@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Channel Switching</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+        }
+        button {
+            background: #9146ff;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        .result {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #9146ff;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .success {
+            border-left-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Twitch Channel Switching Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Channel Connection</h2>
+        <input type="text" id="channelInput" placeholder="Enter channel name (e.g., kamet0)" value="kamet0">
+        <button onclick="testConnect()">Connect to Channel</button>
+        <button onclick="testDisconnect()">Disconnect</button>
+        <button onclick="testCurrentChannel()">Get Current Channel</button>
+        <div id="connectionResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test API Endpoints</h2>
+        <button onclick="testHealth()">Test Health Endpoint</button>
+        <button onclick="testMetrics()">Test Metrics Endpoint</button>
+        <div id="apiResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>WebSocket Test</h2>
+        <button onclick="testWebSocket()">Connect WebSocket</button>
+        <button onclick="disconnectWebSocket()">Disconnect WebSocket</button>
+        <div id="wsResult" class="result" style="display: none;"></div>
+        <div id="wsMessages" style="max-height: 200px; overflow-y: auto; background: #222; padding: 10px; margin: 10px 0; border-radius: 5px;"></div>
+    </div>
+
+    <script>
+        let ws = null;
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        function addWSMessage(message) {
+            const element = document.getElementById('wsMessages');
+            const timestamp = new Date().toLocaleTimeString();
+            element.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        async function testConnect() {
+            const channel = document.getElementById('channelInput').value.trim();
+            if (!channel) {
+                showResult('connectionResult', 'Please enter a channel name', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/connect-channel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ channel: channel })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult('connectionResult', `✅ Connected to ${result.channel}`, 'success');
+                } else {
+                    showResult('connectionResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showResult('connectionResult', `❌ Connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDisconnect() {
+            try {
+                const response = await fetch('/api/disconnect-channel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult('connectionResult', '✅ Disconnected from channel', 'success');
+                } else {
+                    showResult('connectionResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showResult('connectionResult', `❌ Disconnect failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testCurrentChannel() {
+            try {
+                const response = await fetch('/api/current-channel');
+                const result = await response.json();
+                
+                showResult('connectionResult', 
+                    `📊 Current Channel: ${result.channel || 'None'}\n` +
+                    `🔗 Status: ${result.status}\n` +
+                    `✅ Connected: ${result.connected}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('connectionResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch('/api/health');
+                const result = await response.json();
+                
+                showResult('apiResult', 
+                    `🏥 Health Status: ${result.status}\n` +
+                    `🔗 Twitch Connected: ${result.twitch.connected}\n` +
+                    `📺 Channel: ${result.twitch.channel}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('apiResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testMetrics() {
+            try {
+                const response = await fetch('/api/metrics');
+                const result = await response.json();
+                
+                showResult('apiResult', 
+                    `📊 Metrics:\n` +
+                    `📺 Channel: ${result.channelName}\n` +
+                    `👥 Viewers: ${result.currentViewerCount}\n` +
+                    `💬 Messages: ${result.totalMessages}\n` +
+                    `👥 Followers: ${result.totalFollowers}\n` +
+                    `🎉 Subs: ${result.totalSubs}`, 
+                    'success'
+                );
+            } catch (error) {
+                showResult('apiResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function testWebSocket() {
+            if (ws) {
+                addWSMessage('WebSocket already connected');
+                return;
+            }
+
+            ws = new WebSocket('ws://localhost:3000');
+            
+            ws.onopen = function() {
+                addWSMessage('✅ WebSocket connected');
+                showResult('wsResult', 'WebSocket connected successfully', 'success');
+            };
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    addWSMessage(`📊 Received metrics: Channel=${data.channelName}, Viewers=${data.currentViewerCount}, Messages=${data.totalMessages}`);
+                } catch (error) {
+                    addWSMessage(`📨 Received: ${event.data}`);
+                }
+            };
+            
+            ws.onclose = function() {
+                addWSMessage('❌ WebSocket disconnected');
+                ws = null;
+            };
+            
+            ws.onerror = function(error) {
+                addWSMessage(`❌ WebSocket error: ${error}`);
+                showResult('wsResult', 'WebSocket connection failed', 'error');
+            };
+        }
+
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+                addWSMessage('🔌 WebSocket manually disconnected');
+            } else {
+                addWSMessage('No WebSocket connection to disconnect');
+            }
+        }
+
+        // Auto-test on load
+        window.onload = function() {
+            addWSMessage('🧪 Test page loaded. Ready to test channel switching functionality.');
+        };
+    </script>
+</body>
+</html>

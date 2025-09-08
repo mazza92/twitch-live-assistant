@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .info { background: #e3f2fd; color: #1565c0; }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Test for Twitch Dashboard</h1>
+    <div id="status">Connecting...</div>
+    <div id="logs"></div>
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="clearLogs()">Clear Logs</button>
+
+    <script>
+        let ws;
+        const logs = document.getElementById('logs');
+        const status = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(div);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function clearLogs() {
+            logs.innerHTML = '';
+        }
+
+        function testConnection() {
+            log('Testing WebSocket connection...', 'info');
+            initWebSocket();
+        }
+
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            log(`Connecting to: ${wsUrl}`, 'info');
+            
+            try {
+                ws = new WebSocket(wsUrl);
+
+                ws.onopen = function() {
+                    log('✅ WebSocket connected successfully!', 'success');
+                    status.textContent = 'Connected';
+                    status.style.color = 'green';
+                };
+
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        log(`📊 Received data: ${JSON.stringify(data, null, 2)}`, 'success');
+                        
+                        // Check specific metrics
+                        if (data.currentViewerCount) {
+                            log(`👥 Current Viewers: ${data.currentViewerCount}`, 'info');
+                        }
+                        if (data.totalMessages) {
+                            log(`💬 Total Messages: ${data.totalMessages}`, 'info');
+                        }
+                        if (data.isLive !== undefined) {
+                            log(`📺 Stream Status: ${data.isLive ? 'LIVE' : 'OFFLINE'}`, 'info');
+                        }
+                        if (data.sessionFollowersGained) {
+                            log(`👥 New Followers: ${data.sessionFollowersGained}`, 'info');
+                        }
+                        if (data.sessionSubsGained) {
+                            log(`🎉 New Subs: ${data.sessionSubsGained}`, 'info');
+                        }
+                        if (data.sessionBitsEarned) {
+                            log(`💰 Bits Earned: ${data.sessionBitsEarned}`, 'info');
+                        }
+                    } catch (error) {
+                        log(`❌ Error parsing message: ${error.message}`, 'error');
+                        log(`Raw message: ${event.data}`, 'error');
+                    }
+                };
+
+                ws.onclose = function() {
+                    log('❌ WebSocket disconnected', 'error');
+                    status.textContent = 'Disconnected';
+                    status.style.color = 'red';
+                };
+
+                ws.onerror = function(error) {
+                    log(`❌ WebSocket error: ${error}`, 'error');
+                    status.textContent = 'Error';
+                    status.style.color = 'red';
+                };
+
+            } catch (error) {
+                log(`❌ Failed to create WebSocket: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-connect on page load
+        window.onload = function() {
+            log('Page loaded, initializing WebSocket...', 'info');
+            initWebSocket();
+        };
+    </script>
+</body>
+</html>

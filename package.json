@@ -1,0 +1,43 @@
+{
+  "name": "twitch-live-assistant",
+  "version": "1.0.0",
+  "description": "Real-time Twitch Live Assistant with AI-powered engagement analytics",
+  "main": "twitch_data_processor.js",
+  "scripts": {
+    "start": "node twitch_data_processor.js",
+    "dev": "node twitch_data_processor.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "twitch",
+    "live-streaming",
+    "analytics",
+    "ai",
+    "engagement",
+    "metrics",
+    "realtime"
+  ],
+  "author": "Twitch Live Assistant",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "tmi.js": "^1.8.5",
+    "axios": "^1.6.0",
+    "sentiment": "^5.0.2",
+    "@google/generative-ai": "^0.2.1",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/twitch-live-assistant.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/twitch-live-assistant/issues"
+  },
+  "homepage": "https://github.com/your-username/twitch-live-assistant#readme"
+}
