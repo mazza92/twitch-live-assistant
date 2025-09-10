@@ -108,6 +108,30 @@ function generateSessionId() {
     return `session_${Date.now()}_${++sessionCounter}`;
 }
 
+// Helper function to clean up old sessions for a channel
+function cleanupOldSessions(channelName, currentSessionId) {
+    const sessionsToRemove = [];
+    
+    userSessions.forEach((session, sessionId) => {
+        if (session.channel === channelName && sessionId !== currentSessionId) {
+            console.log(`🧹 [CLEANUP] Removing old session for channel ${channelName}: ${sessionId}`);
+            sessionsToRemove.push(sessionId);
+        }
+    });
+    
+    sessionsToRemove.forEach(sessionId => {
+        const session = userSessions.get(sessionId);
+        if (session && session.connection && session.connection.readyState() === 'OPEN') {
+            session.connection.disconnect();
+        }
+        userSessions.delete(sessionId);
+    });
+    
+    if (sessionsToRemove.length > 0) {
+        console.log(`🧹 [CLEANUP] Cleaned up ${sessionsToRemove.length} old sessions. Remaining: ${userSessions.size}`);
+    }
+}
+
 // Helper function to calculate accurate revenue based on Twitch monetization rates
 function calculateAccurateRevenue(metrics) {
     // Twitch Bits: 1 bit = $0.01 USD (streamer receives full value)
@@ -704,8 +728,12 @@ async function getStreamInfo(channel) {
             const session = Array.from(userSessions.values()).find(s => s.channel === channel);
             if (session) {
                 session.metrics.isLive = false;
+                session.metrics.currentViewerCount = 0;
+                session.metrics.streamTitle = '';
+                session.metrics.gameCategory = '';
+                session.metrics.streamLanguage = '';
+                console.log(`❌ [STREAM] No live stream found for channel: ${channel} - Channel may be offline`);
             }
-            console.log(`❌ [STREAM] No live stream found for channel: ${channel}`);
             return null;
         }
     } catch (error) {
@@ -1201,24 +1229,39 @@ app.post('/api/connect-channel', async (req, res) => {
         const channelName = channel.trim().toLowerCase();
         const newSessionId = sessionId || generateSessionId();
         
-        // Check if session already exists
-        if (userSessions.has(newSessionId)) {
-            const existingSession = userSessions.get(newSessionId);
-            if (existingSession.isConnected && existingSession.channel === channelName) {
+        // Check if there's already a session for this channel
+        const existingChannelSession = Array.from(userSessions.values()).find(s => s.channel === channelName);
+        if (existingChannelSession) {
+            console.log(`🔄 [CHANNEL] Found existing session for channel ${channelName}: ${existingChannelSession.sessionId}`);
+            if (existingChannelSession.isConnected) {
                 return res.json({ 
                     success: true, 
                     channel: channelName,
-                    sessionId: newSessionId,
+                    sessionId: existingChannelSession.sessionId,
                     message: `Already connected to ${channelName}` 
                 });
             }
             
             // Disconnect existing session
-            if (existingSession.connection && existingSession.connection.readyState() === 'OPEN') {
-                console.log(`🔄 [CHANNEL] Disconnecting existing session: ${newSessionId}`);
-                await existingSession.connection.disconnect();
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (existingChannelSession.connection && existingChannelSession.connection.readyState() === 'OPEN') {
+                console.log(`🔄 [CHANNEL] Disconnecting existing session: ${existingChannelSession.sessionId}`);
+                await existingChannelSession.connection.disconnect();
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
+            
+            // Remove the old session
+            userSessions.delete(existingChannelSession.sessionId);
+        }
+        
+        // Check if session already exists by ID
+        if (userSessions.has(newSessionId)) {
+            const existingSession = userSessions.get(newSessionId);
+            if (existingSession.connection && existingSession.connection.readyState() === 'OPEN') {
+                console.log(`🔄 [CHANNEL] Disconnecting existing session by ID: ${newSessionId}`);
+                await existingSession.connection.disconnect();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            userSessions.delete(newSessionId);
         }
         
         // Create new session
@@ -1271,6 +1314,9 @@ app.post('/api/connect-channel', async (req, res) => {
         
         console.log(`✅ [CHANNEL] Successfully connected to: ${channelName} (Session: ${newSessionId})`);
         console.log(`📊 [SESSION] Session stored in userSessions. Total sessions: ${userSessions.size}`);
+        
+        // Clean up any old sessions for this channel
+        cleanupOldSessions(channelName, newSessionId);
         
         // Send initial data to any existing WebSocket clients for this session
         if (session.wsClients.size > 0) {
