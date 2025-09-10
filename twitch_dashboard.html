@@ -1887,6 +1887,7 @@
         let currentLanguage = 'en';
         let lastViewerCount = 0;
         let sessionStartTime = Date.now();
+        let currentSessionId = null;
         let reconnectAttempts = 0;
         const maxReconnectAttempts = 5;
         let chatScore = 0;
@@ -2011,7 +2012,12 @@
         // Initialize WebSocket connection
         function initWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}`;
+            let wsUrl = `${protocol}//${window.location.host}`;
+            
+            // Add sessionId to WebSocket URL if available
+            if (currentSessionId) {
+                wsUrl += `?sessionId=${currentSessionId}`;
+            }
             
             console.log('🔌 [WEBSOCKET] Connecting to:', wsUrl);
             ws = new WebSocket(wsUrl);
@@ -2460,20 +2466,20 @@
             // Update main AI prompts (Tier 2)
             if (promptsContainer) {
                 promptsContainer.innerHTML = '';
-                prompts.slice(-5).forEach(prompt => {
-                    const promptDiv = document.createElement('div');
-                    promptDiv.className = 'prompt-item';
-                    
-                    const timestamp = new Date(prompt.timestamp || Date.now());
+            prompts.slice(-5).forEach(prompt => {
+                const promptDiv = document.createElement('div');
+                promptDiv.className = 'prompt-item';
+                
+                const timestamp = new Date(prompt.timestamp || Date.now());
                     const message = prompt.prompt?.message || 'No message';
                     
-                    promptDiv.innerHTML = `
+                promptDiv.innerHTML = `
                         <div class="prompt-type">${prompt.prompt?.type || 'AI Assistant'}</div>
                         <div class="prompt-message">${message}</div>
-                        <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
-                    `;
-                    promptsContainer.appendChild(promptDiv);
-                });
+                    <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
+                `;
+                promptsContainer.appendChild(promptDiv);
+            });
             }
             
             // Update AI prompts history (Tier 3)
@@ -2717,8 +2723,11 @@
                 if (response.ok) {
                     clearTimeout(connectionTimeout);
                     currentChannel = channel;
+                    currentSessionId = result.sessionId; // Store the session ID
                     updateConnectionStatus('connected', `Connected to ${channel}`);
                     document.getElementById('channelName').textContent = channel;
+                    
+                    console.log('🔗 [SESSION] Connected to session:', currentSessionId);
                     
                     // Reconnect WebSocket to get new data
                     if (ws) {
@@ -2746,13 +2755,17 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                    }
+                    },
+                    body: JSON.stringify({ sessionId: currentSessionId })
                 });
                 
                 if (response.ok) {
                     currentChannel = '';
+                    currentSessionId = null; // Clear the session ID
                     updateConnectionStatus('disconnected', 'Not Connected');
                     document.getElementById('channelName').textContent = 'Not Connected';
+                    
+                    console.log('🔗 [SESSION] Disconnected from session');
                     
                     // Close WebSocket
                     if (ws) {
