@@ -1121,6 +1121,54 @@
             100% { transform: scale(1); }
         }
 
+        /* Strategic Metrics Styling */
+        .strategic-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .recommendation-card {
+            background: rgba(145, 70, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(145, 70, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .recommendation-card:hover {
+            background: rgba(145, 70, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: var(--twitch-purple);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recommendation-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .health-score-excellent {
+            color: #4CAF50;
+        }
+
+        .health-score-good {
+            color: #FFC107;
+        }
+
+        .health-score-poor {
+            color: #f44336;
+        }
+
         /* Scrollbar Styling */
         ::-webkit-scrollbar {
             width: 8px;
@@ -1756,6 +1804,64 @@
             </div>
         </div>
 
+        <!-- Strategic Analytics Grid -->
+        <div class="strategic-metrics-grid">
+            <!-- Health Score -->
+            <div class="metric-card">
+                <div class="metric-title">💚 Stream Health Score</div>
+                <div class="metric-value" id="healthScore">0</div>
+                <div class="metric-subtitle">Overall stream performance</div>
+                <div class="metric-trend">
+                    <span id="healthScoreText">Calculating...</span>
+                </div>
+            </div>
+
+            <!-- Predicted Retention -->
+            <div class="metric-card">
+                <div class="metric-title">📊 Predicted Retention</div>
+                <div class="metric-value" id="predictedRetention">0%</div>
+                <div class="metric-subtitle">Expected viewer retention</div>
+                <div class="metric-trend">
+                    <span id="retentionRec">Calculating...</span>
+                </div>
+            </div>
+
+            <!-- Projected Revenue -->
+            <div class="metric-card">
+                <div class="metric-title">💰 Projected Revenue</div>
+                <div class="metric-value" id="projectedRevenue">$0.00</div>
+                <div class="metric-subtitle">Monthly projection</div>
+                <div class="metric-trend">
+                    <span id="revenueTip">Calculating...</span>
+                </div>
+            </div>
+
+            <!-- Schedule Suggestion -->
+            <div class="metric-card">
+                <div class="metric-title">📅 Optimal Schedule</div>
+                <div class="metric-value" id="scheduleSuggestion">--:--</div>
+                <div class="metric-subtitle">Best streaming time</div>
+                <div class="metric-trend">
+                    <span id="scheduleReason">Calculating...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Recommendations -->
+        <div class="metric-card" style="margin: 20px 0;">
+            <div class="metric-title">🤖 AI Recommendations</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                <div class="recommendation-card">
+                    <div class="recommendation-title">👥 Viewer Growth</div>
+                    <div id="viewerRec" class="recommendation-text">Calculating recommendations...</div>
+                </div>
+                <div class="recommendation-card">
+                    <div class="recommendation-title">📈 Growth Strategy</div>
+                    <div id="growthRec" class="recommendation-text">Calculating recommendations...</div>
+                </div>
+            </div>
+        </div>
+
         <!-- AI Prompts History -->
         <div class="ai-prompts">
             <div class="metric-title">🤖 AI Prompts History</div>
@@ -2278,6 +2384,32 @@
                 document.getElementById('streamDuration').textContent = '00:00:00';
                 document.getElementById('streamDurationText').textContent = 'Not live';
             }
+
+            // Update new strategic metrics
+            updateMetricValue('healthScore', Math.round(data.healthScore || 0));
+            updateMetricValue('predictedRetention', `${Math.round(data.predictedRetention || 0)}%`);
+            updateMetricValue('projectedRevenue', `$${(data.projectedRevenue || 0).toFixed(2)}`);
+            updateMetricValue('scheduleSuggestion', data.scheduleSuggestion || '--:--');
+            
+            // Update recommendation texts with color coding
+            const healthScore = data.healthScore || 0;
+            const healthScoreElement = document.getElementById('healthScoreText');
+            if (healthScore >= 70) {
+                healthScoreElement.textContent = 'Excellent';
+                healthScoreElement.className = 'health-score-excellent';
+            } else if (healthScore >= 50) {
+                healthScoreElement.textContent = 'Good';
+                healthScoreElement.className = 'health-score-good';
+            } else {
+                healthScoreElement.textContent = 'Needs improvement';
+                healthScoreElement.className = 'health-score-poor';
+            }
+            
+            document.getElementById('retentionRec').textContent = data.retentionRec || 'Calculating...';
+            document.getElementById('revenueTip').textContent = data.revenueTip || 'Calculating...';
+            document.getElementById('scheduleReason').textContent = data.scheduleReason || 'Calculating...';
+            document.getElementById('viewerRec').textContent = data.viewerRec || 'Calculating recommendations...';
+            document.getElementById('growthRec').textContent = data.growthRec || 'Calculating recommendations...';
         }
 
         // Update chat messages
@@ -2333,9 +2465,11 @@
                     promptDiv.className = 'prompt-item';
                     
                     const timestamp = new Date(prompt.timestamp || Date.now());
+                    const message = prompt.prompt?.message || 'No message';
+                    
                     promptDiv.innerHTML = `
-                        <div class="prompt-type">${prompt.prompt?.type || 'Unknown'}</div>
-                        <div class="prompt-message">${prompt.prompt?.message || 'No message'}</div>
+                        <div class="prompt-type">${prompt.prompt?.type || 'AI Assistant'}</div>
+                        <div class="prompt-message">${message}</div>
                         <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
                     `;
                     promptsContainer.appendChild(promptDiv);
@@ -2350,9 +2484,11 @@
                     promptDiv.className = 'prompt-item';
                     
                     const timestamp = new Date(prompt.timestamp || Date.now());
+                    const message = prompt.prompt?.message || 'No message';
+                    
                     promptDiv.innerHTML = `
-                        <div class="prompt-type">${prompt.prompt?.type || 'Unknown'}</div>
-                        <div class="prompt-message">${prompt.prompt?.message || 'No message'}</div>
+                        <div class="prompt-type">${prompt.prompt?.type || 'AI Assistant'}</div>
+                        <div class="prompt-message">${message}</div>
                         <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
                     `;
                     historyContainer.appendChild(promptDiv);
