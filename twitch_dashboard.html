@@ -1742,9 +1742,9 @@
             <div class="gauge-container">
                 <div class="gauge-circle">
                     <div class="gauge-inner">
-                        <div class="gauge-score" id="chatScore">0</div>
+                        <div class="gauge-score" id="chatScoreStrategic">0</div>
                     </div>
-                    <div class="gauge-needle" id="gaugeNeedle"></div>
+                    <div class="gauge-needle" id="gaugeNeedleStrategic"></div>
                     <div class="gauge-center"></div>
                 </div>
             </div>
@@ -2599,24 +2599,51 @@
 
         // Update chat score gauge
         function updateChatScoreGauge(score) {
+            // Update main dashboard gauge
             const scoreElement = document.getElementById('chatScore');
             const needleElement = document.getElementById('gaugeNeedle');
+            
+            // Update strategic view gauge
+            const scoreElementStrategic = document.getElementById('chatScoreStrategic');
+            const needleElementStrategic = document.getElementById('gaugeNeedleStrategic');
             
             console.log('🎯 Updating chat score gauge with score:', score);
             
             // Update score with animation
             if (score !== lastChatScore) {
-                scoreElement.textContent = score;
-                scoreElement.classList.add('updated');
-                setTimeout(() => {
-                    scoreElement.classList.remove('updated');
-                }, 600);
+                // Update main gauge
+                if (scoreElement) {
+                    scoreElement.textContent = score;
+                    scoreElement.classList.add('updated');
+                    setTimeout(() => {
+                        scoreElement.classList.remove('updated');
+                    }, 600);
+                }
+                
+                // Update strategic gauge
+                if (scoreElementStrategic) {
+                    scoreElementStrategic.textContent = score;
+                    scoreElementStrategic.classList.add('updated');
+                    setTimeout(() => {
+                        scoreElementStrategic.classList.remove('updated');
+                    }, 600);
+                }
+                
                 lastChatScore = score;
             }
             
             // Calculate needle rotation (-90deg to 90deg for half circle)
             const rotation = (score / 100) * 180 - 90;
-            needleElement.style.transform = `rotate(${rotation}deg)`;
+            
+            // Update main gauge needle
+            if (needleElement) {
+                needleElement.style.transform = `rotate(${rotation}deg)`;
+            }
+            
+            // Update strategic gauge needle
+            if (needleElementStrategic) {
+                needleElementStrategic.style.transform = `rotate(${rotation}deg)`;
+            }
             
             // Update level indicators
             let level = 1;
