@@ -208,6 +208,19 @@ function setupTwitchEventHandlers(client) {
         
         const username = tags.username;
         const displayName = tags['display-name'] || username;
+        const messageId = `${username}-${message}-${Date.now()}`;
+        
+        // Check for duplicate messages (same user, same message within 1 second)
+        const recentMessage = streamMetrics.recentMessages.find(msg => 
+            msg.username === displayName && 
+            msg.message === message && 
+            (Date.now() - msg.timestamp) < 1000
+        );
+        
+        if (recentMessage) {
+            console.log(`🔄 [CHAT] Skipping duplicate message from ${displayName}: ${message}`);
+            return;
+        }
         
         // Add to recent messages
         streamMetrics.recentMessages.push({
@@ -1493,6 +1506,8 @@ app.post('/api/connect-channel', async (req, res) => {
         if (isConnected && twitchClient && twitchClient.readyState() === 'OPEN') {
             console.log(`🔄 [CHANNEL] Disconnecting from current channel: ${currentChannel}`);
             await twitchClient.disconnect();
+            // Small delay to ensure clean disconnection
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
         
         // Reset metrics for new channel
