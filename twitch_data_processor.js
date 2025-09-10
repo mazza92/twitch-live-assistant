@@ -99,9 +99,14 @@ const promptTranslations = {
     }
 };
 
-// Current channel tracking
-let currentChannel = process.env.TWITCH_CHANNEL || '';
-let isConnected = false;
+// Multi-session architecture
+const userSessions = new Map(); // sessionId -> { connection, metrics, wsClients, channel, isConnected }
+let sessionCounter = 0;
+
+// Helper function to generate unique session ID
+function generateSessionId() {
+    return `session_${Date.now()}_${++sessionCounter}`;
+}
 
 // Helper function to calculate accurate revenue based on Twitch monetization rates
 function calculateAccurateRevenue(metrics) {
@@ -134,9 +139,9 @@ function calculateAccurateRevenue(metrics) {
     };
 }
 
-// Helper function to reset stream metrics
-function resetStreamMetrics() {
-    streamMetrics = {
+// Helper function to create empty metrics for a new session
+function createEmptyMetrics() {
+    return {
         // Basic stream info
         streamStartTime: null,
         currentViewerCount: 0,
@@ -211,11 +216,12 @@ function resetStreamMetrics() {
         revenueTip: "Focus on Tier 2 subs",
         healthScore: 0
     };
-    console.log('🔄 [METRICS] Stream metrics reset for new channel');
 }
 
-// Helper function to set up Twitch event handlers
-function setupTwitchEventHandlers(client) {
+// Helper function to set up Twitch event handlers for a specific session
+function setupSessionEventHandlers(session) {
+    const client = session.connection;
+    const metrics = session.metrics;
     // Chat message handler
     client.on('message', (channel, tags, message, self) => {
         if (self) return;
@@ -225,7 +231,7 @@ function setupTwitchEventHandlers(client) {
         const messageId = `${username}-${message}-${Date.now()}`;
         
         // Check for duplicate messages (same user, same message within 1 second)
-        const recentMessage = streamMetrics.recentMessages.find(msg => 
+        const recentMessage = metrics.recentMessages.find(msg => 
             msg.username === displayName && 
             msg.message === message && 
             (Date.now() - msg.timestamp) < 1000
@@ -237,20 +243,20 @@ function setupTwitchEventHandlers(client) {
         }
         
         // Add to recent messages
-        streamMetrics.recentMessages.push({
+        metrics.recentMessages.push({
             username: displayName,
             message: message,
             timestamp: Date.now()
         });
         
         // Keep only last 100 messages
-        if (streamMetrics.recentMessages.length > 100) {
-            streamMetrics.recentMessages = streamMetrics.recentMessages.slice(-100);
+        if (metrics.recentMessages.length > 100) {
+            metrics.recentMessages = metrics.recentMessages.slice(-100);
         }
         
         // Update user engagement
-        if (!streamMetrics.userEngagement.has(username)) {
-            streamMetrics.userEngagement.set(username, {
+        if (!metrics.userEngagement.has(username)) {
+            metrics.userEngagement.set(username, {
                 messages: 0,
                 bits: 0,
                 follows: 0,
@@ -258,45 +264,45 @@ function setupTwitchEventHandlers(client) {
             });
         }
         
-        const userData = streamMetrics.userEngagement.get(username);
+        const userData = metrics.userEngagement.get(username);
         userData.messages = (userData.messages || 0) + 1;
         
         // Update metrics
-        streamMetrics.totalMessages++;
-        streamMetrics.uniqueChatters.add(username);
+        metrics.totalMessages++;
+        metrics.uniqueChatters.add(username);
         
         // Analyze sentiment
-        analyzeSentiment();
+        analyzeSentiment(metrics);
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates immediately for real-time chat
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Follow handler
     client.on('follow', (channel, username, displayName, userID) => {
         console.log(`👥 [FOLLOW] ${displayName} followed!`);
         
-        streamMetrics.totalFollowers++;
-        streamMetrics.sessionFollowersGained++;
+        metrics.totalFollowers++;
+        metrics.sessionFollowersGained++;
         
         // Add to recent followers
-        streamMetrics.newFollowers.push({
+        metrics.newFollowers.push({
             username: displayName,
             timestamp: Date.now()
         });
         
         // Keep only last 50 followers
-        if (streamMetrics.newFollowers.length > 50) {
-            streamMetrics.newFollowers = streamMetrics.newFollowers.slice(-50);
+        if (metrics.newFollowers.length > 50) {
+            metrics.newFollowers = metrics.newFollowers.slice(-50);
         }
         
         // Update user engagement
-        if (!streamMetrics.userEngagement.has(username)) {
-            streamMetrics.userEngagement.set(username, {
+        if (!metrics.userEngagement.has(username)) {
+            metrics.userEngagement.set(username, {
                 messages: 0,
                 bits: 0,
                 follows: 0,
@@ -304,15 +310,15 @@ function setupTwitchEventHandlers(client) {
             });
         }
         
-        const userData = streamMetrics.userEngagement.get(username);
+        const userData = metrics.userEngagement.get(username);
         userData.follows = (userData.follows || 0) + 1;
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates immediately for real-time follows
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Subscription handler
@@ -628,14 +634,7 @@ function setupTwitchEventHandlers(client) {
     });
 }
 
-// Twitch-specific metrics and data structures
-let streamMetrics = {};
-resetStreamMetrics();
-
-// Twitch client configuration - will be created when user connects to a channel
-let twitchClient = null;
-
-// WebSocket connections for dashboard
+// WebSocket connections for dashboard (legacy - will be removed)
 const dashboardConnections = new Set();
 
 // Twitch API configuration
@@ -664,39 +663,49 @@ async function getTwitchAPI(endpoint, params = {}) {
     return response.json();
 }
 
-// Get current stream info
-async function getStreamInfo() {
+// Get current stream info for a specific channel
+async function getStreamInfo(channel) {
     try {
-        if (!currentChannel) {
-            console.log('🔍 [API] No channel connected, skipping stream info fetch');
+        if (!channel) {
+            console.log('🔍 [API] No channel provided, skipping stream info fetch');
             return null;
         }
         
-        console.log(`🔍 [API] Fetching stream info for channel: ${currentChannel}`);
+        console.log(`🔍 [API] Fetching stream info for channel: ${channel}`);
         const data = await getTwitchAPI('streams', {
-            user_login: currentChannel
+            user_login: channel
         });
         
         console.log(`📊 [API] Received data:`, JSON.stringify(data, null, 2));
         
         if (data.data && data.data.length > 0) {
             const stream = data.data[0];
-            streamMetrics.isLive = true;
-            streamMetrics.streamTitle = stream.title;
-            streamMetrics.gameCategory = stream.game_name;
-            streamMetrics.currentViewerCount = stream.viewer_count;
-            streamMetrics.streamLanguage = stream.language;
             
-            // Update peak viewers
-            if (stream.viewer_count > streamMetrics.peakViewerCount) {
-                streamMetrics.peakViewerCount = stream.viewer_count;
+            // Find the session for this channel
+            const session = Array.from(userSessions.values()).find(s => s.channel === channel);
+            if (session) {
+                session.metrics.isLive = true;
+                session.metrics.streamTitle = stream.title;
+                session.metrics.gameCategory = stream.game_name;
+                session.metrics.currentViewerCount = stream.viewer_count;
+                session.metrics.streamLanguage = stream.language;
+                
+                // Update peak viewers
+                if (stream.viewer_count > session.metrics.peakViewerCount) {
+                    session.metrics.peakViewerCount = stream.viewer_count;
+                }
+                
+                console.log(`✅ [STREAM] Updated metrics for session ${session.sessionId} - Live: ${session.metrics.isLive}, Viewers: ${session.metrics.currentViewerCount}`);
             }
             
-            console.log(`✅ [STREAM] Updated metrics - Live: ${streamMetrics.isLive}, Viewers: ${streamMetrics.currentViewerCount}`);
             return stream;
         } else {
-            streamMetrics.isLive = false;
-            console.log('❌ [STREAM] No live stream found');
+            // Find the session for this channel
+            const session = Array.from(userSessions.values()).find(s => s.channel === channel);
+            if (session) {
+                session.metrics.isLive = false;
+            }
+            console.log(`❌ [STREAM] No live stream found for channel: ${channel}`);
             return null;
         }
     } catch (error) {
@@ -751,8 +760,8 @@ async function getSubscriberCount(userId) {
     }
 }
 
-// Fetch initial metrics when connecting to channel
-async function fetchInitialMetrics(channel) {
+// Fetch initial metrics when connecting to channel for a specific session
+async function fetchInitialMetrics(channel, metrics) {
     try {
         const channelInfo = await getChannelInfo(channel);
         if (!channelInfo) return;
@@ -760,73 +769,73 @@ async function fetchInitialMetrics(channel) {
         const userId = channelInfo.id;
         
         // Get followers
-        streamMetrics.totalFollowers = await getFollowerCount(userId);
+        metrics.totalFollowers = await getFollowerCount(userId);
         
         // Get subscribers (may require additional scopes)
-        streamMetrics.totalSubs = await getSubscriberCount(userId);
+        metrics.totalSubs = await getSubscriberCount(userId);
         
-        console.log(`📊 [INITIAL] Fetched metrics - Followers: ${streamMetrics.totalFollowers}, Subs: ${streamMetrics.totalSubs}`);
+        console.log(`📊 [INITIAL] Fetched metrics - Followers: ${metrics.totalFollowers}, Subs: ${metrics.totalSubs}`);
     } catch (error) {
         console.error('Error fetching initial metrics:', error);
     }
 }
 
-// Calculate rolling metrics
-function calculateRollingMetrics() {
+// Calculate rolling metrics for a specific session
+function calculateRollingMetrics(metrics) {
     const now = Date.now();
-    const streamDuration = streamMetrics.streamStartTime ? (now - streamMetrics.streamStartTime) / 60000 : 0; // minutes
+    const streamDuration = metrics.streamStartTime ? (now - metrics.streamStartTime) / 60000 : 0; // minutes
     
     if (streamDuration > 0) {
         // Messages per minute
-        streamMetrics.messagesPerMinute = streamMetrics.totalMessages / streamDuration;
+        metrics.messagesPerMinute = metrics.totalMessages / streamDuration;
         
         // Followers per minute
-        streamMetrics.followersGainsPerMinute = streamMetrics.sessionFollowersGained / streamDuration;
+        metrics.followersGainsPerMinute = metrics.sessionFollowersGained / streamDuration;
         
         // Subs per minute
-        streamMetrics.subsGainsPerMinute = streamMetrics.sessionSubsGained / streamDuration;
+        metrics.subsGainsPerMinute = metrics.sessionSubsGained / streamDuration;
         
         // Bits per minute
-        streamMetrics.bitsPerMinute = streamMetrics.sessionBitsEarned / streamDuration;
+        metrics.bitsPerMinute = metrics.sessionBitsEarned / streamDuration;
         
         // Average viewers
-        streamMetrics.averageViewerCount = streamMetrics.totalViewerMinutes / streamDuration;
+        metrics.averageViewerCount = metrics.totalViewerMinutes / streamDuration;
         
         // Viewer retention (simplified calculation)
-        streamMetrics.viewerRetention = streamMetrics.currentViewerCount > 0 ? 
-            Math.min(100, (streamMetrics.currentViewerCount / Math.max(streamMetrics.peakViewerCount, 1)) * 100) : 0;
+        metrics.viewerRetention = metrics.currentViewerCount > 0 ? 
+            Math.min(100, (metrics.currentViewerCount / Math.max(metrics.peakViewerCount, 1)) * 100) : 0;
         
         // Predicted retention (dummy calc)
-        streamMetrics.predictedRetention = Math.round(50 + streamMetrics.rollingSentimentScore * 20 + (streamMetrics.currentViewerCount / 10));
+        metrics.predictedRetention = Math.round(50 + metrics.rollingSentimentScore * 20 + (metrics.currentViewerCount / 10));
         
         // Projected revenue (daily * 30)
-        const dailyRev = calculateAccurateRevenue(streamMetrics).total;
-        streamMetrics.projectedRevenue = dailyRev * 30;
+        const dailyRev = calculateAccurateRevenue(metrics).total;
+        metrics.projectedRevenue = dailyRev * 30;
         
         // Revenue tip
-        streamMetrics.revenueTip = streamMetrics.projectedRevenue < 50 ? "Focus on subs" : "Great momentum!";
+        metrics.revenueTip = metrics.projectedRevenue < 50 ? "Focus on subs" : "Great momentum!";
         
         // Health score
         const durationHours = streamDuration / 60;
         let score = 100 - (durationHours * 10);
-        score += streamMetrics.rollingSentimentScore * 20;
-        streamMetrics.healthScore = Math.max(0, Math.min(100, score));
+        score += metrics.rollingSentimentScore * 20;
+        metrics.healthScore = Math.max(0, Math.min(100, score));
         
         // Dynamic recommendations
-        streamMetrics.retentionRec = streamMetrics.predictedRetention < 50 ? "Add polls every 15 min to improve retention" : "Retention looks good - maintain engagement";
+        metrics.retentionRec = metrics.predictedRetention < 50 ? "Add polls every 15 min to improve retention" : "Retention looks good - maintain engagement";
         
-        streamMetrics.viewerRec = streamMetrics.currentViewerCount < streamMetrics.peerAvgViewers ? 
-            `Increase interactive segments to boost by ${Math.round((streamMetrics.peerAvgViewers - streamMetrics.currentViewerCount) / streamMetrics.peerAvgViewers * 100)}%` : "Viewership above average!";
+        metrics.viewerRec = metrics.currentViewerCount < metrics.peerAvgViewers ? 
+            `Increase interactive segments to boost by ${Math.round((metrics.peerAvgViewers - metrics.currentViewerCount) / metrics.peerAvgViewers * 100)}%` : "Viewership above average!";
         
-        streamMetrics.growthRec = streamMetrics.sessionFollowersGained < 10 ? "Collaborate with similar-sized streamers" : "Strong growth - keep promoting!";
+        metrics.growthRec = metrics.sessionFollowersGained < 10 ? "Collaborate with similar-sized streamers" : "Strong growth - keep promoting!";
     }
 }
 
-// Analyze sentiment of recent messages
-function analyzeSentiment() {
-    if (streamMetrics.recentMessages.length === 0) return;
+// Analyze sentiment of recent messages for a specific session
+function analyzeSentiment(metrics) {
+    if (metrics.recentMessages.length === 0) return;
     
-    const recentMessages = streamMetrics.recentMessages.slice(-20); // Last 20 messages
+    const recentMessages = metrics.recentMessages.slice(-20); // Last 20 messages
     let totalSentiment = 0;
     let validMessages = 0;
     
@@ -839,13 +848,13 @@ function analyzeSentiment() {
     });
     
     if (validMessages > 0) {
-        streamMetrics.rollingSentimentScore = totalSentiment / validMessages;
+        metrics.rollingSentimentScore = totalSentiment / validMessages;
     }
 }
 
-// Update top engaged users
-function updateTopEngagedUsers() {
-    const userArray = Array.from(streamMetrics.userEngagement.entries())
+// Update top engaged users for a specific session
+function updateTopEngagedUsers(metrics) {
+    const userArray = Array.from(metrics.userEngagement.entries())
         .map(([username, data]) => ({
             username,
             messages: data.messages || 0,
@@ -857,22 +866,22 @@ function updateTopEngagedUsers() {
         .sort((a, b) => b.totalEngagement - a.totalEngagement)
         .slice(0, 10);
     
-    streamMetrics.topEngagedUsers = userArray;
+    metrics.topEngagedUsers = userArray;
 }
 
-// Generate AI prompt based on current metrics
-async function generateAIPrompt() {
+// Generate AI prompt based on current metrics for a specific session
+async function generateAIPrompt(session) {
     try {
-        const prompt = await geminiService.generatePrompt(streamMetrics, currentLanguage);
+        const prompt = await geminiService.generatePrompt(session.metrics, currentLanguage);
         
         // Assume prompt is {type: 'some_type', message: 'some_key'}
         // Format the message using translations
         let fullMessage = promptTranslations[currentLanguage][prompt.message] || prompt.message;
         
         const replacements = {
-            '{viewerCount}': streamMetrics.currentViewerCount,
-            '{messageRate}': streamMetrics.messagesPerMinute.toFixed(1),
-            '{followRate}': streamMetrics.followersGainsPerMinute.toFixed(1)
+            '{viewerCount}': session.metrics.currentViewerCount,
+            '{messageRate}': session.metrics.messagesPerMinute.toFixed(1),
+            '{followRate}': session.metrics.followersGainsPerMinute.toFixed(1)
             // Add more placeholders as needed from translations
         };
         
@@ -883,22 +892,22 @@ async function generateAIPrompt() {
         prompt.message = fullMessage;
         
         // Add to prompt history
-        streamMetrics.promptHistory.push({
+        session.metrics.promptHistory.push({
             timestamp: Date.now(),
             prompt: prompt,
             metrics: {
-                viewerCount: streamMetrics.currentViewerCount,
-                messageRate: streamMetrics.messagesPerMinute,
-                sentiment: streamMetrics.rollingSentimentScore
+                viewerCount: session.metrics.currentViewerCount,
+                messageRate: session.metrics.messagesPerMinute,
+                sentiment: session.metrics.rollingSentimentScore
             }
         });
         
         // Keep only last 50 prompts
-        if (streamMetrics.promptHistory.length > 50) {
-            streamMetrics.promptHistory = streamMetrics.promptHistory.slice(-50);
+        if (session.metrics.promptHistory.length > 50) {
+            session.metrics.promptHistory = session.metrics.promptHistory.slice(-50);
         }
         
-        streamMetrics.lastPromptTime = Date.now();
+        session.metrics.lastPromptTime = Date.now();
         
         return prompt;
     } catch (error) {
@@ -907,128 +916,77 @@ async function generateAIPrompt() {
     }
 }
 
-// Broadcast metrics to dashboard
-function broadcastMetrics() {
-    // Only broadcast if we're connected to a channel
-    if (!isConnected || !currentChannel) {
+// Broadcast metrics to a specific session's dashboard clients
+function broadcastToSession(session) {
+    if (!session.isConnected || !session.channel) {
         return;
     }
     
     // Calculate accurate revenue
-    const revenueData = calculateAccurateRevenue(streamMetrics);
+    const revenueData = calculateAccurateRevenue(session.metrics);
     
     const metricsData = {
-        ...streamMetrics,
-        uniqueChatters: streamMetrics.uniqueChatters.size,
-        userEngagement: Object.fromEntries(streamMetrics.userEngagement),
-        channelName: currentChannel,
-        sessionId: streamMetrics.streamStartTime || Date.now(),
+        ...session.metrics,
+        uniqueChatters: session.metrics.uniqueChatters.size,
+        userEngagement: Object.fromEntries(session.metrics.userEngagement),
+        channelName: session.channel,
+        sessionId: session.metrics.streamStartTime || Date.now(),
         timestamp: Date.now(),
         revenue: revenueData
     };
     
     const message = JSON.stringify(metricsData);
     
-    dashboardConnections.forEach(ws => {
+    session.wsClients.forEach(ws => {
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(message);
         }
     });
 }
 
-// WebSocket connection handler
-wss.on('connection', (ws) => {
+// Broadcast metrics to all active sessions (legacy support)
+function broadcastGlobalMetrics() {
+    userSessions.forEach(session => {
+        broadcastToSession(session);
+    });
+}
+
+// WebSocket connection handler for multi-session support
+wss.on('connection', (ws, req) => {
     console.log('📊 [DASHBOARD] New dashboard connection');
-    dashboardConnections.add(ws);
     
-    // Send current metrics immediately only if connected to a channel
-    if (isConnected && currentChannel) {
-        // Calculate accurate revenue
-        const revenueData = calculateAccurateRevenue(streamMetrics);
+    // Extract sessionId from query parameters or first message
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const sessionId = url.searchParams.get('sessionId');
+    
+    if (sessionId && userSessions.has(sessionId)) {
+        // Add WebSocket to existing session
+        const session = userSessions.get(sessionId);
+        session.wsClients.add(ws);
+        console.log(`📊 [DASHBOARD] Added client to session: ${sessionId}`);
         
-        const metricsData = {
-            ...streamMetrics,
-            uniqueChatters: streamMetrics.uniqueChatters.size,
-            userEngagement: Object.fromEntries(streamMetrics.userEngagement),
-            channelName: currentChannel,
-            sessionId: streamMetrics.streamStartTime || Date.now(),
-            timestamp: Date.now(),
-            revenue: revenueData
-        };
-        
-        ws.send(JSON.stringify(metricsData));
+        // Send current metrics immediately
+        broadcastToSession(session);
     } else {
-        // Send empty state when no channel is connected
-        const emptyData = {
-            streamStartTime: null,
-            currentViewerCount: 0,
-            peakViewerCount: 0,
-            averageViewerCount: 0,
-            totalViewerMinutes: 0,
-            totalMessages: 0,
-            messagesPerMinute: 0,
-            uniqueChatters: 0,
-            recentMessages: [],
-            rollingSentimentScore: 0,
-            totalFollowers: 0,
-            sessionFollowersGained: 0,
-            followersGainsPerMinute: 0,
-            newFollowers: [],
-            totalSubs: 0,
-            sessionSubsGained: 0,
-            subsGainsPerMinute: 0,
-            newSubs: [],
-            tier1Subs: 0,
-            tier2Subs: 0,
-            tier3Subs: 0,
-            sessionTier1Subs: 0,
-            sessionTier2Subs: 0,
-            sessionTier3Subs: 0,
-            totalBits: 0,
-            sessionBitsEarned: 0,
-            bitsPerMinute: 0,
-            recentBits: [],
-            totalRaids: 0,
-            sessionRaidsReceived: 0,
-            raidsPerMinute: 0,
-            recentRaids: [],
-            isLive: false,
-            streamTitle: '',
-            gameCategory: '',
-            streamLanguage: '',
-            userEngagement: {},
-            topEngagedUsers: [],
-            promptHistory: [],
-            lastPromptTime: null,
-            viewerRetention: 0,
-            channelName: 'No Channel',
-            sessionId: null,
-            timestamp: Date.now(),
-            revenue: {
+        // Legacy support - add to global connections
+        dashboardConnections.add(ws);
+        
+        // Send empty state when no session is connected
+        const emptyData = createEmptyMetrics();
+        emptyData.channelName = 'No Channel';
+        emptyData.sessionId = null;
+        emptyData.timestamp = Date.now();
+        emptyData.revenue = {
+            bits: 0,
+            subs: 0,
+            total: 0,
+            breakdown: {
                 bits: 0,
-                subs: 0,
-                total: 0,
-                breakdown: {
-                    bits: 0,
-                    tier1: 0,
-                    tier2: 0,
-                    tier3: 0,
-                    totalSubs: 0
-                }
-            },
-            // New fields default
-            peerAvgViewers: 75,
-            viewerRec: "Increase interactive segments to boost by 20%",
-            peerRetention: 60,
-            retentionRec: "Add polls every 15 min",
-            peerGrowth: 12,
-            growthRec: "Collaborate with similar-sized streamers",
-            predictedRetention: 50,
-            scheduleSuggestion: "Tue 8PM",
-            scheduleReason: "+25% views expected",
-            projectedRevenue: 0,
-            revenueTip: "Focus on Tier 2 subs",
-            healthScore: 0
+                tier1: 0,
+                tier2: 0,
+                tier3: 0,
+                totalSubs: 0
+            }
         };
         
         ws.send(JSON.stringify(emptyData));
@@ -1036,11 +994,25 @@ wss.on('connection', (ws) => {
     
     ws.on('close', () => {
         console.log('📊 [DASHBOARD] Dashboard connection closed');
+        
+        // Remove from all sessions
+        userSessions.forEach(session => {
+            session.wsClients.delete(ws);
+        });
+        
+        // Remove from legacy connections
         dashboardConnections.delete(ws);
     });
     
     ws.on('error', (error) => {
         console.error('📊 [DASHBOARD] WebSocket error:', error);
+        
+        // Remove from all sessions
+        userSessions.forEach(session => {
+            session.wsClients.delete(ws);
+        });
+        
+        // Remove from legacy connections
         dashboardConnections.delete(ws);
     });
 });
@@ -1189,33 +1161,50 @@ app.post('/api/set-language', (req, res) => {
     }
 });
 
-// Channel switching endpoints
+// Channel switching endpoints - Multi-session support
 app.post('/api/connect-channel', async (req, res) => {
     try {
-        const { channel } = req.body;
+        const { channel, sessionId } = req.body;
         
         if (!channel || typeof channel !== 'string') {
             return res.status(400).json({ error: 'Channel name is required' });
         }
         
         const channelName = channel.trim().toLowerCase();
+        const newSessionId = sessionId || generateSessionId();
         
-        // Disconnect from current channel if connected
-        if (isConnected && twitchClient && twitchClient.readyState() === 'OPEN') {
-            console.log(`🔄 [CHANNEL] Disconnecting from current channel: ${currentChannel}`);
-            await twitchClient.disconnect();
-            // Small delay to ensure clean disconnection
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        // Check if session already exists
+        if (userSessions.has(newSessionId)) {
+            const existingSession = userSessions.get(newSessionId);
+            if (existingSession.isConnected && existingSession.channel === channelName) {
+                return res.json({ 
+                    success: true, 
+                    channel: channelName,
+                    sessionId: newSessionId,
+                    message: `Already connected to ${channelName}` 
+                });
+            }
+            
+            // Disconnect existing session
+            if (existingSession.connection && existingSession.connection.readyState() === 'OPEN') {
+                console.log(`🔄 [CHANNEL] Disconnecting existing session: ${newSessionId}`);
+                await existingSession.connection.disconnect();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
         }
         
-        // Reset metrics for new channel
-        resetStreamMetrics();
-        
-        // Update current channel
-        currentChannel = channelName;
+        // Create new session
+        const session = {
+            sessionId: newSessionId,
+            channel: channelName,
+            isConnected: false,
+            connection: null,
+            metrics: createEmptyMetrics(),
+            wsClients: new Set()
+        };
         
         // Connect to new channel
-        console.log(`🔗 [CHANNEL] Connecting to new channel: ${channelName}`);
+        console.log(`🔗 [CHANNEL] Connecting to new channel: ${channelName} (Session: ${newSessionId})`);
         
         // Update Twitch client configuration
         const twitchConfig = {
@@ -1233,35 +1222,36 @@ app.post('/api/connect-channel', async (req, res) => {
             channels: [channelName]
         };
         
-        // Recreate Twitch client with new channel
+        // Create new Twitch client for this session
         const newTwitchClient = new tmi.Client(twitchConfig);
+        session.connection = newTwitchClient;
         
-        // Set up event handlers for new client
-        setupTwitchEventHandlers(newTwitchClient);
+        // Set up event handlers for this session
+        setupSessionEventHandlers(session);
         
         // Connect to new channel
         await newTwitchClient.connect();
         
-        // Update global reference
-        twitchClient = newTwitchClient;
+        session.isConnected = true;
+        session.metrics.streamStartTime = Date.now();
         
-        isConnected = true;
-        streamMetrics.streamStartTime = Date.now();
+        // Store session
+        userSessions.set(newSessionId, session);
         
         // Fetch initial metrics
-        await fetchInitialMetrics(channelName);
+        await fetchInitialMetrics(channelName, session.metrics);
         
-        console.log(`✅ [CHANNEL] Successfully connected to: ${channelName}`);
+        console.log(`✅ [CHANNEL] Successfully connected to: ${channelName} (Session: ${newSessionId})`);
         
         res.json({ 
             success: true, 
             channel: channelName,
+            sessionId: newSessionId,
             message: `Connected to ${channelName}` 
         });
         
     } catch (error) {
         console.error('❌ [CHANNEL] Error connecting to channel:', error);
-        isConnected = false;
         res.status(500).json({ 
             error: 'Failed to connect to channel',
             details: error.message 
@@ -1271,16 +1261,23 @@ app.post('/api/connect-channel', async (req, res) => {
 
 app.post('/api/disconnect-channel', async (req, res) => {
     try {
-        if (isConnected && twitchClient && twitchClient.readyState() === 'OPEN') {
-            console.log(`🔄 [CHANNEL] Disconnecting from channel: ${currentChannel}`);
-            await twitchClient.disconnect();
+        const { sessionId } = req.body;
+        
+        if (!sessionId || !userSessions.has(sessionId)) {
+            return res.status(400).json({ error: 'Session not found' });
         }
         
-        isConnected = false;
-        currentChannel = '';
-        resetStreamMetrics();
+        const session = userSessions.get(sessionId);
         
-        console.log('✅ [CHANNEL] Disconnected from channel');
+        if (session.isConnected && session.connection && session.connection.readyState() === 'OPEN') {
+            console.log(`🔄 [CHANNEL] Disconnecting from channel: ${session.channel} (Session: ${sessionId})`);
+            await session.connection.disconnect();
+        }
+        
+        // Remove session
+        userSessions.delete(sessionId);
+        
+        console.log(`✅ [CHANNEL] Disconnected from channel (Session: ${sessionId})`);
         
         res.json({ 
             success: true, 
@@ -1297,11 +1294,30 @@ app.post('/api/disconnect-channel', async (req, res) => {
 });
 
 app.get('/api/current-channel', (req, res) => {
-    res.json({
-        channel: currentChannel,
-        connected: isConnected,
-        status: isConnected ? 'connected' : 'disconnected'
-    });
+    const { sessionId } = req.query;
+    
+    if (sessionId && userSessions.has(sessionId)) {
+        const session = userSessions.get(sessionId);
+        res.json({
+            channel: session.channel,
+            connected: session.isConnected,
+            sessionId: session.sessionId,
+            status: session.isConnected ? 'connected' : 'disconnected'
+        });
+    } else {
+        // Return all active sessions for overview
+        const activeSessions = Array.from(userSessions.values()).map(session => ({
+            sessionId: session.sessionId,
+            channel: session.channel,
+            connected: session.isConnected,
+            status: session.isConnected ? 'connected' : 'disconnected'
+        }));
+        
+        res.json({
+            activeSessions,
+            totalSessions: activeSessions.length
+        });
+    }
 });
 
 // Start the server
@@ -1312,48 +1328,59 @@ server.listen(PORT, () => {
     console.log(`🔗 [API] API available at http://localhost:${PORT}/api/metrics`);
 });
 
-// Periodic tasks - only run when connected to a channel
+// Periodic tasks - run for all active sessions
 setInterval(async () => {
-    if (isConnected && currentChannel) {
-        console.log('🔄 [PERIODIC] Updating stream info...');
-        // Update stream info
-        const streamInfo = await getStreamInfo();
-        if (streamInfo) {
-            console.log(`📺 [STREAM] Live: ${streamMetrics.isLive}, Viewers: ${streamMetrics.currentViewerCount}, Title: ${streamMetrics.streamTitle}`);
-        } else {
-            console.log('📺 [STREAM] No stream data received');
+    userSessions.forEach(async (session) => {
+        if (session.isConnected && session.channel) {
+            console.log(`🔄 [PERIODIC] Updating stream info for session ${session.sessionId}...`);
+            // Update stream info
+            const streamInfo = await getStreamInfo(session.channel);
+            if (streamInfo) {
+                console.log(`📺 [STREAM] Session ${session.sessionId} - Live: ${session.metrics.isLive}, Viewers: ${session.metrics.currentViewerCount}, Title: ${session.metrics.streamTitle}`);
+            } else {
+                console.log(`📺 [STREAM] Session ${session.sessionId} - No stream data received`);
+            }
+            
+            // Update rolling metrics
+            calculateRollingMetrics(session.metrics);
+            
+            // Broadcast updates
+            broadcastToSession(session);
+            console.log(`📊 [PERIODIC] Metrics updated and broadcasted for session ${session.sessionId}`);
         }
-        
-        // Update rolling metrics
-        calculateRollingMetrics();
-        
-        // Broadcast updates
-        broadcastMetrics();
-        console.log('📊 [PERIODIC] Metrics updated and broadcasted');
-    }
+    });
 }, 5000); // Every 5 seconds for more real-time updates
 
 // WebSocket heartbeat - send updates more frequently to keep dashboard responsive
 setInterval(() => {
-    if (isConnected && currentChannel && dashboardConnections.size > 0) {
-        // Send a lightweight update to keep dashboard responsive
-        broadcastMetrics();
+    userSessions.forEach(session => {
+        if (session.isConnected && session.channel && session.wsClients.size > 0) {
+            // Send a lightweight update to keep dashboard responsive
+            broadcastToSession(session);
+        }
+    });
+    
+    // Legacy support for global connections
+    if (dashboardConnections.size > 0) {
+        broadcastGlobalMetrics();
     }
 }, 2000); // Every 2 seconds for dashboard responsiveness
 
-// AI prompt generation interval - only run when connected to a channel
+// AI prompt generation interval - run for all active sessions
 setInterval(async () => {
-    if (isConnected && currentChannel && streamMetrics.isLive && streamMetrics.currentViewerCount > 0) {
-        const timeSinceLastPrompt = Date.now() - streamMetrics.lastPromptTime;
-        const shouldGeneratePrompt = timeSinceLastPrompt > 60000; // 1 minute minimum
-        
-        if (shouldGeneratePrompt) {
-            const prompt = await generateAIPrompt();
-            if (prompt) {
-                console.log('🤖 [AI] Generated prompt:', prompt.message);
+    userSessions.forEach(async (session) => {
+        if (session.isConnected && session.channel && session.metrics.isLive && session.metrics.currentViewerCount > 0) {
+            const timeSinceLastPrompt = Date.now() - session.metrics.lastPromptTime;
+            const shouldGeneratePrompt = timeSinceLastPrompt > 60000; // 1 minute minimum
+            
+            if (shouldGeneratePrompt) {
+                const prompt = await generateAIPrompt(session);
+                if (prompt) {
+                    console.log(`🤖 [AI] Generated prompt for session ${session.sessionId}:`, prompt.message);
+                }
             }
         }
-    }
+    });
 }, 30000); // Check every 30 seconds
 
 // Graceful shutdown
