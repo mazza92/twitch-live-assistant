@@ -1397,4 +1397,4 @@ process.on('SIGINT', () => {
     });
 });
 
-module.exports = { app, server, streamMetrics };
+module.exports = { app, server, userSessions };
