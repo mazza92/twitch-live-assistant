@@ -918,7 +918,12 @@ async function generateAIPrompt(session) {
 
 // Broadcast metrics to a specific session's dashboard clients
 function broadcastToSession(session) {
+    console.log(`📊 [BROADCAST] Attempting to broadcast to session: ${session.sessionId}`);
+    console.log(`📊 [BROADCAST] Session connected: ${session.isConnected}, Channel: ${session.channel}`);
+    console.log(`📊 [BROADCAST] WebSocket clients: ${session.wsClients.size}`);
+    
     if (!session.isConnected || !session.channel) {
+        console.log(`📊 [BROADCAST] Skipping broadcast - not connected or no channel`);
         return;
     }
     
@@ -936,10 +941,14 @@ function broadcastToSession(session) {
     };
     
     const message = JSON.stringify(metricsData);
+    console.log(`📊 [BROADCAST] Sending data to ${session.wsClients.size} clients`);
     
     session.wsClients.forEach(ws => {
         if (ws.readyState === WebSocket.OPEN) {
             ws.send(message);
+            console.log(`📊 [BROADCAST] Data sent to WebSocket client`);
+        } else {
+            console.log(`📊 [BROADCAST] WebSocket client not open, state: ${ws.readyState}`);
         }
     });
 }
@@ -964,10 +973,13 @@ wss.on('connection', (ws, req) => {
         const session = userSessions.get(sessionId);
         session.wsClients.add(ws);
         console.log(`📊 [DASHBOARD] Added client to session: ${sessionId}`);
+        console.log(`📊 [DASHBOARD] Session status - Connected: ${session.isConnected}, Channel: ${session.channel}`);
         
         // Send current metrics immediately
         broadcastToSession(session);
     } else {
+        console.log(`📊 [DASHBOARD] No session found for sessionId: ${sessionId}`);
+        console.log(`📊 [DASHBOARD] Available sessions: ${Array.from(userSessions.keys()).join(', ')}`);
         // Legacy support - add to global connections
         dashboardConnections.add(ws);
         
@@ -1258,6 +1270,13 @@ app.post('/api/connect-channel', async (req, res) => {
         await fetchInitialMetrics(channelName, session.metrics);
         
         console.log(`✅ [CHANNEL] Successfully connected to: ${channelName} (Session: ${newSessionId})`);
+        console.log(`📊 [SESSION] Session stored in userSessions. Total sessions: ${userSessions.size}`);
+        
+        // Send initial data to any existing WebSocket clients for this session
+        if (session.wsClients.size > 0) {
+            console.log(`📊 [SESSION] Broadcasting to ${session.wsClients.size} existing clients`);
+            broadcastToSession(session);
+        }
         
         res.json({ 
             success: true, 
