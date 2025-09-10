@@ -327,8 +327,8 @@ function setupSessionEventHandlers(session) {
         console.log(`🎉 [SUB] ${displayName} subscribed with ${plan} plan!`);
         console.log(`🔍 [DEBUG] Sub info:`, subInfo);
         
-        streamMetrics.totalSubs++;
-        streamMetrics.sessionSubsGained++;
+        metrics.totalSubs++;
+        metrics.sessionSubsGained++;
         
         // Track subscription tiers for accurate revenue calculation
         // Handle different plan formats from Twitch
@@ -336,56 +336,56 @@ function setupSessionEventHandlers(session) {
         if (typeof plan === 'string') {
             if (plan === '1000' || plan === 'Tier 1' || plan === 'Prime') {
                 tier = 'Tier 1';
-                streamMetrics.tier1Subs++;
-                streamMetrics.sessionTier1Subs++;
+                metrics.tier1Subs++;
+                metrics.sessionTier1Subs++;
             } else if (plan === '2000' || plan === 'Tier 2') {
                 tier = 'Tier 2';
-                streamMetrics.tier2Subs++;
-                streamMetrics.sessionTier2Subs++;
+                metrics.tier2Subs++;
+                metrics.sessionTier2Subs++;
             } else if (plan === '3000' || plan === 'Tier 3') {
                 tier = 'Tier 3';
-                streamMetrics.tier3Subs++;
-                streamMetrics.sessionTier3Subs++;
+                metrics.tier3Subs++;
+                metrics.sessionTier3Subs++;
             } else if (plan === 'gift' || plan === 'resub') {
                 // For gifts and resubs, assume Tier 1 (most common)
                 tier = 'Tier 1 (gift/resub)';
-                streamMetrics.tier1Subs++;
-                streamMetrics.sessionTier1Subs++;
+                metrics.tier1Subs++;
+                metrics.sessionTier1Subs++;
             }
         } else if (typeof plan === 'object' && plan.plan) {
             // Handle object format like {"prime":false,"plan":"1000","planName":"Channel Subscription"}
             if (plan.plan === '1000') {
                 tier = 'Tier 1';
-                streamMetrics.tier1Subs++;
-                streamMetrics.sessionTier1Subs++;
+                metrics.tier1Subs++;
+                metrics.sessionTier1Subs++;
             } else if (plan.plan === '2000') {
                 tier = 'Tier 2';
-                streamMetrics.tier2Subs++;
-                streamMetrics.sessionTier2Subs++;
+                metrics.tier2Subs++;
+                metrics.sessionTier2Subs++;
             } else if (plan.plan === '3000') {
                 tier = 'Tier 3';
-                streamMetrics.tier3Subs++;
-                streamMetrics.sessionTier3Subs++;
+                metrics.tier3Subs++;
+                metrics.sessionTier3Subs++;
             }
         }
         
         console.log(`💰 [TIER] Assigned to ${tier}`);
         
         // Add to recent subs
-        streamMetrics.newSubs.push({
+        metrics.newSubs.push({
             username: displayName,
             plan: plan,
             timestamp: Date.now()
         });
         
         // Keep only last 50 subs
-        if (streamMetrics.newSubs.length > 50) {
-            streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
+        if (metrics.newSubs.length > 50) {
+            metrics.newSubs = metrics.newSubs.slice(-50);
         }
         
         // Update user engagement
-        if (!streamMetrics.userEngagement.has(username)) {
-            streamMetrics.userEngagement.set(username, {
+        if (!metrics.userEngagement.has(username)) {
+            metrics.userEngagement.set(username, {
                 messages: 0,
                 bits: 0,
                 follows: 0,
@@ -393,15 +393,15 @@ function setupSessionEventHandlers(session) {
             });
         }
         
-        const userData = streamMetrics.userEngagement.get(username);
+        const userData = metrics.userEngagement.get(username);
         userData.subs = (userData.subs || 0) + 1;
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Bits handler
@@ -412,11 +412,11 @@ function setupSessionEventHandlers(session) {
         
         console.log(`💰 [BITS] ${displayName} cheered ${bits} bits!`);
         
-        streamMetrics.totalBits += bits;
-        streamMetrics.sessionBitsEarned += bits;
+        metrics.totalBits += bits;
+        metrics.sessionBitsEarned += bits;
         
         // Add to recent bits
-        streamMetrics.recentBits.push({
+        metrics.recentBits.push({
             username: displayName,
             bits: bits,
             message: message,
@@ -424,13 +424,13 @@ function setupSessionEventHandlers(session) {
         });
         
         // Keep only last 50 bits
-        if (streamMetrics.recentBits.length > 50) {
-            streamMetrics.recentBits = streamMetrics.recentBits.slice(-50);
+        if (metrics.recentBits.length > 50) {
+            metrics.recentBits = metrics.recentBits.slice(-50);
         }
         
         // Update user engagement
-        if (!streamMetrics.userEngagement.has(username)) {
-            streamMetrics.userEngagement.set(username, {
+        if (!metrics.userEngagement.has(username)) {
+            metrics.userEngagement.set(username, {
                 messages: 0,
                 bits: 0,
                 follows: 0,
@@ -438,53 +438,53 @@ function setupSessionEventHandlers(session) {
             });
         }
         
-        const userData = streamMetrics.userEngagement.get(username);
+        const userData = metrics.userEngagement.get(username);
         userData.bits = (userData.bits || 0) + bits;
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Raid handler
     client.on('raided', (channel, username, viewers) => {
         console.log(`⚔️ [RAID] ${username} raided with ${viewers} viewers!`);
         
-        streamMetrics.totalRaids++;
-        streamMetrics.sessionRaidsReceived++;
+        metrics.totalRaids++;
+        metrics.sessionRaidsReceived++;
         
         // Add to recent raids
-        streamMetrics.recentRaids.push({
+        metrics.recentRaids.push({
             username: username,
             viewers: viewers,
             timestamp: Date.now()
         });
         
         // Keep only last 20 raids
-        if (streamMetrics.recentRaids.length > 20) {
-            streamMetrics.recentRaids = streamMetrics.recentRaids.slice(-20);
+        if (metrics.recentRaids.length > 20) {
+            metrics.recentRaids = metrics.recentRaids.slice(-20);
         }
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Handle resub
     client.on('resub', (channel, username, months, message, userstate, methods) => {
         console.log(`🎉 [RESUB] ${username} resubscribed for ${months} months!`);
         
-        streamMetrics.totalSubs++;
-        streamMetrics.sessionSubsGained++;
+        metrics.totalSubs++;
+        metrics.sessionSubsGained++;
         
         // Add to new subs
-        streamMetrics.newSubs.push({
+        metrics.newSubs.push({
             username: username,
             plan: 'resub',
             months: months,
@@ -492,13 +492,13 @@ function setupSessionEventHandlers(session) {
         });
         
         // Keep only last 50 subs
-        if (streamMetrics.newSubs.length > 50) {
-            streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
+        if (metrics.newSubs.length > 50) {
+            metrics.newSubs = metrics.newSubs.slice(-50);
         }
         
         // Update user engagement
-        if (!streamMetrics.userEngagement.has(username)) {
-            streamMetrics.userEngagement.set(username, {
+        if (!metrics.userEngagement.has(username)) {
+            metrics.userEngagement.set(username, {
                 messages: 0,
                 bits: 0,
                 follows: 0,
@@ -506,26 +506,26 @@ function setupSessionEventHandlers(session) {
             });
         }
         
-        const userData = streamMetrics.userEngagement.get(username);
+        const userData = metrics.userEngagement.get(username);
         userData.subs = (userData.subs || 0) + 1;
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Handle gift subscriptions
     client.on('subgift', (channel, username, streakMonths, recipient, methods, userstate) => {
         console.log(`🎁 [GIFT SUB] ${username} gifted a sub to ${recipient}!`);
         
-        streamMetrics.totalSubs++;
-        streamMetrics.sessionSubsGained++;
+        metrics.totalSubs++;
+        metrics.sessionSubsGained++;
         
         // Add to new subs
-        streamMetrics.newSubs.push({
+        metrics.newSubs.push({
             username: username,
             plan: 'gift',
             recipient: recipient,
@@ -533,13 +533,13 @@ function setupSessionEventHandlers(session) {
         });
         
         // Keep only last 50 subs
-        if (streamMetrics.newSubs.length > 50) {
-            streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
+        if (metrics.newSubs.length > 50) {
+            metrics.newSubs = metrics.newSubs.slice(-50);
         }
         
         // Update user engagement
-        if (!streamMetrics.userEngagement.has(username)) {
-            streamMetrics.userEngagement.set(username, {
+        if (!metrics.userEngagement.has(username)) {
+            metrics.userEngagement.set(username, {
                 messages: 0,
                 bits: 0,
                 follows: 0,
@@ -547,26 +547,26 @@ function setupSessionEventHandlers(session) {
             });
         }
         
-        const userData = streamMetrics.userEngagement.get(username);
+        const userData = metrics.userEngagement.get(username);
         userData.subs = (userData.subs || 0) + 1;
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Handle mystery gifts
     client.on('submysterygift', (channel, username, numbOfSubs, methods, userstate) => {
         console.log(`🎁 [MYSTERY GIFT] ${username} gifted ${numbOfSubs} subs!`);
         
-        streamMetrics.totalSubs += numbOfSubs;
-        streamMetrics.sessionSubsGained += numbOfSubs;
+        metrics.totalSubs += numbOfSubs;
+        metrics.sessionSubsGained += numbOfSubs;
         
         // Add to new subs
-        streamMetrics.newSubs.push({
+        metrics.newSubs.push({
             username: 'mystery_gift_recipients',
             plan: 'mystery_gift',
             gifter: username,
@@ -575,13 +575,13 @@ function setupSessionEventHandlers(session) {
         });
         
         // Keep only last 50 subs
-        if (streamMetrics.newSubs.length > 50) {
-            streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
+        if (metrics.newSubs.length > 50) {
+            metrics.newSubs = metrics.newSubs.slice(-50);
         }
         
         // Update user engagement
-        if (!streamMetrics.userEngagement.has(username)) {
-            streamMetrics.userEngagement.set(username, {
+        if (!metrics.userEngagement.has(username)) {
+            metrics.userEngagement.set(username, {
                 messages: 0,
                 bits: 0,
                 follows: 0,
@@ -589,21 +589,21 @@ function setupSessionEventHandlers(session) {
             });
         }
         
-        const userData = streamMetrics.userEngagement.get(username);
+        const userData = metrics.userEngagement.get(username);
         userData.subs = (userData.subs || 0) + numbOfSubs;
         
         // Update rolling metrics
-        calculateRollingMetrics();
-        updateTopEngagedUsers();
+        calculateRollingMetrics(metrics);
+        updateTopEngagedUsers(metrics);
         
         // Broadcast updates
-        broadcastMetrics();
+        broadcastToSession(session);
     });
     
     // Connection handlers
     client.on('connected', (addr, port) => {
         console.log(`🔗 [TWITCH] Connected to Twitch IRC at ${addr}:${port}`);
-        streamMetrics.streamStartTime = Date.now();
+        metrics.streamStartTime = Date.now();
     });
     
     client.on('disconnected', (reason) => {
@@ -689,12 +689,12 @@ async function getStreamInfo(channel) {
                 session.metrics.gameCategory = stream.game_name;
                 session.metrics.currentViewerCount = stream.viewer_count;
                 session.metrics.streamLanguage = stream.language;
-                
-                // Update peak viewers
+            
+            // Update peak viewers
                 if (stream.viewer_count > session.metrics.peakViewerCount) {
                     session.metrics.peakViewerCount = stream.viewer_count;
-                }
-                
+            }
+            
                 console.log(`✅ [STREAM] Updated metrics for session ${session.sessionId} - Live: ${session.metrics.isLive}, Viewers: ${session.metrics.currentViewerCount}`);
             }
             
@@ -977,15 +977,15 @@ wss.on('connection', (ws, req) => {
         emptyData.sessionId = null;
         emptyData.timestamp = Date.now();
         emptyData.revenue = {
-            bits: 0,
-            subs: 0,
-            total: 0,
-            breakdown: {
                 bits: 0,
-                tier1: 0,
-                tier2: 0,
-                tier3: 0,
-                totalSubs: 0
+                subs: 0,
+                total: 0,
+                breakdown: {
+                    bits: 0,
+                    tier1: 0,
+                    tier2: 0,
+                    tier3: 0,
+                    totalSubs: 0
             }
         };
         
@@ -1028,14 +1028,30 @@ app.get('/twitch_dashboard.html', (req, res) => {
 
 // API endpoints
 app.get('/api/metrics', (req, res) => {
+    const { sessionId } = req.query;
+    
+    if (sessionId && userSessions.has(sessionId)) {
+        const session = userSessions.get(sessionId);
     res.json({
-        ...streamMetrics,
-        uniqueChatters: streamMetrics.uniqueChatters.size,
-        userEngagement: Object.fromEntries(streamMetrics.userEngagement),
-        channelName: currentChannel || 'No Channel',
-        sessionId: streamMetrics.streamStartTime || Date.now(),
+            ...session.metrics,
+            uniqueChatters: session.metrics.uniqueChatters.size,
+            userEngagement: Object.fromEntries(session.metrics.userEngagement),
+            channelName: session.channel || 'No Channel',
+            sessionId: session.sessionId,
         timestamp: Date.now()
     });
+    } else {
+        // Return empty metrics for no session
+        const emptyMetrics = createEmptyMetrics();
+        res.json({
+            ...emptyMetrics,
+            uniqueChatters: 0,
+            userEngagement: {},
+            channelName: 'No Channel',
+            sessionId: null,
+            timestamp: Date.now()
+        });
+    }
 });
 
 app.post('/api/set-language', (req, res) => {
@@ -1189,7 +1205,7 @@ app.post('/api/connect-channel', async (req, res) => {
             if (existingSession.connection && existingSession.connection.readyState() === 'OPEN') {
                 console.log(`🔄 [CHANNEL] Disconnecting existing session: ${newSessionId}`);
                 await existingSession.connection.disconnect();
-                await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
         
@@ -1298,7 +1314,7 @@ app.get('/api/current-channel', (req, res) => {
     
     if (sessionId && userSessions.has(sessionId)) {
         const session = userSessions.get(sessionId);
-        res.json({
+    res.json({
             channel: session.channel,
             connected: session.isConnected,
             sessionId: session.sessionId,
@@ -1333,21 +1349,21 @@ setInterval(async () => {
     userSessions.forEach(async (session) => {
         if (session.isConnected && session.channel) {
             console.log(`🔄 [PERIODIC] Updating stream info for session ${session.sessionId}...`);
-            // Update stream info
+        // Update stream info
             const streamInfo = await getStreamInfo(session.channel);
-            if (streamInfo) {
+        if (streamInfo) {
                 console.log(`📺 [STREAM] Session ${session.sessionId} - Live: ${session.metrics.isLive}, Viewers: ${session.metrics.currentViewerCount}, Title: ${session.metrics.streamTitle}`);
-            } else {
+        } else {
                 console.log(`📺 [STREAM] Session ${session.sessionId} - No stream data received`);
-            }
-            
-            // Update rolling metrics
+        }
+        
+        // Update rolling metrics
             calculateRollingMetrics(session.metrics);
-            
-            // Broadcast updates
+        
+        // Broadcast updates
             broadcastToSession(session);
             console.log(`📊 [PERIODIC] Metrics updated and broadcasted for session ${session.sessionId}`);
-        }
+    }
     });
 }, 5000); // Every 5 seconds for more real-time updates
 
@@ -1355,7 +1371,7 @@ setInterval(async () => {
 setInterval(() => {
     userSessions.forEach(session => {
         if (session.isConnected && session.channel && session.wsClients.size > 0) {
-            // Send a lightweight update to keep dashboard responsive
+        // Send a lightweight update to keep dashboard responsive
             broadcastToSession(session);
         }
     });
@@ -1371,15 +1387,15 @@ setInterval(async () => {
     userSessions.forEach(async (session) => {
         if (session.isConnected && session.channel && session.metrics.isLive && session.metrics.currentViewerCount > 0) {
             const timeSinceLastPrompt = Date.now() - session.metrics.lastPromptTime;
-            const shouldGeneratePrompt = timeSinceLastPrompt > 60000; // 1 minute minimum
-            
-            if (shouldGeneratePrompt) {
+        const shouldGeneratePrompt = timeSinceLastPrompt > 60000; // 1 minute minimum
+        
+        if (shouldGeneratePrompt) {
                 const prompt = await generateAIPrompt(session);
-                if (prompt) {
+            if (prompt) {
                     console.log(`🤖 [AI] Generated prompt for session ${session.sessionId}:`, prompt.message);
-                }
             }
         }
+    }
     });
 }, 30000); // Check every 30 seconds
 
