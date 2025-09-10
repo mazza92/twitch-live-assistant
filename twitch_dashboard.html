@@ -25,6 +25,207 @@
             background: linear-gradient(135deg, #9146ff 0%, #0e0e10 50%, #18181b 100%);
             color: white;
             overflow-x: hidden;
+            padding-top: 100px; /* Space for fixed urgent action bar */
+        }
+
+        /* Tier 1: Urgent Action Bar */
+        .urgent-action-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 3px solid var(--twitch-purple);
+            box-shadow: 0 4px 20px rgba(145, 70, 255, 0.4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .urgent-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            gap: 40px;
+        }
+
+        .ai-prompt-area {
+            flex: 2;
+            background: rgba(145, 70, 255, 0.1);
+            border: 2px solid rgba(145, 70, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px 25px;
+            animation: urgentPulse 2s infinite;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { border-color: rgba(145, 70, 255, 0.3); }
+            50% { border-color: rgba(145, 70, 255, 0.8); }
+        }
+
+        .ai-prompt-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .ai-prompt-icon {
+            font-size: 1.2rem;
+            filter: drop-shadow(0 0 5px rgba(145, 70, 255, 0.6));
+        }
+
+        .ai-prompt-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--twitch-purple);
+        }
+
+        .ai-prompt-message {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prompt-content {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #ffffff;
+            flex: 1;
+        }
+
+        .prompt-timestamp {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+
+        .urgent-chat-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+
+        .urgent-gauge-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .urgent-gauge-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff4444 0deg,
+                #ffaa00 60deg,
+                #00ff00 120deg,
+                #00aaff 180deg,
+                #aa00ff 240deg,
+                #ff00aa 300deg,
+                #ff4444 360deg
+            );
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .urgent-gauge-inner {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .urgent-gauge-score {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(145, 70, 255, 0.8);
+            position: relative;
+            z-index: 4;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(145, 70, 255, 0.5);
+        }
+
+        .urgent-gauge-needle {
+            position: absolute;
+            width: 3px;
+            height: 35px;
+            background: linear-gradient(to top, #ffffff, #ff6b6b);
+            border-radius: 2px;
+            transform-origin: bottom center;
+            transition: transform 0.5s ease;
+            z-index: 3;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            top: 5px;
+        }
+
+        .urgent-gauge-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .urgent-viewers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(145, 70, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px 25px;
+            min-width: 140px;
+            flex: 0 0 auto;
+            min-height: 80px;
+            justify-content: center;
+        }
+
+        .urgent-viewers-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .urgent-viewers-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(145, 70, 255, 0.6);
+            line-height: 1;
+        }
+
+        .urgent-viewers-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-top: 5px;
         }
 
         /* Header Styles */
@@ -223,7 +424,70 @@
             box-shadow: 0 4px 15px rgba(145, 70, 255, 0.4);
         }
 
-        /* Main Dashboard Grid */
+        /* Tier 2: Current State Panel */
+        .current-state-panel {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .current-state-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .community-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .alerts-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Tier 3: Strategic View Panel */
+        .strategic-view-panel {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px;
+            border: 1px solid rgba(145, 70, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: none; /* Hidden by default */
+        }
+
+        .strategic-view-panel.visible {
+            display: block;
+        }
+
+        .strategic-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--twitch-purple), #7c3aed);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(145, 70, 255, 0.3);
+            z-index: 1000;
+        }
+
+        .strategic-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(145, 70, 255, 0.4);
+        }
+
+        /* Main Dashboard Grid (Legacy) */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -585,7 +849,65 @@
         }
 
         /* Responsive Design */
+        @media (max-width: 1200px) {
+            .current-state-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .urgent-content {
+                flex-direction: column;
+                gap: 15px;
+                height: auto;
+                padding: 15px 0;
+            }
+            
+            .ai-prompt-area {
+                flex: 1;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .urgent-chat-score,
+            .urgent-viewers {
+                margin: 0 10px;
+                flex: 1;
+            }
+        }
+
         @media (max-width: 768px) {
+            body {
+                padding-top: 140px; /* More space for stacked urgent bar */
+            }
+            
+            .urgent-action-bar {
+                height: auto;
+                min-height: 140px;
+                padding: 0 20px;
+            }
+            
+            .urgent-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .ai-prompt-area {
+                order: 1;
+                flex: 1;
+            }
+            
+            .urgent-chat-score {
+                order: 2;
+                margin: 0;
+                flex: 1;
+            }
+            
+            .urgent-viewers {
+                order: 3;
+                margin: 0;
+                flex: 1;
+            }
+            
             .dashboard-grid {
                 grid-template-columns: 1fr;
                 padding: 10px;
@@ -597,6 +919,41 @@
             
             .metric-value {
                 font-size: 2rem;
+            }
+            
+            .strategic-toggle {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .urgent-gauge-container {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .urgent-gauge-inner {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .urgent-gauge-score {
+                font-size: 1.2rem;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .urgent-gauge-needle {
+                width: 2px;
+                height: 25px;
+                top: 3px;
+            }
+            
+            .urgent-viewers-value {
+                font-size: 1.5rem;
             }
         }
 
@@ -661,7 +1018,7 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -672,14 +1029,15 @@
 
         .gauge-needle {
             position: absolute;
-            width: 5px;
-            height: 100px;
+            width: 4px;
+            height: 90px;
             background: linear-gradient(to top, #ffffff, #ff6b6b);
             border-radius: 2px;
             transform-origin: bottom center;
             transition: transform 0.5s ease;
             z-index: 3;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            top: 10px;
         }
 
         .gauge-center {
@@ -687,11 +1045,21 @@
         }
 
         .gauge-score {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: #ffffff;
-            text-shadow: 0 0 15px rgba(145, 70, 255, 0.6);
+            text-shadow: 0 0 15px rgba(145, 70, 255, 0.8);
             margin-bottom: 5px;
+            position: relative;
+            z-index: 4;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(145, 70, 255, 0.5);
         }
 
 
@@ -774,6 +1142,43 @@
     </style>
 </head>
 <body>
+    <!-- Tier 1: Urgent Action Bar -->
+    <div class="urgent-action-bar">
+        <div class="urgent-content">
+            <!-- AI Prompts Area -->
+            <div class="ai-prompt-area">
+                <div class="ai-prompt-header">
+                    <span class="ai-prompt-icon">🤖</span>
+                    <span class="ai-prompt-title">AI Assistant</span>
+                </div>
+                <div class="ai-prompt-message" id="urgentAiPrompt">
+                    <div class="prompt-content">Waiting for AI prompts...</div>
+                    <div class="prompt-timestamp">--:--</div>
+                </div>
+            </div>
+            
+            <!-- Live Chat Score -->
+            <div class="urgent-chat-score">
+                <div class="urgent-gauge-container">
+                    <div class="urgent-gauge-circle">
+                        <div class="urgent-gauge-inner">
+                            <div class="urgent-gauge-score" id="urgentChatScore">0</div>
+                        </div>
+                        <div class="urgent-gauge-needle" id="urgentGaugeNeedle"></div>
+                    </div>
+                </div>
+                <div class="urgent-gauge-label">Chat Score</div>
+            </div>
+            
+            <!-- Current Viewers -->
+            <div class="urgent-viewers">
+                <div class="urgent-viewers-icon">👥</div>
+                <div class="urgent-viewers-value" id="urgentCurrentViewers">0</div>
+                <div class="urgent-viewers-label">Live Viewers</div>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
         <h1><span class="emoji">🎮</span>Twitch Live Dashboard</h1>
         <p>Real-time analytics and engagement tracking for your Twitch stream</p>
@@ -822,8 +1227,134 @@
         <button class="language-btn" onclick="setLanguage('de')">🇩🇪 Deutsch</button>
     </div>
 
-    <!-- Main Dashboard Grid -->
-    <div class="dashboard-grid">
+    <!-- Tier 2: Current State Panel -->
+    <div class="current-state-panel">
+        <div class="current-state-grid">
+            <!-- Left Column: Community -->
+            <div class="community-column">
+                <!-- Top Engaged Users -->
+                <div class="top-users">
+                    <div class="metric-title">🏆 Top Engaged Users</div>
+                    <div class="user-list" id="topUsers">
+                        <div class="user-item">
+                            <div class="user-name">Loading...</div>
+                            <div class="user-stats">
+                                <span>Messages: 0</span>
+                                <span>Bits: 0</span>
+                                <span>Subs: 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Activity -->
+                <div class="chat-activity">
+                    <div class="metric-title">💬 Recent Chat Activity</div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message">
+                            <span class="chat-username">System:</span>
+                            <span class="chat-text">Waiting for chat messages...</span>
+                            <span class="chat-timestamp">--:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Alerts & Actions -->
+            <div class="alerts-column">
+                <!-- Stream Status -->
+                <div class="metric-card">
+                    <div class="metric-title">📺 Stream Status</div>
+                    <div class="metric-value" id="streamStatus">Offline</div>
+                    <div class="metric-subtitle">Current stream status</div>
+                    <div class="metric-trend">
+                        <span class="status-indicator status-offline"></span>
+                        <span id="streamStatusText">Not streaming</span>
+                    </div>
+                </div>
+
+                <!-- Peak Viewers -->
+                <div class="metric-card">
+                    <div class="metric-title">📈 Peak Viewers</div>
+                    <div class="metric-value" id="peakViewers">0</div>
+                    <div class="metric-subtitle">Highest viewer count</div>
+                    <div class="metric-trend">
+                        <span class="trend-up">↗</span>
+                        <span id="peakViewerTime">Today</span>
+                    </div>
+                </div>
+
+                <!-- Total Subs -->
+                <div class="metric-card">
+                    <div class="metric-title">🎉 Total Subs</div>
+                    <div class="metric-value" id="totalSubsMain">0</div>
+                    <div class="metric-subtitle">Total subscriptions</div>
+                    <div class="metric-trend">
+                        <span class="trend-indicator" id="subsTrend">+0 this session</span>
+                    </div>
+                </div>
+
+                <!-- New Followers -->
+                <div class="metric-card">
+                    <div class="metric-title">👥 New Followers</div>
+                    <div class="metric-value" id="totalFollowers">0</div>
+                    <div class="metric-subtitle">Total new followers</div>
+                    <div class="metric-trend">
+                        <span class="trend-indicator" id="followersTrend">+0 this session</span>
+                    </div>
+                </div>
+
+                <!-- Stream Total Revenue -->
+                <div class="metric-card">
+                    <div class="metric-title">💰 Stream Revenue</div>
+                    <div class="metric-value" id="streamTotalRevenue">$0.00</div>
+                    <div class="metric-subtitle">Total earned</div>
+                    <div class="metric-trend">
+                        <span id="revenueTrend" class="trend-stable">→</span>
+                        <span id="revenueTrendText">$0.00 this session</span>
+                    </div>
+                </div>
+
+                <!-- Twitch Specific Metrics -->
+                <div class="twitch-metrics">
+                    <div class="twitch-metric">
+                        <div class="twitch-metric-icon">👥</div>
+                        <div class="twitch-metric-value" id="newFollowers">0</div>
+                        <div class="twitch-metric-label">New Followers</div>
+                    </div>
+                    <div class="twitch-metric">
+                        <div class="twitch-metric-icon">🎉</div>
+                        <div class="twitch-metric-value" id="newSubs">0</div>
+                        <div class="twitch-metric-label">New Subs</div>
+                    </div>
+                    <div class="twitch-metric">
+                        <div class="twitch-metric-icon">💰</div>
+                        <div class="twitch-metric-value" id="bitsEarned">0</div>
+                        <div class="twitch-metric-label">Bits Earned</div>
+                    </div>
+                    <div class="twitch-metric">
+                        <div class="twitch-metric-icon">⚔️</div>
+                        <div class="twitch-metric-value" id="raidsReceived">0</div>
+                        <div class="twitch-metric-label">Raids Received</div>
+                    </div>
+                </div>
+
+                <!-- Sentiment Analysis -->
+                <div class="metric-card">
+                    <div class="metric-title">😊 Chat Sentiment</div>
+                    <div class="metric-value" id="sentimentScore">0.0</div>
+                    <div class="metric-subtitle">Overall chat mood</div>
+                    <div class="metric-trend">
+                        <span id="sentimentEmoji">😐</span>
+                        <span id="sentimentText">Neutral</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Grid (Legacy - will be moved to Tier 3) -->
+    <div class="dashboard-grid" style="display: none;">
         <!-- Stream Status -->
         <div class="metric-card">
             <div class="metric-title">📺 Stream Status</div>
@@ -1077,6 +1608,172 @@
         </div>
     </div>
 
+    <!-- Tier 3: Strategic View Panel -->
+    <div class="strategic-view-panel" id="strategicPanel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="metric-title" style="font-size: 1.5rem; margin: 0;">
+                📊 Strategic Analytics Dashboard
+            </div>
+            <button onclick="toggleStrategicView()" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                ✕ Close
+            </button>
+        </div>
+        
+        <!-- Revenue Metrics -->
+        <div class="revenue-metrics">
+            <div class="metric-title" style="font-size: 1.2rem; margin-bottom: 15px;">💰 Revenue Metrics</div>
+            <div class="revenue-grid">
+                <div class="metric-card">
+                    <div class="metric-title">💎 Bits Earned</div>
+                    <div class="metric-value" id="totalBits">0</div>
+                    <div class="metric-subtitle">Total bits this session</div>
+                    <div class="metric-trend">
+                        <span class="trend-indicator">+<span id="sessionBits">0</span> this session</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">🎉 Subscriptions</div>
+                    <div class="metric-value" id="totalSubs">0</div>
+                    <div class="metric-subtitle">Total subs this session</div>
+                    <div class="metric-trend">
+                        <span class="trend-indicator">+<span id="sessionSubs">0</span> this session</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">⚔️ Raids Received</div>
+                    <div class="metric-value" id="totalRaids">0</div>
+                    <div class="metric-subtitle">Total raids this session</div>
+                    <div class="metric-trend">
+                        <span class="trend-indicator">+<span id="sessionRaids">0</span> this session</span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-title">📈 Revenue Rate</div>
+                    <div class="metric-value" id="revenueRate">$0.00/hr</div>
+                    <div class="metric-subtitle">Estimated hourly rate</div>
+                    <div class="metric-trend">
+                        <span class="trend-indicator"><span id="bitsPerMinute">0</span> bits/min</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Revenue Breakdown -->
+            <div class="revenue-breakdown">
+                <div class="breakdown-title">💰 Revenue Breakdown</div>
+                <div class="breakdown-grid">
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Bits Revenue:</span>
+                        <span class="breakdown-value" id="bitsRevenue">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Tier 1 Subs:</span>
+                        <span class="breakdown-value" id="tier1Revenue">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Tier 2 Subs:</span>
+                        <span class="breakdown-value" id="tier2Revenue">$0.00</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Tier 3 Subs:</span>
+                        <span class="breakdown-value" id="tier3Revenue">$0.00</span>
+                    </div>
+                    <div class="breakdown-item total">
+                        <span class="breakdown-label">Total Revenue:</span>
+                        <span class="breakdown-value" id="totalRevenue">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Chat Score Gauge (Full Version) -->
+        <div class="chat-score-gauge">
+            <div class="metric-title">💬 Live Chat Score</div>
+            <div class="gauge-container">
+                <div class="gauge-circle">
+                    <div class="gauge-inner">
+                        <div class="gauge-score" id="chatScore">0</div>
+                    </div>
+                    <div class="gauge-needle" id="gaugeNeedle"></div>
+                    <div class="gauge-center"></div>
+                </div>
+            </div>
+            <div class="gauge-levels">
+                <div class="gauge-level" id="level1">
+                    <div class="gauge-level-dot"></div>
+                    <span>😴 Quiet</span>
+                </div>
+                <div class="gauge-level" id="level2">
+                    <div class="gauge-level-dot"></div>
+                    <span>📊 Low</span>
+                </div>
+                <div class="gauge-level" id="level3">
+                    <div class="gauge-level-dot"></div>
+                    <span>📈 Moderate</span>
+                </div>
+                <div class="gauge-level" id="level4">
+                    <div class="gauge-level-dot"></div>
+                    <span>🔥 High</span>
+                </div>
+                <div class="gauge-level" id="level5">
+                    <div class="gauge-level-dot"></div>
+                    <span>🚀 Fire</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stream Info -->
+        <div class="metric-card">
+            <div class="metric-title">📺 Stream Information</div>
+            <div class="metric-subtitle">Title: <span id="streamTitle">No stream</span></div>
+            <div class="metric-subtitle">Game: <span id="gameCategory">Not set</span></div>
+            <div class="metric-subtitle">Language: <span id="streamLanguage">en</span></div>
+            <div class="metric-subtitle">Started: <span id="streamStartTime">Not started</span></div>
+        </div>
+
+        <!-- Additional Strategic Metrics -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+            <div class="metric-card">
+                <div class="metric-title">📈 Peak Viewers</div>
+                <div class="metric-value" id="peakViewersStrategic">0</div>
+                <div class="metric-subtitle">Highest viewer count</div>
+                <div class="metric-trend">
+                    <span class="trend-up">↗</span>
+                    <span id="peakViewerTimeStrategic">Today</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">⏱️ Stream Duration</div>
+                <div class="metric-value" id="streamDuration">00:00:00</div>
+                <div class="metric-subtitle">Current session length</div>
+                <div class="metric-trend">
+                    <span class="trend-stable">→</span>
+                    <span id="streamDurationText">Live now</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Prompts History -->
+        <div class="ai-prompts">
+            <div class="metric-title">🤖 AI Prompts History</div>
+            <div id="aiPromptsHistory">
+                <div class="prompt-item">
+                    <div class="prompt-type">System</div>
+                    <div class="prompt-message">Waiting for AI prompts...</div>
+                    <div class="prompt-timestamp">--:--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategic View Toggle Button -->
+    <button class="strategic-toggle" id="strategicToggle" onclick="toggleStrategicView()">
+        📊 Strategic View
+    </button>
+
 
     <script>
         // Global variables
@@ -1285,9 +1982,71 @@
             }
         }
 
+        // Toggle strategic view panel
+        function toggleStrategicView() {
+            const panel = document.getElementById('strategicPanel');
+            const button = document.getElementById('strategicToggle');
+            
+            console.log('🔄 Toggling strategic view panel...');
+            console.log('Panel element:', panel);
+            console.log('Button element:', button);
+            
+            if (panel && button) {
+                if (panel.classList.contains('visible')) {
+                    panel.classList.remove('visible');
+                    panel.style.display = 'none';
+                    button.textContent = '📊 Strategic View';
+                    console.log('✅ Strategic panel hidden');
+                } else {
+                    panel.classList.add('visible');
+                    panel.style.display = 'block';
+                    button.textContent = '📊 Hide Strategic';
+                    console.log('✅ Strategic panel shown');
+                }
+            } else {
+                console.error('❌ Could not find strategic panel or button elements');
+            }
+        }
+
+        // Update urgent action bar
+        function updateUrgentActionBar(data) {
+            // Update urgent AI prompt
+            if (data.promptHistory && data.promptHistory.length > 0) {
+                const latestPrompt = data.promptHistory[data.promptHistory.length - 1];
+                const promptContent = document.querySelector('.prompt-content');
+                const promptTimestamp = document.querySelector('.urgent-action-bar .prompt-timestamp');
+                
+                if (promptContent && promptTimestamp) {
+                    promptContent.textContent = latestPrompt.prompt?.message || 'No message';
+                    promptTimestamp.textContent = new Date(latestPrompt.timestamp || Date.now()).toLocaleTimeString();
+                }
+            }
+
+            // Update urgent chat score
+            const newChatScore = calculateChatScore(data);
+            const urgentScoreElement = document.getElementById('urgentChatScore');
+            const urgentNeedleElement = document.getElementById('urgentGaugeNeedle');
+            
+            if (urgentScoreElement && urgentNeedleElement) {
+                urgentScoreElement.textContent = newChatScore;
+                const rotation = (newChatScore / 100) * 180 - 90;
+                urgentNeedleElement.style.transform = `rotate(${rotation}deg)`;
+            }
+
+            // Update urgent viewers
+            const currentViewers = data.currentViewerCount || 0;
+            const urgentViewersElement = document.getElementById('urgentCurrentViewers');
+            if (urgentViewersElement) {
+                urgentViewersElement.textContent = formatNumber(currentViewers);
+            }
+        }
+
         // Update dashboard with new data
         function updateDashboard(data) {
             console.log('🔄 [DASHBOARD] Updating dashboard with data:', data);
+            
+            // Update urgent action bar first
+            updateUrgentActionBar(data);
             
             // Update last update timestamp
             document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
@@ -1508,6 +2267,17 @@
                 document.getElementById('tier3Revenue').textContent = '$0.00';
                 document.getElementById('totalRevenue').textContent = `$${(bitsValue + subsValue).toFixed(2)}`;
             }
+
+            // Update strategic view metrics
+            updateMetricValue('peakViewersStrategic', formatNumber(peakViewers));
+            if (data.streamStartTime) {
+                const streamDuration = Date.now() - data.streamStartTime;
+                document.getElementById('streamDuration').textContent = formatUptime(streamDuration);
+                document.getElementById('streamDurationText').textContent = 'Live now';
+            } else {
+                document.getElementById('streamDuration').textContent = '00:00:00';
+                document.getElementById('streamDurationText').textContent = 'Not live';
+            }
         }
 
         // Update chat messages
@@ -1553,20 +2323,41 @@
         // Update AI prompts
         function updateAIPrompts(prompts) {
             const promptsContainer = document.getElementById('aiPrompts');
-            promptsContainer.innerHTML = '';
+            const historyContainer = document.getElementById('aiPromptsHistory');
             
-            prompts.slice(-5).forEach(prompt => {
-                const promptDiv = document.createElement('div');
-                promptDiv.className = 'prompt-item';
-                
-                const timestamp = new Date(prompt.timestamp || Date.now());
-                promptDiv.innerHTML = `
-                    <div class="prompt-type">${prompt.prompt?.type || 'Unknown'}</div>
-                    <div class="prompt-message">${prompt.prompt?.message || 'No message'}</div>
-                    <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
-                `;
-                promptsContainer.appendChild(promptDiv);
-            });
+            // Update main AI prompts (Tier 2)
+            if (promptsContainer) {
+                promptsContainer.innerHTML = '';
+                prompts.slice(-5).forEach(prompt => {
+                    const promptDiv = document.createElement('div');
+                    promptDiv.className = 'prompt-item';
+                    
+                    const timestamp = new Date(prompt.timestamp || Date.now());
+                    promptDiv.innerHTML = `
+                        <div class="prompt-type">${prompt.prompt?.type || 'Unknown'}</div>
+                        <div class="prompt-message">${prompt.prompt?.message || 'No message'}</div>
+                        <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
+                    `;
+                    promptsContainer.appendChild(promptDiv);
+                });
+            }
+            
+            // Update AI prompts history (Tier 3)
+            if (historyContainer) {
+                historyContainer.innerHTML = '';
+                prompts.slice(-10).forEach(prompt => {
+                    const promptDiv = document.createElement('div');
+                    promptDiv.className = 'prompt-item';
+                    
+                    const timestamp = new Date(prompt.timestamp || Date.now());
+                    promptDiv.innerHTML = `
+                        <div class="prompt-type">${prompt.prompt?.type || 'Unknown'}</div>
+                        <div class="prompt-message">${prompt.prompt?.message || 'No message'}</div>
+                        <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
+                    `;
+                    historyContainer.appendChild(promptDiv);
+                });
+            }
         }
 
         // Set language
@@ -1844,6 +2635,18 @@
             // Set default values
             document.getElementById('sessionId').textContent = 'Not Started';
             document.getElementById('channelName').textContent = 'No Channel';
+            
+            // Initialize strategic view panel
+            const strategicPanel = document.getElementById('strategicPanel');
+            const strategicToggle = document.getElementById('strategicToggle');
+            
+            if (strategicPanel && strategicToggle) {
+                console.log('✅ Strategic view elements found and initialized');
+                strategicPanel.style.display = 'none';
+                strategicToggle.textContent = '📊 Strategic View';
+            } else {
+                console.error('❌ Strategic view elements not found');
+            }
             
             // Channel input event listeners
             const channelInput = document.getElementById('channelInput');

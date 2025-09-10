@@ -106,18 +106,18 @@ let isConnected = false;
 // Helper function to calculate accurate revenue based on Twitch monetization rates
 function calculateAccurateRevenue(metrics) {
     // Twitch Bits: 1 bit = $0.01 USD (streamer receives full value)
-    const bitsRevenue = (metrics.totalBits || 0) * 0.01;
+    const bitsRevenue = (metrics.sessionBitsEarned || 0) * 0.01;
     
     // Twitch Subscriptions: Revenue split varies by tier and partnership level
     // Standard rates (50% split): Tier 1: $2.50, Tier 2: $5.00, Tier 3: $12.50
     // For simplicity, we'll use average rates, but could be enhanced with actual tier tracking
-    const tier1Revenue = (metrics.tier1Subs || 0) * 2.50;  // $4.99 * 50%
-    const tier2Revenue = (metrics.tier2Subs || 0) * 5.00;  // $9.99 * 50%
-    const tier3Revenue = (metrics.tier3Subs || 0) * 12.50; // $24.99 * 50%
+    const tier1Revenue = (metrics.sessionTier1Subs || 0) * 2.50;  // $4.99 * 50%
+    const tier2Revenue = (metrics.sessionTier2Subs || 0) * 5.00;  // $9.99 * 50%
+    const tier3Revenue = (metrics.sessionTier3Subs || 0) * 12.50; // $24.99 * 50%
     
     // If we don't have tier breakdown, use average of $2.50 per sub
-    const averageSubRevenue = (metrics.totalSubs || 0) * 2.50;
-    const subsRevenue = (metrics.tier1Subs || metrics.tier2Subs || metrics.tier3Subs) ? 
+    const averageSubRevenue = (metrics.sessionSubsGained || 0) * 2.50;
+    const subsRevenue = (metrics.sessionTier1Subs || metrics.sessionTier2Subs || metrics.sessionTier3Subs) ? 
         (tier1Revenue + tier2Revenue + tier3Revenue) : averageSubRevenue;
     
     return {
@@ -195,7 +195,21 @@ function resetStreamMetrics() {
         lastPromptTime: null,
         
         // Viewer retention
-        viewerRetention: 0
+        viewerRetention: 0,
+        
+        // New growth metrics
+        peerAvgViewers: 75,
+        viewerRec: "Increase interactive segments to boost by 20%",
+        peerRetention: 60,
+        retentionRec: "Add polls every 15 min",
+        peerGrowth: 12,
+        growthRec: "Collaborate with similar-sized streamers",
+        predictedRetention: 50,
+        scheduleSuggestion: "Tue 8PM",
+        scheduleReason: "+25% views expected",
+        projectedRevenue: 0,
+        revenueTip: "Focus on Tier 2 subs",
+        healthScore: 0
     };
     console.log('🔄 [METRICS] Stream metrics reset for new channel');
 }
@@ -456,22 +470,7 @@ function setupTwitchEventHandlers(client) {
         broadcastMetrics();
     });
     
-    // Connection handlers
-    client.on('connected', (addr, port) => {
-        console.log(`🔗 [TWITCH] Connected to Twitch IRC at ${addr}:${port}`);
-        streamMetrics.streamStartTime = Date.now();
-    });
-    
-    client.on('disconnected', (reason) => {
-        console.log(`❌ [TWITCH] Disconnected from Twitch IRC: ${reason}`);
-    });
-    
-    // Add debugging for all events
-    client.on('raw_message', (messageCloned, message) => {
-        console.log(`🔍 [DEBUG] Raw message:`, message);
-    });
-    
-    // Handle subscription events (different types)
+    // Handle resub
     client.on('resub', (channel, username, months, message, userstate, methods) => {
         console.log(`🎉 [RESUB] ${username} resubscribed for ${months} months!`);
         
@@ -595,7 +594,17 @@ function setupTwitchEventHandlers(client) {
         broadcastMetrics();
     });
     
-    // Add raw message debugging to see all events
+    // Connection handlers
+    client.on('connected', (addr, port) => {
+        console.log(`🔗 [TWITCH] Connected to Twitch IRC at ${addr}:${port}`);
+        streamMetrics.streamStartTime = Date.now();
+    });
+    
+    client.on('disconnected', (reason) => {
+        console.log(`❌ [TWITCH] Disconnected from Twitch IRC: ${reason}`);
+    });
+    
+    // Add debugging for all events
     client.on('raw_message', (messageCloned, message) => {
         console.log(`🔍 [DEBUG] Raw message:`, {
             raw: message.raw,
@@ -617,83 +626,11 @@ function setupTwitchEventHandlers(client) {
             console.log('👥 FOLLOW EVENT DETECTED!');
         }
     });
-    
-    // Connection events
-    client.on('connected', (addr, port) => {
-        console.log(`🔗 [TWITCH] Connected to Twitch IRC at ${addr}:${port}`);
-        streamMetrics.streamStartTime = Date.now();
-    });
-    
-    client.on('disconnected', (reason) => {
-        console.log(`❌ [TWITCH] Disconnected from Twitch IRC: ${reason}`);
-    });
 }
 
 // Twitch-specific metrics and data structures
-let streamMetrics = {
-    // Basic stream info
-    streamStartTime: null,
-    currentViewerCount: 0,
-    peakViewerCount: 0,
-    averageViewerCount: 0,
-    totalViewerMinutes: 0,
-    
-    // Chat metrics
-    totalMessages: 0,
-    messagesPerMinute: 0,
-    recentMessages: [],
-    uniqueChatters: new Set(),
-    
-    // Follow metrics
-    totalFollowers: 0,
-    sessionFollowersGained: 0,
-    followersGainsPerMinute: 0,
-    newFollowers: [],
-    
-    // Subscription metrics
-    totalSubs: 0,
-    sessionSubsGained: 0,
-    subsGainsPerMinute: 0,
-    newSubs: [],
-    
-    // Subscription tier breakdown
-    tier1Subs: 0,
-    tier2Subs: 0,
-    tier3Subs: 0,
-    sessionTier1Subs: 0,
-    sessionTier2Subs: 0,
-    sessionTier3Subs: 0,
-    
-    // Bits metrics
-    totalBits: 0,
-    sessionBitsEarned: 0,
-    bitsPerMinute: 0,
-    recentBits: [],
-    
-    // Raid metrics
-    totalRaids: 0,
-    sessionRaidsReceived: 0,
-    recentRaids: [],
-    
-    // Engagement metrics
-    averageWatchTime: 0,
-    viewerRetention: 0,
-    rollingSentimentScore: 0,
-    
-    // User engagement tracking
-    topEngagedUsers: [],
-    userEngagement: new Map(),
-    
-    // AI prompt history
-    promptHistory: [],
-    lastPromptTime: 0,
-    
-    // Stream health
-    isLive: false,
-    streamTitle: '',
-    gameCategory: '',
-    streamLanguage: 'en'
-};
+let streamMetrics = {};
+resetStreamMetrics();
 
 // Twitch client configuration - will be created when user connects to a channel
 let twitchClient = null;
@@ -769,10 +706,10 @@ async function getStreamInfo() {
 }
 
 // Get channel info
-async function getChannelInfo() {
+async function getChannelInfo(channel) {
     try {
         const data = await getTwitchAPI('users', {
-            login: process.env.TWITCH_CHANNEL || 'your_channel_name'
+            login: channel
         });
         
         if (data.data && data.data.length > 0) {
@@ -782,6 +719,55 @@ async function getChannelInfo() {
     } catch (error) {
         console.error('Error getting channel info:', error);
         return null;
+    }
+}
+
+// Get total followers
+async function getFollowerCount(userId) {
+    try {
+        const data = await getTwitchAPI('users/follows', {
+            to_id: userId,
+            first: 1 // We only need the total
+        });
+        
+        return data.total || 0;
+    } catch (error) {
+        console.error('Error getting follower count:', error);
+        return 0;
+    }
+}
+
+// Get subscriber count (requires broadcaster token with channel:read:subscriptions scope)
+async function getSubscriberCount(userId) {
+    try {
+        const data = await getTwitchAPI('subscriptions', {
+            broadcaster_id: userId
+        });
+        
+        return data.total || 0;
+    } catch (error) {
+        console.error('Error getting subscriber count:', error);
+        return 0;
+    }
+}
+
+// Fetch initial metrics when connecting to channel
+async function fetchInitialMetrics(channel) {
+    try {
+        const channelInfo = await getChannelInfo(channel);
+        if (!channelInfo) return;
+        
+        const userId = channelInfo.id;
+        
+        // Get followers
+        streamMetrics.totalFollowers = await getFollowerCount(userId);
+        
+        // Get subscribers (may require additional scopes)
+        streamMetrics.totalSubs = await getSubscriberCount(userId);
+        
+        console.log(`📊 [INITIAL] Fetched metrics - Followers: ${streamMetrics.totalFollowers}, Subs: ${streamMetrics.totalSubs}`);
+    } catch (error) {
+        console.error('Error fetching initial metrics:', error);
     }
 }
 
@@ -809,6 +795,22 @@ function calculateRollingMetrics() {
         // Viewer retention (simplified calculation)
         streamMetrics.viewerRetention = streamMetrics.currentViewerCount > 0 ? 
             Math.min(100, (streamMetrics.currentViewerCount / Math.max(streamMetrics.peakViewerCount, 1)) * 100) : 0;
+        
+        // Predicted retention (dummy calc)
+        streamMetrics.predictedRetention = Math.round(50 + streamMetrics.rollingSentimentScore * 20 + (streamMetrics.currentViewerCount / 10));
+        
+        // Projected revenue (daily * 30)
+        const dailyRev = calculateAccurateRevenue(streamMetrics).total;
+        streamMetrics.projectedRevenue = dailyRev * 30;
+        
+        // Revenue tip
+        streamMetrics.revenueTip = streamMetrics.projectedRevenue < 50 ? "Focus on subs" : "Great momentum!";
+        
+        // Health score
+        const durationHours = streamDuration / 60;
+        let score = 100 - (durationHours * 10);
+        score += streamMetrics.rollingSentimentScore * 20;
+        streamMetrics.healthScore = Math.max(0, Math.min(100, score));
     }
 }
 
@@ -909,348 +911,6 @@ function broadcastMetrics() {
     });
 }
 
-// Twitch client event handlers (DUPLICATE - now handled by setupTwitchEventHandlers)
-/*
-twitchClient.on('message', (channel, tags, message, self) => {
-    if (self) return; // Ignore bot's own messages
-    
-    const username = tags.username;
-    const displayName = tags['display-name'];
-    
-    // Update message metrics
-    streamMetrics.totalMessages++;
-    streamMetrics.uniqueChatters.add(username);
-    
-    // Add to recent messages
-    streamMetrics.recentMessages.push({
-        username: displayName || username,
-        message: message,
-        timestamp: Date.now(),
-        badges: tags.badges || {}
-    });
-    
-    // Keep only last 100 messages
-    if (streamMetrics.recentMessages.length > 100) {
-        streamMetrics.recentMessages = streamMetrics.recentMessages.slice(-100);
-    }
-    
-    // Update user engagement
-    if (!streamMetrics.userEngagement.has(username)) {
-        streamMetrics.userEngagement.set(username, {
-            messages: 0,
-            bits: 0,
-            follows: 0,
-            subs: 0
-        });
-    }
-    
-    const userData = streamMetrics.userEngagement.get(username);
-    userData.messages = (userData.messages || 0) + 1;
-    
-    // Analyze sentiment
-    analyzeSentiment();
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-    
-    console.log(`💬 [CHAT] ${displayName}: ${message}`);
-});
-
-twitchClient.on('follow', (channel, username, displayName, userId) => {
-    console.log(`👥 [FOLLOW] ${displayName} followed! (User ID: ${userId})`);
-    
-    streamMetrics.totalFollowers++;
-    streamMetrics.sessionFollowersGained++;
-    
-    // Add to new followers
-    streamMetrics.newFollowers.push({
-        username: displayName,
-        timestamp: Date.now()
-    });
-    
-    // Keep only last 50 followers
-    if (streamMetrics.newFollowers.length > 50) {
-        streamMetrics.newFollowers = streamMetrics.newFollowers.slice(-50);
-    }
-    
-    // Update user engagement
-    if (!streamMetrics.userEngagement.has(username)) {
-        streamMetrics.userEngagement.set(username, {
-            messages: 0,
-            bits: 0,
-            follows: 0,
-            subs: 0
-        });
-    }
-    
-    const userData = streamMetrics.userEngagement.get(username);
-    userData.follows = (userData.follows || 0) + 1;
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-});
-
-twitchClient.on('subscription', (channel, username, displayName, subInfo) => {
-    const plan = subInfo ? subInfo.plan : 'unknown';
-    console.log(`🎉 [SUB] ${displayName} subscribed! (${plan})`);
-    console.log(`🔍 [DEBUG] Sub info:`, subInfo);
-    
-    streamMetrics.totalSubs++;
-    streamMetrics.sessionSubsGained++;
-    
-    // Add to new subs
-    streamMetrics.newSubs.push({
-        username: displayName,
-        plan: plan,
-        timestamp: Date.now()
-    });
-    
-    // Keep only last 50 subs
-    if (streamMetrics.newSubs.length > 50) {
-        streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
-    }
-    
-    // Update user engagement
-    if (!streamMetrics.userEngagement.has(username)) {
-        streamMetrics.userEngagement.set(username, {
-            messages: 0,
-            bits: 0,
-            follows: 0,
-            subs: 0
-        });
-    }
-    
-    const userData = streamMetrics.userEngagement.get(username);
-    userData.subs = (userData.subs || 0) + 1;
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-});
-
-twitchClient.on('cheer', (channel, tags, message) => {
-    const username = tags.username;
-    const displayName = tags['display-name'];
-    const bits = parseInt(tags.bits);
-    
-    console.log(`💰 [BITS] ${displayName} cheered ${bits} bits!`);
-    console.log(`🔍 [DEBUG] Bits tags:`, tags);
-    
-    streamMetrics.totalBits += bits;
-    streamMetrics.sessionBitsEarned += bits;
-    
-    // Add to recent bits
-    streamMetrics.recentBits.push({
-        username: displayName,
-        bits: bits,
-        message: message,
-        timestamp: Date.now()
-    });
-    
-    // Keep only last 50 bits
-    if (streamMetrics.recentBits.length > 50) {
-        streamMetrics.recentBits = streamMetrics.recentBits.slice(-50);
-    }
-    
-    // Update user engagement
-    if (!streamMetrics.userEngagement.has(username)) {
-        streamMetrics.userEngagement.set(username, {
-            messages: 0,
-            bits: 0,
-            follows: 0,
-            subs: 0
-        });
-    }
-    
-    const userData = streamMetrics.userEngagement.get(username);
-    userData.bits = (userData.bits || 0) + bits;
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-});
-
-twitchClient.on('raid', (channel, username, displayName, viewers) => {
-    console.log(`⚔️ [RAID] ${displayName} raided with ${viewers} viewers!`);
-    
-    streamMetrics.totalRaids++;
-    streamMetrics.sessionRaidsReceived++;
-    
-    // Add to recent raids
-    streamMetrics.recentRaids.push({
-        username: displayName,
-        viewers: viewers,
-        timestamp: Date.now()
-    });
-    
-    // Keep only last 20 raids
-    if (streamMetrics.recentRaids.length > 20) {
-        streamMetrics.recentRaids = streamMetrics.recentRaids.slice(-20);
-    }
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-});
-
-twitchClient.on('connected', (addr, port) => {
-    console.log(`🔗 [TWITCH] Connected to Twitch IRC at ${addr}:${port}`);
-    streamMetrics.streamStartTime = Date.now();
-});
-
-twitchClient.on('disconnected', (reason) => {
-    console.log(`❌ [TWITCH] Disconnected from Twitch IRC: ${reason}`);
-});
-*/
-
-// Add debugging for all events - will be set up when client is created
-// twitchClient.on('raw_message', (messageCloned, message) => {
-//     console.log(`🔍 [DEBUG] Raw message:`, message);
-// });
-
-// Handle subscription events (different types) - will be set up when client is created
-/*
-twitchClient.on('resub', (channel, username, months, message, userstate, methods) => {
-    console.log(`🎉 [RESUB] ${username} resubscribed for ${months} months!`);
-    
-    streamMetrics.totalSubs++;
-    streamMetrics.sessionSubsGained++;
-    
-    // Add to new subs
-    streamMetrics.newSubs.push({
-        username: username,
-        plan: 'resub',
-        months: months,
-        timestamp: Date.now()
-    });
-    
-    // Keep only last 50 subs
-    if (streamMetrics.newSubs.length > 50) {
-        streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
-    }
-    
-    // Update user engagement
-    if (!streamMetrics.userEngagement.has(username)) {
-        streamMetrics.userEngagement.set(username, {
-            messages: 0,
-            bits: 0,
-            follows: 0,
-            subs: 0
-        });
-    }
-    
-    const userData = streamMetrics.userEngagement.get(username);
-    userData.subs = (userData.subs || 0) + 1;
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-});
-
-// Handle gift subscriptions
-twitchClient.on('subgift', (channel, username, streakMonths, recipient, methods, userstate) => {
-    console.log(`🎁 [GIFT SUB] ${username} gifted a sub to ${recipient}!`);
-    
-    streamMetrics.totalSubs++;
-    streamMetrics.sessionSubsGained++;
-    
-    // Add to new subs
-    streamMetrics.newSubs.push({
-        username: recipient,
-        plan: 'gift',
-        gifter: username,
-        timestamp: Date.now()
-    });
-    
-    // Keep only last 50 subs
-    if (streamMetrics.newSubs.length > 50) {
-        streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
-    }
-    
-    // Update user engagement
-    if (!streamMetrics.userEngagement.has(username)) {
-        streamMetrics.userEngagement.set(username, {
-            messages: 0,
-            bits: 0,
-            follows: 0,
-            subs: 0
-        });
-    }
-    
-    const userData = streamMetrics.userEngagement.get(username);
-    userData.subs = (userData.subs || 0) + 1;
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-});
-
-// Handle mystery gifts
-twitchClient.on('submysterygift', (channel, username, numbOfSubs, methods, userstate) => {
-    console.log(`🎁 [MYSTERY GIFT] ${username} gifted ${numbOfSubs} subs!`);
-    
-    streamMetrics.totalSubs += numbOfSubs;
-    streamMetrics.sessionSubsGained += numbOfSubs;
-    
-    // Add to new subs
-    streamMetrics.newSubs.push({
-        username: 'mystery_gift_recipients',
-        plan: 'mystery_gift',
-        gifter: username,
-        count: numbOfSubs,
-        timestamp: Date.now()
-    });
-    
-    // Keep only last 50 subs
-    if (streamMetrics.newSubs.length > 50) {
-        streamMetrics.newSubs = streamMetrics.newSubs.slice(-50);
-    }
-    
-    // Update user engagement
-    if (!streamMetrics.userEngagement.has(username)) {
-        streamMetrics.userEngagement.set(username, {
-            messages: 0,
-            bits: 0,
-            follows: 0,
-            subs: 0
-        });
-    }
-    
-    const userData = streamMetrics.userEngagement.get(username);
-    userData.subs = (userData.subs || 0) + numbOfSubs;
-    
-    // Update rolling metrics
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    
-    // Broadcast updates
-    broadcastMetrics();
-});
-*/
-
 // WebSocket connection handler
 wss.on('connection', (ws) => {
     console.log('📊 [DASHBOARD] New dashboard connection');
@@ -1330,7 +990,20 @@ wss.on('connection', (ws) => {
                     tier3: 0,
                     totalSubs: 0
                 }
-            }
+            },
+            // New fields default
+            peerAvgViewers: 75,
+            viewerRec: "Increase interactive segments to boost by 20%",
+            peerRetention: 60,
+            retentionRec: "Add polls every 15 min",
+            peerGrowth: 12,
+            growthRec: "Collaborate with similar-sized streamers",
+            predictedRetention: 50,
+            scheduleSuggestion: "Tue 8PM",
+            scheduleReason: "+25% views expected",
+            projectedRevenue: 0,
+            revenueTip: "Focus on Tier 2 subs",
+            healthScore: 0
         };
         
         ws.send(JSON.stringify(emptyData));
@@ -1362,7 +1035,7 @@ app.get('/api/metrics', (req, res) => {
         ...streamMetrics,
         uniqueChatters: streamMetrics.uniqueChatters.size,
         userEngagement: Object.fromEntries(streamMetrics.userEngagement),
-        channelName: process.env.TWITCH_CHANNEL || 'kamet0',
+        channelName: currentChannel || 'No Channel',
         sessionId: streamMetrics.streamStartTime || Date.now(),
         timestamp: Date.now()
     });
@@ -1550,6 +1223,9 @@ app.post('/api/connect-channel', async (req, res) => {
         isConnected = true;
         streamMetrics.streamStartTime = Date.now();
         
+        // Fetch initial metrics
+        await fetchInitialMetrics(channelName);
+        
         console.log(`✅ [CHANNEL] Successfully connected to: ${channelName}`);
         
         res.json({ 
@@ -1610,8 +1286,6 @@ server.listen(PORT, () => {
     console.log(`📊 [DASHBOARD] Dashboard available at http://localhost:${PORT}/twitch_dashboard.html`);
     console.log(`🔗 [API] API available at http://localhost:${PORT}/api/metrics`);
 });
-
-// Twitch client will be connected when user selects a channel via the dashboard
 
 // Periodic tasks - only run when connected to a channel
 setInterval(async () => {
