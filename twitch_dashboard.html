@@ -1342,11 +1342,11 @@
                     </div>
                 </div>
 
-                <!-- New Followers -->
+                <!-- Total Followers -->
                 <div class="metric-card">
-                    <div class="metric-title">👥 New Followers</div>
+                    <div class="metric-title">👥 Total Followers</div>
                     <div class="metric-value" id="totalFollowers">0</div>
-                    <div class="metric-subtitle">Total new followers</div>
+                    <div class="metric-subtitle">Channel total followers</div>
                     <div class="metric-trend">
                         <span class="trend-indicator" id="followersTrend">+0 this session</span>
                     </div>
@@ -1446,11 +1446,11 @@
             </div>
         </div>
 
-        <!-- New Followers -->
+        <!-- Total Followers -->
         <div class="metric-card">
-            <div class="metric-title">👥 New Followers</div>
+            <div class="metric-title">👥 Total Followers</div>
             <div class="metric-value" id="totalFollowers">0</div>
-            <div class="metric-subtitle">Total new followers</div>
+            <div class="metric-subtitle">Channel total followers</div>
             <div class="metric-trend">
                 <span class="trend-indicator" id="followersTrend">+0 this session</span>
             </div>
@@ -1900,6 +1900,7 @@
                 currentViewers: 'Current Viewers',
                 peakViewers: 'Peak Viewers',
                 totalSubs: 'Total Subs',
+                totalFollowers: 'Total Followers',
                 newFollowers: 'New Followers',
                 streamRevenue: 'Stream Revenue',
                 newSubs: 'New Subs',
@@ -1928,6 +1929,7 @@
                 currentViewers: 'Spectateurs Actuels',
                 peakViewers: 'Pic de Spectateurs',
                 totalSubs: 'Total Abonnements',
+                totalFollowers: 'Total Followers',
                 newFollowers: 'Nouveaux Followers',
                 streamRevenue: 'Revenus du Stream',
                 newSubs: 'Nouveaux Subs',
@@ -1956,6 +1958,7 @@
                 currentViewers: 'Espectadores Actuales',
                 peakViewers: 'Pico de Espectadores',
                 totalSubs: 'Total Suscripciones',
+                totalFollowers: 'Total Seguidores',
                 newFollowers: 'Nuevos Seguidores',
                 streamRevenue: 'Ingresos del Stream',
                 newSubs: 'Nuevos Subs',
@@ -1984,6 +1987,7 @@
                 currentViewers: 'Aktuelle Zuschauer',
                 peakViewers: 'Höchste Zuschauerzahl',
                 totalSubs: 'Gesamte Abonnements',
+                totalFollowers: 'Gesamte Follower',
                 newFollowers: 'Neue Follower',
                 streamRevenue: 'Stream-Einnahmen',
                 newSubs: 'Neue Subs',
@@ -2236,6 +2240,7 @@
             const totalFollowers = data.totalFollowers || 0;
             const sessionFollowers = data.sessionFollowersGained || 0;
             
+            // Display total followers (from Twitch API)
             updateMetricValue('totalFollowers', formatNumber(totalFollowers));
             document.getElementById('followersTrend').textContent = `+${formatNumber(sessionFollowers)} this session`;
             
