@@ -2778,6 +2778,8 @@
 
         async function disconnectFromChannel() {
             try {
+                console.log('🔄 [DISCONNECT] Attempting to disconnect - currentSessionId:', currentSessionId);
+                
                 const response = await fetch('/api/disconnect-channel', {
                     method: 'POST',
                     headers: {

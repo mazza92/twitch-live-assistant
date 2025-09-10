@@ -1404,7 +1404,32 @@ app.post('/api/disconnect-channel', async (req, res) => {
     try {
         const { sessionId } = req.body;
         
-        if (!sessionId || !userSessions.has(sessionId)) {
+        console.log(`🔄 [CHANNEL] Disconnect request - SessionId: ${sessionId}, Available sessions: ${Array.from(userSessions.keys())}`);
+        
+        if (!sessionId) {
+            // If no sessionId provided, disconnect all sessions
+            console.log(`🔄 [CHANNEL] No sessionId provided, disconnecting all sessions`);
+            
+            for (const [id, session] of userSessions.entries()) {
+                if (session.isConnected && session.connection && session.connection.readyState() === 'OPEN') {
+                    console.log(`🔄 [CHANNEL] Disconnecting session: ${id} (Channel: ${session.channel})`);
+                    await session.connection.disconnect();
+                }
+            }
+            
+            userSessions.clear();
+            
+            console.log(`✅ [CHANNEL] Disconnected from all channels`);
+            
+            res.json({ 
+                success: true, 
+                message: 'Disconnected from all channels' 
+            });
+            return;
+        }
+        
+        if (!userSessions.has(sessionId)) {
+            console.log(`❌ [CHANNEL] Session not found: ${sessionId}`);
             return res.status(400).json({ error: 'Session not found' });
         }
         
