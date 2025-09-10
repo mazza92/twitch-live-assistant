@@ -309,6 +309,7 @@ function setupSessionEventHandlers(session) {
     // Follow handler
     client.on('follow', (channel, username, displayName, userID) => {
         console.log(`👥 [FOLLOW] ${displayName} followed!`);
+        console.log(`👥 [FOLLOW] Channel: ${channel}, Username: ${username}, DisplayName: ${displayName}, UserID: ${userID}`);
         
         metrics.totalFollowers++;
         metrics.sessionFollowersGained++;
@@ -343,6 +344,8 @@ function setupSessionEventHandlers(session) {
         
         // Broadcast updates immediately for real-time follows
         broadcastToSession(session);
+        
+        console.log(`👥 [FOLLOW] Updated metrics - Total: ${metrics.totalFollowers}, Session: ${metrics.sessionFollowersGained}`);
     });
     
     // Subscription handler
@@ -627,11 +630,17 @@ function setupSessionEventHandlers(session) {
     // Connection handlers
     client.on('connected', (addr, port) => {
         console.log(`🔗 [TWITCH] Connected to Twitch IRC at ${addr}:${port}`);
+        console.log(`🔗 [TWITCH] Listening for events on channel: ${session.channel}`);
         metrics.streamStartTime = Date.now();
     });
     
     client.on('disconnected', (reason) => {
         console.log(`❌ [TWITCH] Disconnected from Twitch IRC: ${reason}`);
+    });
+    
+    // Add error handler
+    client.on('error', (error) => {
+        console.error(`❌ [TWITCH] IRC Error:`, error);
     });
     
     // Add debugging for all events
@@ -1120,36 +1129,41 @@ app.get('/api/health', (req, res) => {
 
 // Test endpoint to simulate events
 app.post('/api/test-events', (req, res) => {
-    if (!isConnected || !currentChannel) {
-        return res.status(400).json({ error: 'Not connected to a channel' });
+    const { sessionId } = req.body;
+    
+    if (!sessionId || !userSessions.has(sessionId)) {
+        return res.status(400).json({ error: 'Session not found' });
     }
     
-    console.log('🧪 [TEST] Simulating test events...');
+    const session = userSessions.get(sessionId);
+    const metrics = session.metrics;
+    
+    console.log('🧪 [TEST] Simulating test events for session:', sessionId);
     
     // Simulate a follow
-    streamMetrics.totalFollowers++;
-    streamMetrics.sessionFollowersGained++;
-    streamMetrics.newFollowers.push({
+    metrics.totalFollowers++;
+    metrics.sessionFollowersGained++;
+    metrics.newFollowers.push({
         username: 'TestFollower',
         timestamp: Date.now()
     });
     
     // Simulate subscriptions with different tiers
-    streamMetrics.totalSubs += 3;
-    streamMetrics.sessionSubsGained += 3;
+    metrics.totalSubs += 3;
+    metrics.sessionSubsGained += 3;
     
     // Tier 1 subscription
-    streamMetrics.tier1Subs++;
-    streamMetrics.sessionTier1Subs++;
-    streamMetrics.newSubs.push({
+    metrics.tier1Subs++;
+    metrics.sessionTier1Subs++;
+    metrics.newSubs.push({
         username: 'TestSubscriber1',
         plan: 'Tier 1',
         timestamp: Date.now()
     });
     
     // Tier 2 subscription
-    streamMetrics.tier2Subs++;
-    streamMetrics.sessionTier2Subs++;
+    metrics.tier2Subs++;
+    metrics.sessionTier2Subs++;
     streamMetrics.newSubs.push({
         username: 'TestSubscriber2',
         plan: 'Tier 2',
@@ -1157,8 +1171,8 @@ app.post('/api/test-events', (req, res) => {
     });
     
     // Tier 3 subscription
-    streamMetrics.tier3Subs++;
-    streamMetrics.sessionTier3Subs++;
+    metrics.tier3Subs++;
+    metrics.sessionTier3Subs++;
     streamMetrics.newSubs.push({
         username: 'TestSubscriber3',
         plan: 'Tier 3',
@@ -1166,9 +1180,9 @@ app.post('/api/test-events', (req, res) => {
     });
     
     // Simulate bits
-    streamMetrics.totalBits += 100;
-    streamMetrics.sessionBitsEarned += 100;
-    streamMetrics.recentBits.push({
+    metrics.totalBits += 100;
+    metrics.sessionBitsEarned += 100;
+    metrics.recentBits.push({
         username: 'TestBitsUser',
         bits: 100,
         message: 'Test bits!',
@@ -1176,20 +1190,20 @@ app.post('/api/test-events', (req, res) => {
     });
     
     // Update metrics and broadcast
-    calculateRollingMetrics();
-    updateTopEngagedUsers();
-    broadcastMetrics();
+    calculateRollingMetrics(metrics);
+    updateTopEngagedUsers(metrics);
+    broadcastToSession(session);
     
     res.json({ 
         message: 'Test events simulated',
         metrics: {
-            followers: streamMetrics.totalFollowers,
-            subs: streamMetrics.totalSubs,
-            bits: streamMetrics.totalBits,
-            tier1Subs: streamMetrics.tier1Subs,
-            tier2Subs: streamMetrics.tier2Subs,
-            tier3Subs: streamMetrics.tier3Subs,
-            revenue: calculateAccurateRevenue(streamMetrics)
+            followers: metrics.totalFollowers,
+            subs: metrics.totalSubs,
+            bits: metrics.totalBits,
+            tier1Subs: metrics.tier1Subs,
+            tier2Subs: metrics.tier2Subs,
+            tier3Subs: metrics.tier3Subs,
+            revenue: calculateAccurateRevenue(metrics)
         }
     });
 });
@@ -1246,9 +1260,9 @@ app.post('/api/connect-channel', async (req, res) => {
             if (existingChannelSession.connection && existingChannelSession.connection.readyState() === 'OPEN') {
                 console.log(`🔄 [CHANNEL] Disconnecting existing session: ${existingChannelSession.sessionId}`);
                 await existingChannelSession.connection.disconnect();
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
             // Remove the old session
             userSessions.delete(existingChannelSession.sessionId);
         }
