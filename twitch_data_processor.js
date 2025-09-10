@@ -711,6 +711,16 @@ async function getStreamInfo(channel) {
         
         console.log(`📊 [API] Received data:`, JSON.stringify(data, null, 2));
         
+        // Also check if the user exists
+        try {
+            const userData = await getTwitchAPI('users', {
+                login: channel
+            });
+            console.log(`👤 [API] User data for ${channel}:`, JSON.stringify(userData, null, 2));
+        } catch (error) {
+            console.log(`❌ [API] Error fetching user data for ${channel}:`, error.message);
+        }
+        
         if (data.data && data.data.length > 0) {
             const stream = data.data[0];
             
@@ -1125,6 +1135,42 @@ app.get('/api/health', (req, res) => {
         uptime: process.uptime(),
         memory: process.memoryUsage()
     });
+});
+
+// Test endpoint to check if a channel is live
+app.post('/api/test-channel', async (req, res) => {
+    const { channel } = req.body;
+    
+    if (!channel) {
+        return res.status(400).json({ error: 'Channel name required' });
+    }
+    
+    try {
+        console.log(`🧪 [TEST] Checking if channel ${channel} is live...`);
+        
+        // Check if user exists
+        const userData = await getTwitchAPI('users', {
+            login: channel
+        });
+        console.log(`👤 [TEST] User data:`, JSON.stringify(userData, null, 2));
+        
+        // Check if stream is live
+        const streamData = await getTwitchAPI('streams', {
+            user_login: channel
+        });
+        console.log(`📺 [TEST] Stream data:`, JSON.stringify(streamData, null, 2));
+        
+        res.json({
+            channel: channel,
+            userExists: userData.data && userData.data.length > 0,
+            isLive: streamData.data && streamData.data.length > 0,
+            userData: userData,
+            streamData: streamData
+        });
+    } catch (error) {
+        console.error('Error testing channel:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Test endpoint to simulate events
