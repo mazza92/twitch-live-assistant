@@ -811,6 +811,14 @@ function calculateRollingMetrics() {
         let score = 100 - (durationHours * 10);
         score += streamMetrics.rollingSentimentScore * 20;
         streamMetrics.healthScore = Math.max(0, Math.min(100, score));
+        
+        // Dynamic recommendations
+        streamMetrics.retentionRec = streamMetrics.predictedRetention < 50 ? "Add polls every 15 min to improve retention" : "Retention looks good - maintain engagement";
+        
+        streamMetrics.viewerRec = streamMetrics.currentViewerCount < streamMetrics.peerAvgViewers ? 
+            `Increase interactive segments to boost by ${Math.round((streamMetrics.peerAvgViewers - streamMetrics.currentViewerCount) / streamMetrics.peerAvgViewers * 100)}%` : "Viewership above average!";
+        
+        streamMetrics.growthRec = streamMetrics.sessionFollowersGained < 10 ? "Collaborate with similar-sized streamers" : "Strong growth - keep promoting!";
     }
 }
 
@@ -856,6 +864,23 @@ function updateTopEngagedUsers() {
 async function generateAIPrompt() {
     try {
         const prompt = await geminiService.generatePrompt(streamMetrics, currentLanguage);
+        
+        // Assume prompt is {type: 'some_type', message: 'some_key'}
+        // Format the message using translations
+        let fullMessage = promptTranslations[currentLanguage][prompt.message] || prompt.message;
+        
+        const replacements = {
+            '{viewerCount}': streamMetrics.currentViewerCount,
+            '{messageRate}': streamMetrics.messagesPerMinute.toFixed(1),
+            '{followRate}': streamMetrics.followersGainsPerMinute.toFixed(1)
+            // Add more placeholders as needed from translations
+        };
+        
+        Object.keys(replacements).forEach(key => {
+            fullMessage = fullMessage.replace(new RegExp(key, 'g'), replacements[key]);
+        });
+        
+        prompt.message = fullMessage;
         
         // Add to prompt history
         streamMetrics.promptHistory.push({
