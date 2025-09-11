@@ -1628,6 +1628,15 @@
             }
         }
 
+        .gauge-svg {
+            width: 280px;
+            height: 280px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
         .gauge-ring {
             width: 280px;
             height: 280px;
@@ -1650,42 +1659,6 @@
             min-height: 280px;
             max-width: 280px;
             max-height: 280px;
-        }
-
-        .gauge-progress {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 240px;
-            height: 240px;
-            border-radius: 50%;
-            background: conic-gradient(
-                from -90deg,
-                #ff4757 0deg,
-                #ff6b35 20deg,
-                #feca57 40deg,
-                #48dbfb 60deg,
-                #0abde3 80deg,
-                #3742fa 100deg,
-                #2f3542 120deg,
-                #ff4757 140deg,
-                #ff6b35 160deg,
-                #feca57 180deg,
-                #48dbfb 200deg,
-                #0abde3 220deg,
-                #3742fa 240deg,
-                #2f3542 260deg,
-                #ff4757 280deg,
-                #ff6b35 300deg,
-                #feca57 320deg,
-                #48dbfb 340deg,
-                #0abde3 360deg
-            );
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            mask: radial-gradient(circle at center, transparent 60%, black 60%);
-            -webkit-mask: radial-gradient(circle at center, transparent 60%, black 60%);
         }
 
         @keyframes gaugeGlow {
@@ -2028,13 +2001,46 @@
                 
             <!-- Circular Gauge -->
             <div class="circular-gauge-container">
-                <div class="gauge-ring">
-                    <div class="gauge-progress" id="gaugeProgress"></div>
-                    <div class="gauge-center">
-                        <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
-                    </div>
-                    <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
+                <svg class="gauge-svg" viewBox="0 0 280 280">
+                    <!-- Background circle -->
+                    <circle
+                        cx="140"
+                        cy="140"
+                        r="120"
+                        fill="none"
+                        stroke="rgba(255, 255, 255, 0.1)"
+                        stroke-width="8"
+                    />
+                    <!-- Progress arc -->
+                    <circle
+                        id="gaugeProgressArc"
+                        cx="140"
+                        cy="140"
+                        r="120"
+                        fill="none"
+                        stroke="url(#gaugeGradient)"
+                        stroke-width="8"
+                        stroke-linecap="round"
+                        stroke-dasharray="754"
+                        stroke-dashoffset="754"
+                        transform="rotate(-90 140 140)"
+                    />
+                    <!-- Gradient definition -->
+                    <defs>
+                        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ff4757;stop-opacity:1" />
+                            <stop offset="20%" style="stop-color:#ff6b35;stop-opacity:1" />
+                            <stop offset="40%" style="stop-color:#feca57;stop-opacity:1" />
+                            <stop offset="60%" style="stop-color:#48dbfb;stop-opacity:1" />
+                            <stop offset="80%" style="stop-color:#0abde3;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#3742fa;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="gauge-center">
+                    <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
                 </div>
+                <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
             </div>
             
             <!-- Gauge Levels -->
@@ -3736,20 +3742,14 @@
                 lastChatScore = score;
             }
             
-            // Update progress arc (0-100 maps to 0-360 degrees)
-            if (progressElement) {
-                const progressAngle = (score / 100) * 360;
-                progressElement.style.background = `conic-gradient(
-                    from -90deg,
-                    #ff4757 0deg,
-                    #ff6b35 ${progressAngle * 0.2}deg,
-                    #feca57 ${progressAngle * 0.4}deg,
-                    #48dbfb ${progressAngle * 0.6}deg,
-                    #0abde3 ${progressAngle * 0.8}deg,
-                    #3742fa ${progressAngle}deg,
-                    transparent ${progressAngle}deg,
-                    transparent 360deg
-                )`;
+            // Update SVG progress arc (0-100 maps to 0-754 dash offset)
+            const progressArc = document.getElementById('gaugeProgressArc');
+            if (progressArc) {
+                const circumference = 2 * Math.PI * 120; // radius = 120
+                const progress = (score / 100) * circumference;
+                const offset = circumference - progress;
+                progressArc.style.strokeDashoffset = offset;
+                progressArc.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
             }
             
             // Calculate needle rotation (-90deg to 90deg for half circle)
@@ -3838,6 +3838,26 @@
             setTimeout(() => updateChatScoreGauge(45), 2000); // Should be level 3
             setTimeout(() => updateChatScoreGauge(65), 4000); // Should be level 4
             setTimeout(() => updateChatScoreGauge(85), 6000); // Should be level 5
+        }
+
+        // Test SVG gauge specifically
+        function testSVGGauge() {
+            console.log('🧪 Testing SVG gauge...');
+            const progressArc = document.getElementById('gaugeProgressArc');
+            if (progressArc) {
+                console.log('✅ SVG progress arc found:', progressArc);
+                console.log('✅ Current stroke-dasharray:', progressArc.style.strokeDasharray);
+                console.log('✅ Current stroke-dashoffset:', progressArc.style.strokeDashoffset);
+                
+                // Test with different scores
+                updateChatScoreGauge(0);
+                setTimeout(() => updateChatScoreGauge(25), 1000);
+                setTimeout(() => updateChatScoreGauge(50), 2000);
+                setTimeout(() => updateChatScoreGauge(75), 3000);
+                setTimeout(() => updateChatScoreGauge(100), 4000);
+            } else {
+                console.error('❌ SVG progress arc not found!');
+            }
         }
         
         // Update gauge levels with modern styling
@@ -4203,6 +4223,7 @@
         window.testGaugeNow = testGaugeNow;
         window.testGaugeVisibility = testGaugeVisibility;
         window.forceGaugeDisplay = forceGaugeDisplay;
+        window.testSVGGauge = testSVGGauge;
         
         // Test gauge visibility function
         function testGaugeVisibility() {
