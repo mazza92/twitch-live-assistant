@@ -46,6 +46,44 @@
         }
 
 
+        /* Live Viewers Metric */
+        .live-viewers-metric {
+            margin: 2rem auto 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(15, 15, 25, 0.95), rgba(25, 25, 35, 0.95));
+            border-radius: 20px;
+            border: 2px solid rgba(0, 212, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .viewers-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .viewers-count {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #00d4ff;
+            text-shadow: 0 4px 8px rgba(0, 212, 255, 0.3);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .viewers-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         /* Clean Chat Score Gauge */
         .chat-score-gauge {
             margin: 2rem auto;
@@ -104,46 +142,54 @@
         }
 
         .gauge-levels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
-            gap: 0.5rem;
+            display: flex !important;
+            justify-content: space-around !important;
+            margin-top: 2rem !important;
+            gap: 0 !important;
+            flex-wrap: nowrap !important;
+            max-width: 100% !important;
+            padding: 0 0.5rem !important;
         }
 
         .gauge-level {
-            padding: 0.8rem;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            min-width: 60px;
+            font-size: 0.7rem !important;
+            font-weight: 600 !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            transition: all 0.3s ease !important;
+            cursor: pointer !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+            padding: 0.4rem 0.1rem !important;
+            position: relative !important;
+            flex: 0 0 auto !important;
+            min-width: 50px !important;
+            max-width: 80px !important;
+            margin: 0 !important;
         }
 
         .gauge-level:hover {
-            background: rgba(145, 70, 255, 0.1);
-            border-color: rgba(145, 70, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
             transform: translateY(-2px);
         }
 
         .gauge-level.active {
-            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(0, 212, 255, 0.2));
-            border-color: rgba(145, 70, 255, 0.5);
-            box-shadow: 0 4px 15px rgba(145, 70, 255, 0.3);
             color: #ffffff;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(145, 70, 255, 0.5);
         }
 
-        /* AI Prompt Area - Single Instance */
-        .ai-prompt-area-enhanced {
-            margin-bottom: 4rem;
-            max-width: 600px;
-            width: 100%;
-            transition: all var(--transition-duration) ease-in-out;
-            order: 1;
+        .gauge-level.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, #9146ff, #00d4ff);
+            border-radius: 1px;
         }
+
 
         /* Main Metrics Grid - Single Instance */
         .main-metrics-grid {
@@ -189,23 +235,36 @@
 
         .phase-zero_viewers .ai-prompt-header {
             background: linear-gradient(135deg, var(--phase-zero) 0%, #ff8a80 100%);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 138, 128, 0.3);
         }
 
         .phase-zero_viewers .ai-prompt-title {
-            font-size: 1.4rem;
-            font-weight: bold;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: white;
-            margin-bottom: 5px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .phase-zero_viewers .ai-prompt-phase {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            display: inline-block;
         }
 
         .phase-zero_viewers .main-metrics-grid {
@@ -254,17 +313,122 @@
                 margin-bottom: 5rem;
             }
             
-            
             .phase-zero_viewers .ai-prompt-area-enhanced {
                 margin-bottom: 6rem;
             }
+        }
+
+        /* Large Desktop Optimization */
+        @media (min-width: 1440px) {
+            #dashboard-container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
             
+            .live-viewers-metric {
+                padding: 3rem;
+                margin: 3rem 0;
+            }
+            
+            .viewers-count {
+                font-size: 4rem;
+            }
+            
+            .ai-prompt-area-enhanced {
+                padding: 3rem;
+                margin: 3rem 0;
+            }
+            
+            .ai-prompt-title {
+                font-size: 2rem;
+            }
+            
+            .ai-prompt-message {
+                font-size: 1.3rem;
+            }
+            
+            .chat-score-gauge {
+                padding: 3rem;
+                margin: 3rem 0;
+            }
+            
+            .gauge-circle {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .gauge-score {
+                font-size: 3rem;
+            }
+            
+            .gauge-levels {
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .gauge-level {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.3rem;
+                min-width: 60px;
+                max-width: 90px;
+            }
         }
 
         /* Responsive Design */
         @media (max-width: 1200px) {
             .analytics-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Tablet Responsiveness */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            #dashboard-container {
+                padding: 1.5rem;
+            }
+            
+            .live-viewers-metric {
+                padding: 2rem;
+                margin: 2rem 0;
+            }
+            
+            .viewers-count {
+                font-size: 3rem;
+            }
+            
+            .ai-prompt-area-enhanced {
+                padding: 2rem;
+                margin: 2rem 0;
+            }
+            
+            .ai-prompt-title {
+                font-size: 1.6rem;
+            }
+            
+            .chat-score-gauge {
+                padding: 2rem;
+                margin: 2rem 0;
+            }
+            
+            .gauge-circle {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .gauge-score {
+                font-size: 2.5rem;
+            }
+            
+            .gauge-levels {
+                gap: 0.6rem;
+                padding: 0 0.5rem;
+            }
+            
+            .gauge-level {
+                font-size: 0.7rem;
+                padding: 0.5rem 0.2rem;
+                min-width: 50px;
+                max-width: 75px;
             }
         }
 
@@ -277,32 +441,132 @@
                 grid-template-columns: 1fr;
             }
             
-            
             .key-metrics-row {
                 grid-template-columns: 1fr;
             }
             
             .ai-prompt-area-enhanced {
                 margin-bottom: 3rem;
+                padding: 1.5rem;
+                transform: scale(1.01);
             }
             
+            .ai-prompt-title {
+                font-size: 1.4rem;
+            }
             
+            .ai-prompt-message {
+                font-size: 1.1rem;
+            }
             
+            .live-viewers-metric {
+                padding: 1.5rem;
+                margin: 1.5rem 0;
+            }
             
+            .viewers-count {
+                font-size: 2.5rem;
+            }
             
+            .chat-score-gauge {
+                padding: 1.5rem;
+                margin: 1.5rem 0;
+            }
             
+            .gauge-circle {
+                width: 140px;
+                height: 140px;
+            }
             
+            .gauge-score {
+                font-size: 2.2rem;
+            }
+            
+            .gauge-levels {
+                gap: 0.4rem;
+                padding: 0 0.3rem;
+            }
+            
+            .gauge-level {
+                font-size: 0.65rem;
+                padding: 0.4rem 0.1rem;
+                min-width: 45px;
+                max-width: 70px;
+            }
             
         }
 
         @media (max-width: 480px) {
+            #dashboard-container {
+                padding: 0.5rem;
+            }
             
+            .live-viewers-metric {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
             
+            .viewers-count {
+                font-size: 2rem;
+            }
             
+            .ai-prompt-area-enhanced {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
             
+            .ai-prompt-title {
+                font-size: 1.2rem;
+            }
             
+            .chat-score-gauge {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
             
+            .gauge-circle {
+                width: 120px;
+                height: 120px;
+            }
             
+            .gauge-score {
+                font-size: 1.8rem;
+            }
+            
+            .gauge-levels {
+                gap: 0.3rem;
+                padding: 0 0.2rem;
+            }
+            
+            .gauge-level {
+                font-size: 0.6rem;
+                padding: 0.3rem 0.05rem;
+                min-width: 40px;
+                max-width: 60px;
+            }
+            
+            /* Mobile Overlay Adjustments */
+            .first-viewer-alert {
+                padding: 2rem 1rem;
+            }
+            
+            .alert-content h2 {
+                font-size: 1.8rem;
+            }
+            
+            .alert-content p {
+                font-size: 1rem;
+            }
+            
+            .alert-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .alert-button {
+                width: 100%;
+                padding: 1rem;
+            }
         }
 
         /* First Viewer Alert - Full Screen Celebration */
@@ -379,15 +643,76 @@
         }
 
 
-        /* Enhanced AI Prompt Area with ABT Coach */
+        /* Enhanced AI Prompt Area with ABT Coach - Streamer Focus */
         .ai-prompt-area-enhanced {
-            background: linear-gradient(135deg, rgba(145, 70, 255, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
-            border: 2px solid var(--twitch-purple);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.15) 0%, rgba(0, 0, 0, 0.4) 100%);
+            border: 3px solid var(--twitch-purple);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(145, 70, 255, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+
+        .ai-prompt-area-enhanced:hover {
+            transform: scale(1.03);
+            box-shadow: 
+                0 12px 40px rgba(145, 70, 255, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .ai-prompt-content {
+            text-align: center;
+        }
+
+        .ai-prompt-message {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .ai-prompt-meta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .ai-prompt-priority {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ai-prompt-category {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: rgba(145, 70, 255, 0.9);
+            background: rgba(145, 70, 255, 0.15);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            border: 1px solid rgba(145, 70, 255, 0.3);
+            display: inline-block;
+            text-transform: capitalize;
+            letter-spacing: 0.3px;
         }
 
         /* ABT Coach Timer */
@@ -419,7 +744,12 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            animation: timerPulse 1s ease-in-out infinite;
+            animation: timerPulse 1s ease-in-out infinite, rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .abt-timer-inner {
@@ -1668,7 +1998,14 @@
     <!-- Main Dashboard Container - Single Layout with Phase Control -->
     <div id="dashboard-container" class="phase-zero_viewers">
         
-        <!-- AI Prompt Area with ABT Coach - Single Instance (Above Gauge) -->
+        <!-- Live Viewers Count Metric -->
+        <div class="live-viewers-metric" id="liveViewersMetric">
+            <div class="viewers-icon">👥</div>
+            <div class="viewers-count" id="viewersCount">0</div>
+            <div class="viewers-label">Live Viewers</div>
+        </div>
+        
+        <!-- AI Prompt Area with ABT Coach - Right Below Live Viewers -->
         <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaEnhanced">
             <!-- ABT Coach Timer -->
             <div class="abt-timer-container" id="abtTimerContainer" style="display: none;">
@@ -1685,10 +2022,13 @@
             </div>
             <div class="ai-prompt-content">
                 <div class="ai-prompt-message" id="aiPromptMessage">Keep talking! Your audience will find you.</div>
+                <div class="ai-prompt-meta">
                 <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
+                    <div class="ai-prompt-category" id="aiPromptCategory" style="display: none;"></div>
             </div>
         </div>
-
+                </div>
+                
         <!-- Clean Chat Score Gauge -->
         <div class="chat-score-gauge" id="chatScoreGauge">
             <h3 class="gauge-title">Chat Score</h3>
@@ -1705,7 +2045,7 @@
                 <div class="gauge-level" data-level="3">🔥 High</div>
                 <div class="gauge-level" data-level="4">🚀 Fire</div>
             </div>
-        </div>
+            </div>
             
         <!-- First Viewer Catcher Alert -->
         <div class="first-viewer-alert" id="firstViewerAlert">
@@ -1727,8 +2067,8 @@
             <div class="confetti"></div>
             <div class="confetti"></div>
             <div class="confetti"></div>
-        </div>
-
+            </div>
+            
         <!-- Persistence Engine - Milestones Section -->
         <div class="milestones-section" id="milestonesSection" style="display: none;">
             <div class="milestones-title">🏆 Your Journey Milestones</div>
@@ -1997,55 +2337,7 @@
             </div>
         </div>
 
-        <!-- Enhanced Live Chat Score Gauge for Zero to One -->
-        <div class="chat-score-gauge chat-score-card">
-            <div class="metric-title">💬 Live Chat Score</div>
-            <div class="gauge-container">
-                <div class="gauge-circle chat-score-gauge-enhanced">
-                    <div class="gauge-inner">
-                        <div class="gauge-score" id="chatScore">0</div>
-                    </div>
-                    <div class="gauge-needle" id="gaugeNeedle"></div>
-                    <div class="gauge-center"></div>
-                </div>
-            </div>
-            <div class="gauge-levels">
-                <div class="gauge-level" id="level1">
-                    <div class="gauge-level-dot"></div>
-                    <span>😴 Quiet</span>
-                </div>
-                <div class="gauge-level" id="level2">
-                    <div class="gauge-level-dot"></div>
-                    <span>📊 Low</span>
-                </div>
-                <div class="gauge-level" id="level3">
-                    <div class="gauge-level-dot"></div>
-                    <span>📈 Moderate</span>
-                </div>
-                <div class="gauge-level" id="level4">
-                    <div class="gauge-level-dot"></div>
-                    <span>🔥 High</span>
-                </div>
-                <div class="gauge-level" id="level5">
-                    <div class="gauge-level-dot"></div>
-                    <span>🚀 Fire</span>
-                </div>
-            </div>
-        </div>
 
-        <!-- Enhanced AI Prompt Area for Zero to One -->
-        <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaEnhanced">
-            <div class="ai-prompt-header">
-                <h3>🤖 AI Co-Pilot</h3>
-                <div class="ai-prompt-phase" id="aiPromptPhase">Zero Viewers</div>
-            </div>
-            <div class="ai-prompt-content" id="aiPromptContent">
-                <div class="ai-prompt-message" id="aiPromptMessage">
-                    Keep talking! Even with no visible chat, you never know who might be lurking. Share your thoughts, ask questions, or talk about what you're passionate about!
-                </div>
-                <div class="ai-prompt-priority" id="aiPromptPriority">high</div>
-            </div>
-        </div>
 
         <!-- Stream Info -->
         <div class="metric-card">
@@ -2256,41 +2548,6 @@
             </div>
         </div>
 
-        <!-- Live Chat Score Gauge (Full Version) -->
-        <div class="chat-score-gauge">
-            <div class="metric-title">💬 Live Chat Score</div>
-            <div class="gauge-container">
-                <div class="gauge-circle">
-                    <div class="gauge-inner">
-                        <div class="gauge-score" id="chatScoreStrategic">0</div>
-                    </div>
-                    <div class="gauge-needle" id="gaugeNeedleStrategic"></div>
-                    <div class="gauge-center"></div>
-                </div>
-            </div>
-            <div class="gauge-levels">
-                <div class="gauge-level" id="level1">
-                    <div class="gauge-level-dot"></div>
-                    <span>😴 Quiet</span>
-                </div>
-                <div class="gauge-level" id="level2">
-                    <div class="gauge-level-dot"></div>
-                    <span>📊 Low</span>
-                </div>
-                <div class="gauge-level" id="level3">
-                    <div class="gauge-level-dot"></div>
-                    <span>📈 Moderate</span>
-                </div>
-                <div class="gauge-level" id="level4">
-                    <div class="gauge-level-dot"></div>
-                    <span>🔥 High</span>
-                </div>
-                <div class="gauge-level" id="level5">
-                    <div class="gauge-level-dot"></div>
-                    <span>🚀 Fire</span>
-                </div>
-            </div>
-        </div>
 
         <!-- Stream Info -->
         <div class="metric-card">
@@ -2429,24 +2686,78 @@
         let milestonesReached = 0;
         let lastMessageTime = 0;
 
-        // ABT Coach - Prompt Templates
-        const abtPrompts = [
-            "Share a story about your first time playing this game!",
-            "What's your favorite part about streaming so far?",
-            "Tell us about your setup - what gear are you using?",
-            "What's the funniest thing that happened to you today?",
-            "Describe your dream gaming setup!",
-            "What's your go-to snack while streaming?",
-            "Share a tip for new streamers!",
-            "What's the most challenging game you've ever played?",
-            "Tell us about your favorite streamer and why you like them!",
-            "What's your biggest gaming achievement?",
-            "Describe your ideal viewer community!",
-            "What's the weirdest comment you've ever gotten?",
-            "Share your streaming goals for this month!",
-            "What's your favorite type of content to watch?",
-            "Tell us about your worst gaming fail!"
-        ];
+        // ABT Coach - Enhanced Prompt Templates for Zero Viewers
+        const abtPrompts = {
+            // Game Commentary & Strategy
+            gameCommentary: [
+                "Narrate your thoughts out loud. Explain why you're making this move.",
+                "What's your strategy for this level/battle? Walk us through your thinking.",
+                "This part is tricky - let me explain what I'm trying to do here.",
+                "I love how the developers designed this section. Notice the details...",
+                "If I were a new player, here's what I'd want to know about this game.",
+                "This reminds me of [other game] - let me explain the similarities.",
+                "I'm going to try a different approach this time. Watch this strategy...",
+                "The music in this area is perfect for the atmosphere. Listen to that...",
+                "I wonder what the developers were thinking when they created this mechanic.",
+                "This is one of my favorite parts of the game because..."
+            ],
+            
+            // Personal Stories & Experiences
+            personalStories: [
+                "What's the best movie you've seen recently? Tell the story.",
+                "Share a funny story from your childhood that relates to gaming.",
+                "What's the most embarrassing thing that happened to you while streaming?",
+                "Tell us about your first gaming console and favorite childhood game.",
+                "What's the weirdest dream you've had about this game?",
+                "Share a story about meeting another streamer or gamer in real life.",
+                "What's your most epic gaming fail that you can laugh about now?",
+                "Tell us about a time when gaming helped you through a tough situation.",
+                "What's the funniest thing your pet has done while you were streaming?",
+                "Share a story about your first time playing this game - what surprised you?"
+            ],
+            
+            // Conversation Starters
+            conversationStarters: [
+                "If you could have dinner with any game developer, who would it be and why?",
+                "What's your guilty pleasure game that you don't usually admit to playing?",
+                "If you could create your own game, what would it be about?",
+                "What's the most overrated game that everyone loves but you don't?",
+                "If you could live in any video game world, which one would you choose?",
+                "What's your favorite gaming memory from the past year?",
+                "If you could have any superpower from a video game, what would it be?",
+                "What's the most underrated game that more people should know about?",
+                "If you could ask the developers of this game one question, what would it be?",
+                "What's your dream collaboration between two different game franchises?"
+            ],
+            
+            // Streaming & Community
+            streamingTips: [
+                "New streamers often ask me about [topic] - here's my advice...",
+                "The biggest mistake I made when I started streaming was...",
+                "If I could go back and tell my past self one streaming tip, it would be...",
+                "The most important thing I've learned about building a community is...",
+                "Here's what I wish I knew about streaming equipment when I started...",
+                "The best piece of advice another streamer ever gave me was...",
+                "If you're thinking about starting to stream, here's what you should know...",
+                "The most challenging part of streaming for me was learning to...",
+                "Here's how I stay motivated when the chat is quiet...",
+                "The thing that surprised me most about streaming was..."
+            ],
+            
+            // Interactive & Engaging
+            interactive: [
+                "I'm curious - what's everyone's favorite part of this game so far?",
+                "If you could change one thing about this game, what would it be?",
+                "What's the most creative thing you've seen someone do in this game?",
+                "I'm going to try something new - what do you think will happen?",
+                "This is a great spot to take a screenshot. The lighting is perfect!",
+                "I wonder what secrets are hidden in this area. Let me explore...",
+                "If I were speedrunning this, here's the route I'd take...",
+                "This achievement is tricky - let me show you the strategy...",
+                "I'm going to play this section differently than usual. Watch this...",
+                "What's the most satisfying sound effect in this game? I love this one..."
+            ]
+        };
 
         // Milestones Configuration
         const milestones = [
@@ -2648,41 +2959,17 @@
             }
         }
         
-        function showFirstViewerAlert() {
-            const alert = document.getElementById('firstViewerAlert');
-            const message = document.getElementById('firstViewerMessage');
-            
-            if (alert && message) {
-                message.innerHTML = `
-                    🎉 Someone just joined your stream!<br>
-                    This is the beginning of your community!<br>
-                    <small>Phase: ${currentPhase}</small>
-                `;
-                alert.classList.add('show');
-                firstViewerAlertShown = true;
-                
-                // Auto-hide after 5 seconds
-                setTimeout(() => {
-                    hideFirstViewerAlert();
-                }, 5000);
-            }
-        }
         
-        function hideFirstViewerAlert() {
-            const alert = document.getElementById('firstViewerAlert');
-            if (alert) {
-                alert.classList.remove('show');
-            }
-        }
         
         function closeFirstViewerAlert() {
             hideFirstViewerAlert();
         }
         
-        function updateAIPromptArea(phase) {
+        function updateAIPromptArea(phase, customData = null) {
             const phaseElement = document.getElementById('aiPromptPhase');
             const messageElement = document.getElementById('aiPromptMessage');
             const priorityElement = document.getElementById('aiPromptPriority');
+            const categoryElement = document.getElementById('aiPromptCategory');
             const areaElement = document.getElementById('aiPromptAreaEnhanced');
             
             if (!phaseElement || !messageElement || !priorityElement || !areaElement) return;
@@ -2690,9 +2977,17 @@
             // Update phase indicator
             phaseElement.textContent = phase.replace('_', ' ').toUpperCase();
             
-            // Update message and priority based on phase
-            let message, priority, className;
+            // Update message and priority based on phase or custom data
+            let message, priority, className, category;
             
+            if (customData) {
+                // Use custom data (from ABT Coach)
+                message = customData.message;
+                priority = customData.priority || 'high';
+                category = customData.category || null;
+                className = priority === 'high' ? 'high-priority' : priority === 'urgent' ? 'urgent' : '';
+            } else {
+                // Use default phase-based messages
             switch (phase) {
                 case 'zero_viewers':
                     message = "Keep talking! Even with no visible chat, you never know who might be lurking. Share your thoughts, ask questions, or talk about what you're passionate about!";
@@ -2713,10 +3008,21 @@
                     message = "AI Co-Pilot is ready to help!";
                     priority = "medium";
                     className = "";
+                }
             }
             
             messageElement.textContent = message;
             priorityElement.textContent = priority;
+            
+            // Update category if provided
+            if (categoryElement) {
+                if (category) {
+                    categoryElement.textContent = category.replace(/([A-Z])/g, ' $1').trim();
+                    categoryElement.style.display = 'inline-block';
+                } else {
+                    categoryElement.style.display = 'none';
+                }
+            }
             
             // Update styling
             areaElement.className = `ai-prompt-area-enhanced ai-prompt-card ${className}`;
@@ -3074,6 +3380,9 @@
             // Update enhanced AI prompt area with latest prompt
             updateEnhancedAIPrompt(data);
 
+            // Update Live Viewers count
+            updateLiveViewers(data.currentViewerCount || 0);
+
             // Update chat score gauge - use backend calculated score
             const newChatScore = data.chatScore || calculateChatScore(data);
             updateChatScoreGauge(newChatScore);
@@ -3355,6 +3664,19 @@
             return Math.max(0, Math.min(100, Math.round(score)));
         }
 
+        // Update Live Viewers count
+        function updateLiveViewers(count) {
+            const viewersElement = document.getElementById('viewersCount');
+            if (viewersElement) {
+                viewersElement.textContent = count;
+                viewersElement.style.transition = 'all 0.3s ease';
+                viewersElement.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    viewersElement.style.transform = 'scale(1)';
+                }, 300);
+            }
+        }
+
         // Update chat score gauge
         function updateChatScoreGauge(score) {
             console.log('🎯 Updating clean chat score gauge with score:', score);
@@ -3366,10 +3688,10 @@
             // Update score with animation
             if (score !== lastChatScore) {
                 if (scoreElement) {
-                    scoreElement.textContent = score;
+                scoreElement.textContent = score;
                     scoreElement.style.transition = 'all 0.3s ease';
                     scoreElement.style.transform = 'scale(1.1)';
-                    setTimeout(() => {
+                setTimeout(() => {
                         scoreElement.style.transform = 'scale(1)';
                     }, 300);
                 }
@@ -3504,7 +3826,7 @@
 
         // ===== ZERO TO ONE FEATURES =====
 
-        // ABT Coach Functions
+        // ABT Coach Functions - Enhanced for Zero Viewers
         function startABTCoach() {
             console.log('🎯 Starting ABT Coach for zero viewers');
             const timerContainer = document.getElementById('abtTimerContainer');
@@ -3525,15 +3847,25 @@
                 timerDisplay.textContent = abtTimer;
             }
             
+            // Enhanced ABT logic with zero viewer detection
             abtInterval = setInterval(() => {
+                // Check if we still have zero viewers
+                const currentViewers = parseInt(document.getElementById('viewersCount')?.textContent || '0');
+                const timeSinceLastMessage = Date.now() - lastMessageTime;
+                
+                // Only trigger if: zero viewers AND (no messages in 30+ seconds OR timer reached 0)
+                if (currentViewers === 0 && (timeSinceLastMessage > 30000 || abtTimer <= 0)) {
+                    triggerABTPrompt();
+                    abtTimer = 30; // Reset timer
+                } else if (currentViewers > 0) {
+                    // If viewers arrive, pause the timer but don't stop completely
+                    console.log('👥 Viewers detected, pausing ABT timer');
+                    return;
+                }
+                
                 abtTimer--;
                 if (timerDisplay) {
                     timerDisplay.textContent = abtTimer;
-                }
-                
-                if (abtTimer <= 0) {
-                    triggerABTPrompt();
-                    abtTimer = 30; // Reset timer
                 }
             }, 1000);
         }
@@ -3570,12 +3902,18 @@
         function triggerABTPrompt() {
             if (abtMuted) return;
             
-            const randomPrompt = abtPrompts[Math.floor(Math.random() * abtPrompts.length)];
-            console.log('💬 ABT Prompt triggered:', randomPrompt);
+            // Get a random prompt from a random category
+            const categories = Object.keys(abtPrompts);
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            const categoryPrompts = abtPrompts[randomCategory];
+            const randomPrompt = categoryPrompts[Math.floor(Math.random() * categoryPrompts.length)];
+            
+            console.log('💬 ABT Prompt triggered:', randomPrompt, 'Category:', randomCategory);
             
             updateAIPromptArea('zero_viewers', {
                 message: randomPrompt,
-                priority: 'high'
+                priority: 'high',
+                category: randomCategory
             });
         }
 
@@ -4030,6 +4368,18 @@
         window.testSVGGauge = testSVGGauge;
         window.testModernGauge = testModernGauge;
         window.forceGaugeVisibility = forceGaugeVisibility;
+        
+        // Test first viewer alert
+        window.testFirstViewerAlert = function() {
+            console.log('🧪 Testing first viewer alert...');
+            showFirstViewerAlert('TestViewer');
+        };
+        
+        // Test live viewers update
+        window.testLiveViewers = function(count = 5) {
+            console.log('🧪 Testing live viewers update...');
+            updateLiveViewers(count);
+        };
         
         // Test gauge visibility function
         function testGaugeVisibility() {
