@@ -3298,6 +3298,13 @@
                 foodFactDescription: 'This will surprise you! Ask: "Did you know this about food?!"',
                 amazingFact: 'AMAZING FACT',
                 amazingFactDescription: 'This is incredible! Ask your viewers: "Did you know this?!"',
+                
+                // Fact Content Translations
+                ruleOfThumb: 'rule of thumb',
+                beaten: 'beaten',
+                wife: 'wife',
+                widerThanThumb: 'wider than your thumb',
+                oldEnglishLaw: 'old English law',
                 uniqueViewers: 'Unique Viewers',
                 messagesSent: 'Messages Sent',
                 liveViewerCount: 'Live viewer count',
@@ -3517,6 +3524,13 @@
                 foodFactDescription: 'Cela va vous surprendre ! Demandez : "Saviez-vous cela sur la nourriture ?!"',
                 amazingFact: 'FAIT INCROYABLE',
                 amazingFactDescription: 'C\'est incroyable ! Demandez à vos spectateurs : "Saviez-vous cela ?!"',
+                
+                // Fact Content Translations
+                ruleOfThumb: 'règle du pouce',
+                beaten: 'battu',
+                wife: 'épouse',
+                widerThanThumb: 'plus large que votre pouce',
+                oldEnglishLaw: 'ancienne loi anglaise',
                 uniqueViewers: 'Spectateurs Uniques',
                 messagesSent: 'Messages Envoyés',
                 liveViewerCount: 'Nombre de spectateurs en direct',
@@ -3736,6 +3750,13 @@
                 foodFactDescription: '¡Esto te sorprenderá! Pregunta: "¿Sabías esto sobre la comida?!"',
                 amazingFact: 'HECHO INCREÍBLE',
                 amazingFactDescription: '¡Esto es increíble! Pregunta a tus espectadores: "¿Sabías esto?!"',
+                
+                // Fact Content Translations
+                ruleOfThumb: 'regla del pulgar',
+                beaten: 'golpeado',
+                wife: 'esposa',
+                widerThanThumb: 'más ancho que tu pulgar',
+                oldEnglishLaw: 'antigua ley inglesa',
                 uniqueViewers: 'Espectadores Únicos',
                 messagesSent: 'Mensajes Enviados',
                 liveViewerCount: 'Número de espectadores en vivo',
@@ -3955,6 +3976,13 @@
                 foodFactDescription: 'Das wird dich überraschen! Frag: "Wusstest du das über Essen?!"',
                 amazingFact: 'ERSTAUNLICHER FAKT',
                 amazingFactDescription: 'Das ist unglaublich! Frag deine Zuschauer: "Wusstest du das?!"',
+                
+                // Fact Content Translations
+                ruleOfThumb: 'Faustregel',
+                beaten: 'geschlagen',
+                wife: 'Ehefrau',
+                widerThanThumb: 'breiter als dein Daumen',
+                oldEnglishLaw: 'altes englisches Gesetz',
                 uniqueViewers: 'Eindeutige Zuschauer',
                 messagesSent: 'Gesendete Nachrichten',
                 liveViewerCount: 'Live-Zuschauerzahl',
@@ -5262,19 +5290,60 @@
             // Analyze fact type and create engaging prompts
             const factLower = fact.toLowerCase();
             
+            // Translate the fact content if not in English
+            const translatedFact = translateFactContent(fact);
+            
             if (factLower.includes('brain') || factLower.includes('mind')) {
-                return `🧠 ${t.mindBlowingFact || 'MIND-BLOWING FACT'}: "${fact}" - ${t.mindBlowingDescription || 'Ask your viewers: "Did you know this about the human brain?!"'}`;
+                return `🧠 ${t.mindBlowingFact || 'MIND-BLOWING FACT'}: "${translatedFact}" - ${t.mindBlowingDescription || 'Ask your viewers: "Did you know this about the human brain?!"'}`;
             } else if (factLower.includes('animal') || factLower.includes('creature')) {
-                return `🐾 ${t.wildFact || 'WILD FACT'}: "${fact}" - ${t.wildFactDescription || 'Perfect conversation starter! Ask: "Who knew this about animals?!"'}`;
+                return `🐾 ${t.wildFact || 'WILD FACT'}: "${translatedFact}" - ${t.wildFactDescription || 'Perfect conversation starter! Ask: "Who knew this about animals?!"'}`;
             } else if (factLower.includes('space') || factLower.includes('universe')) {
-                return `🌌 ${t.cosmicFact || 'COSMIC FACT'}: "${fact}" - ${t.cosmicFactDescription || 'This is out of this world! Ask your viewers: "Did you know this about space?!"'}`;
+                return `🌌 ${t.cosmicFact || 'COSMIC FACT'}: "${translatedFact}" - ${t.cosmicFactDescription || 'This is out of this world! Ask your viewers: "Did you know this about space?!"'}`;
             } else if (factLower.includes('history') || factLower.includes('ancient')) {
-                return `🏛️ ${t.historicalFact || 'HISTORICAL FACT'}: "${fact}" - ${t.historicalFactDescription || 'Blast from the past! Ask: "Can you believe this happened in history?!"'}`;
+                return `🏛️ ${t.historicalFact || 'HISTORICAL FACT'}: "${translatedFact}" - ${t.historicalFactDescription || 'Blast from the past! Ask: "Can you believe this happened in history?!"'}`;
             } else if (factLower.includes('food') || factLower.includes('eat')) {
-                return `🍕 ${t.foodFact || 'FOOD FACT'}: "${fact}" - ${t.foodFactDescription || 'This will surprise you! Ask: "Did you know this about food?!"'}`;
+                return `🍕 ${t.foodFact || 'FOOD FACT'}: "${translatedFact}" - ${t.foodFactDescription || 'This will surprise you! Ask: "Did you know this about food?!"'}`;
             } else {
-                return `🤯 ${t.amazingFact || 'AMAZING FACT'}: "${fact}" - ${t.amazingFactDescription || 'This is incredible! Ask your viewers: "Did you know this?!"'}`;
+                return `🤯 ${t.amazingFact || 'AMAZING FACT'}: "${translatedFact}" - ${t.amazingFactDescription || 'This is incredible! Ask your viewers: "Did you know this?!"'}`;
             }
+        }
+
+        // Translate fact content based on current language
+        function translateFactContent(fact) {
+            const t = translations[currentLanguage];
+            
+            // If already in English or no translation available, return as is
+            if (currentLanguage === 'en' || !t.factTranslations) {
+                return fact;
+            }
+            
+            // Try to find a translation for this specific fact
+            const factKey = fact.toLowerCase().replace(/[^a-z0-9\s]/g, '').substring(0, 50);
+            if (t.factTranslations[factKey]) {
+                return t.factTranslations[factKey];
+            }
+            
+            // If no specific translation, try to translate common patterns
+            let translatedFact = fact;
+            
+            // Common fact patterns that can be translated
+            if (fact.includes('rule of thumb')) {
+                translatedFact = fact.replace('rule of thumb', t.ruleOfThumb || 'règle du pouce');
+            }
+            if (fact.includes('beaten')) {
+                translatedFact = translatedFact.replace('beaten', t.beaten || 'battu');
+            }
+            if (fact.includes('wife')) {
+                translatedFact = translatedFact.replace('wife', t.wife || 'épouse');
+            }
+            if (fact.includes('wider than your thumb')) {
+                translatedFact = translatedFact.replace('wider than your thumb', t.widerThanThumb || 'plus large que votre pouce');
+            }
+            if (fact.includes('old English law')) {
+                translatedFact = translatedFact.replace('old English law', t.oldEnglishLaw || 'ancienne loi anglaise');
+            }
+            
+            return translatedFact;
         }
 
         function getFallbackPrompt() {
