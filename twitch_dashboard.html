@@ -845,11 +845,26 @@
         }
 
         .first-viewer-title {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 900;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
             animation: titleBounce 1s ease-in-out infinite alternate;
+        }
+
+        .first-viewer-subtitle {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ff6b6b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: urgentPulse 1.5s infinite;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
         }
 
         @keyframes titleBounce {
@@ -899,6 +914,19 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
+        .auto-hide-countdown {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 1rem;
+            text-align: center;
+            font-style: italic;
+        }
+
+        #countdownNumber {
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
         /* Confetti Animation */
         .confetti {
             position: absolute;
@@ -927,6 +955,123 @@
                 transform: translateY(100vh) rotate(720deg);
                 opacity: 0;
             }
+        }
+
+        /* PERSISTENCE ENGINE - Milestone Notifications */
+        .milestone-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 10002;
+            max-width: 400px;
+            transform: translateX(100%);
+            transition: transform 0.5s ease-in-out;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .milestone-notification.show {
+            transform: translateX(0);
+        }
+
+        .milestone-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .milestone-icon {
+            font-size: 2.5rem;
+            animation: bounce 1s infinite;
+        }
+
+        .milestone-message {
+            flex: 1;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .milestone-close {
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .milestone-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Stream Summary Styling */
+        .stream-summary {
+            background: linear-gradient(135deg, rgba(15, 15, 25, 0.95), rgba(25, 25, 35, 0.95));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(78, 205, 196, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .stream-summary h3 {
+            color: #4ecdc4;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .encouragement-message {
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+            border: 1px solid rgba(78, 205, 196, 0.3);
         }
 
         /* Persistence Engine - Milestones */
@@ -2002,7 +2147,7 @@
         <div class="live-viewers-metric" id="liveViewersMetric">
             <div class="viewers-icon">👥</div>
             <div class="viewers-count" id="viewersCount">0</div>
-            <div class="viewers-label">Live Viewers</div>
+            <div class="viewers-label" data-translate="liveViewers">Live Viewers</div>
         </div>
         
         <!-- AI Prompt Area with ABT Coach - Right Below Live Viewers -->
@@ -2017,8 +2162,8 @@
             </div>
             
             <div class="ai-prompt-header">
-                <div class="ai-prompt-title">🤖 Your AI Co-Pilot</div>
-                <div class="ai-prompt-phase" id="aiPromptPhase">Zero Viewers</div>
+                <div class="ai-prompt-title" data-translate="aiCoPilot">🤖 Your AI Co-Pilot</div>
+                <div class="ai-prompt-phase" id="aiPromptPhase" data-translate="zeroViewers">Zero Viewers</div>
             </div>
             <div class="ai-prompt-content">
                 <div class="ai-prompt-message" id="aiPromptMessage">Keep talking! Your audience will find you.</div>
@@ -2031,7 +2176,7 @@
                 
         <!-- Clean Chat Score Gauge -->
         <div class="chat-score-gauge" id="chatScoreGauge">
-            <h3 class="gauge-title">Chat Score</h3>
+            <h3 class="gauge-title" data-translate="chatScore">Chat Score</h3>
             <div class="gauge-container">
                 <div class="gauge-circle">
                     <div class="gauge-score" id="gaugeScore">0</div>
@@ -2039,26 +2184,28 @@
                 </div>
             </div>
             <div class="gauge-levels">
-                <div class="gauge-level" data-level="0">😴 Quiet</div>
-                <div class="gauge-level" data-level="1">📊 Low</div>
-                <div class="gauge-level" data-level="2">📈 Moderate</div>
-                <div class="gauge-level" data-level="3">🔥 High</div>
-                <div class="gauge-level" data-level="4">🚀 Fire</div>
+                <div class="gauge-level" data-level="0" data-translate="quiet" data-emoji="😴">😴 Quiet</div>
+                <div class="gauge-level" data-level="1" data-translate="low" data-emoji="📊">📊 Low</div>
+                <div class="gauge-level" data-level="2" data-translate="moderate" data-emoji="📈">📈 Moderate</div>
+                <div class="gauge-level" data-level="3" data-translate="high" data-emoji="🔥">🔥 High</div>
+                <div class="gauge-level" data-level="4" data-translate="fire" data-emoji="🚀">🚀 Fire</div>
             </div>
             </div>
             
-        <!-- First Viewer Catcher Alert -->
+        <!-- FLAGSHIP FEATURE: First Viewer Catcher Alert -->
         <div class="first-viewer-alert" id="firstViewerAlert">
             <div class="first-viewer-content">
-                <div class="first-viewer-title">🎉 FIRST VIEWER!</div>
-                <div class="first-viewer-message" id="firstViewerMessage">Someone just joined your stream!</div>
-                <div class="first-viewer-greeting" id="firstViewerGreeting">Welcome to the stream!</div>
+                <div class="first-viewer-title" data-translate="firstViewerTitle">🎉 FIRST VIEWER!</div>
+                <div class="first-viewer-subtitle">FLAGSHIP FEATURE - CONVERT ZERO TO ONE!</div>
+                <div class="first-viewer-message" id="firstViewerMessage" data-translate="firstViewerMessage">Someone just joined your stream!</div>
+                <div class="first-viewer-greeting" id="firstViewerGreeting" data-translate="welcomeToStream">Welcome to the stream!</div>
                 <div class="first-viewer-actions">
-                    <button class="first-viewer-btn" id="copyGreetingBtn">📋 Copy Greeting</button>
-                    <button class="first-viewer-btn" id="continueBtn">Continue</button>
+                    <button class="first-viewer-btn" id="closeAlertBtn" data-translate="close">✕ Close</button>
+                    <div class="auto-hide-countdown" id="autoHideCountdown" style="display: none;" data-translate="autoClosingIn">Auto-closing in <span id="countdownNumber">8</span>s</div>
                 </div>
             </div>
-            <!-- Confetti -->
+            <!-- Enhanced Confetti -->
+            <div class="confetti"></div>
             <div class="confetti"></div>
             <div class="confetti"></div>
             <div class="confetti"></div>
@@ -2084,11 +2231,11 @@
                     </div>
                     <div class="summary-stat">
                         <div class="summary-stat-value" id="uniqueViewers">0</div>
-                        <div class="summary-stat-label">Unique Viewers</div>
+                        <div class="summary-stat-label" data-translate="uniqueViewers">Unique Viewers</div>
                     </div>
                     <div class="summary-stat">
                         <div class="summary-stat-value" id="messagesSent">0</div>
-                        <div class="summary-stat-label">Messages Sent</div>
+                        <div class="summary-stat-label" data-translate="messagesSent">Messages Sent</div>
                     </div>
                     <div class="summary-stat">
                         <div class="summary-stat-value" id="milestonesReached">0</div>
@@ -2105,12 +2252,12 @@
                 <div class="metric-card">
                     <div class="metric-title">👥 Current Viewers</div>
                     <div class="metric-value" id="currentViewers">0</div>
-                    <div class="metric-subtitle">Live viewer count</div>
+                    <div class="metric-subtitle" data-translate="liveViewerCount">Live viewer count</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-title">📈 Peak Viewers</div>
                     <div class="metric-value" id="peakViewers">0</div>
-                    <div class="metric-subtitle">Highest viewer count</div>
+                    <div class="metric-subtitle" data-translate="highestViewerCount">Highest viewer count</div>
                 </div>
                 <div class="metric-card">
                     <div class="metric-title">💬 Messages/Min</div>
@@ -2471,10 +2618,10 @@
     <!-- Tier 3: Strategic View Panel -->
     <div class="strategic-view-panel" id="strategicPanel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div class="metric-title" style="font-size: 1.5rem; margin: 0;">
+            <div class="metric-title" style="font-size: 1.5rem; margin: 0;" data-translate="strategicAnalytics">
                 📊 Strategic Analytics Dashboard
             </div>
-            <button onclick="toggleStrategicView()" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+            <button onclick="toggleStrategicView()" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;" data-translate="close">
                 ✕ Close
             </button>
         </div>
@@ -2653,7 +2800,7 @@
     </div>
 
     <!-- Strategic View Toggle Button -->
-    <button class="strategic-toggle" id="strategicToggle" onclick="toggleStrategicView()">
+    <button class="strategic-toggle" id="strategicToggle" onclick="toggleStrategicView()" data-translate="strategicView">
         📊 Strategic View
     </button>
 
@@ -2682,6 +2829,72 @@
         let abtMuted = false;
         let uniqueViewers = new Set();
         let streamTime = 0;
+
+        // PERSISTENCE ENGINE - Emotional Support & Validation
+        let persistenceEngine = {
+            // Milestone tracking
+            milestones: {
+                streamTime: {
+                    30: false,    // 30 minutes
+                    60: false,    // 1 hour
+                    120: false,   // 2 hours
+                    180: false    // 3 hours
+                },
+                viewers: {
+                    1: false,     // First viewer
+                    5: false,     // 5 viewers
+                    10: false,    // 10 viewers
+                    25: false     // 25 viewers
+                },
+                engagement: {
+                    firstMessage: false,    // First chat message
+                    firstFollow: false,     // First follow
+                    firstSub: false,       // First subscription
+                    firstRaid: false       // First raid
+                }
+            },
+            
+            // Session data for encouragement
+            sessionData: {
+                startTime: null,
+                totalStreamTime: 0,
+                peakViewers: 0,
+                uniqueViewersToday: 0,
+                totalMessages: 0,
+                averageWatchTime: 0,
+                engagementRate: 0,
+                milestonesReached: 0
+            },
+            
+            // Encouragement messages
+            encouragementMessages: {
+                timeBased: [
+                    "You've been streaming for {time} straight—great job! Consistency is key!",
+                    "Amazing! {time} of continuous streaming shows real dedication!",
+                    "You're building a habit! {time} of streaming is impressive!",
+                    "Keep going! {time} shows you're serious about this!"
+                ],
+                viewerBased: [
+                    "You hit {count} total unique viewers today! That's real growth!",
+                    "Fantastic! {count} unique viewers means people are finding you!",
+                    "Great progress! {count} unique viewers shows your content resonates!",
+                    "You're building a community! {count} unique viewers is awesome!"
+                ],
+                engagementBased: [
+                    "Your average watch time was {time} minutes—that's excellent engagement!",
+                    "Amazing! {time} minutes average watch time shows people love your content!",
+                    "Outstanding! {time} minutes means viewers are really engaged!",
+                    "Fantastic engagement! {time} minutes shows you're doing something right!"
+                ],
+                resilience: [
+                    "Every streamer started with zero viewers. You're on the right path!",
+                    "Focus on the process, not just the numbers. You're improving!",
+                    "Consistency beats perfection. Keep showing up!",
+                    "Your dedication will pay off. Every expert was once a beginner!",
+                    "Small progress is still progress. You're building something great!"
+                ]
+            }
+        };
         let messagesSent = 0;
         let milestonesReached = 0;
         let lastMessageTime = 0;
@@ -2774,6 +2987,140 @@
         // Language translations
         const translations = {
             en: {
+                // Main Dashboard Elements
+                liveViewers: 'Live Viewers',
+                aiCoPilot: 'Your AI Co-Pilot',
+                chatScore: 'Chat Score',
+                zeroViewers: 'Zero Viewers',
+                firstViewer: 'First Viewer!',
+                buildingAudience: 'Building Audience',
+                
+                // ABT Coach
+                nextPromptIn: 'Next prompt in',
+                mute: 'Mute',
+                unmute: 'Unmute',
+                
+                // Gauge Levels
+                quiet: 'Quiet',
+                low: 'Low',
+                moderate: 'Moderate',
+                high: 'High',
+                fire: 'Fire',
+                
+                // First Viewer Alert
+                firstViewerTitle: 'FIRST VIEWER!',
+                firstViewerMessage: 'Someone just joined your stream!',
+                welcomeToStream: 'Welcome to the stream!',
+                close: 'Close',
+                autoClosingIn: 'Auto-closing in',
+                
+                // AI Prompt Messages
+                keepTalking: 'Keep talking! Your audience will find you.',
+                firstViewerDetected: '🎉 FIRST VIEWER DETECTED! Welcome them warmly and make them feel special. This is the start of your community!',
+                greatViewers: 'Great! You have viewers. Keep the energy up with engaging content, ask questions, and build your community!',
+                aiCoPilotReady: 'AI Co-Pilot is ready to help!',
+                
+                // ABT Coach Prompts
+                abtGameCommentary: [
+                    'Narrate your thoughts out loud. Explain why you\'re making this move.',
+                    'What\'s your strategy for this level/battle? Walk us through your thinking.',
+                    'This part is tricky - let me explain what I\'m trying to do here.',
+                    'I love how the developers designed this section. Notice the details...',
+                    'If I were a new player, here\'s what I\'d want to know about this game.',
+                    'This reminds me of [other game] - let me explain the similarities.',
+                    'I\'m going to try a different approach this time. Watch this strategy...',
+                    'The music in this area is perfect for the atmosphere. Listen to that...',
+                    'I wonder what the developers were thinking when they created this mechanic.',
+                    'This is one of my favorite parts of the game because...'
+                ],
+                abtPersonalStories: [
+                    'What\'s the best movie you\'ve seen recently? Tell the story.',
+                    'Share a funny story from your childhood that relates to gaming.',
+                    'What\'s the most embarrassing thing that happened to you while streaming?',
+                    'Tell us about your first gaming console and favorite childhood game.',
+                    'What\'s the weirdest dream you\'ve had about this game?',
+                    'Share a story about meeting another streamer or gamer in real life.',
+                    'What\'s your most epic gaming fail that you can laugh about now?',
+                    'Tell us about a time when gaming helped you through a tough situation.',
+                    'What\'s the funniest thing your pet has done while you were streaming?',
+                    'Share a story about your first time playing this game - what surprised you?'
+                ],
+                abtConversationStarters: [
+                    'If you could have dinner with any game developer, who would it be and why?',
+                    'What\'s your guilty pleasure game that you don\'t usually admit to playing?',
+                    'If you could create your own game, what would it be about?',
+                    'What\'s the most overrated game that everyone loves but you don\'t?',
+                    'If you could live in any video game world, which one would you choose?',
+                    'What\'s your favorite gaming memory from the past year?',
+                    'If you could have any superpower from a video game, what would it be?',
+                    'What\'s the most underrated game that more people should know about?',
+                    'If you could ask the developers of this game one question, what would it be?',
+                    'What\'s your dream collaboration between two different game franchises?'
+                ],
+                abtStreamingTips: [
+                    'New streamers often ask me about [topic] - here\'s my advice...',
+                    'The biggest mistake I made when I started streaming was...',
+                    'If I could go back and tell my past self one streaming tip, it would be...',
+                    'The most important thing I\'ve learned about building a community is...',
+                    'Here\'s what I wish I knew about streaming equipment when I started...',
+                    'The best piece of advice another streamer ever gave me was...',
+                    'If you\'re thinking about starting to stream, here\'s what you should know...',
+                    'The most challenging part of streaming for me was learning to...',
+                    'Here\'s how I stay motivated when the chat is quiet...',
+                    'The thing that surprised me most about streaming was...'
+                ],
+                abtInteractive: [
+                    'I\'m curious - what\'s everyone\'s favorite part of this game so far?',
+                    'If you could change one thing about this game, what would it be?',
+                    'What\'s the most creative thing you\'ve seen someone do in this game?',
+                    'I\'m going to try something new - what do you think will happen?',
+                    'This is a great spot to take a screenshot. The lighting is perfect!',
+                    'I wonder what secrets are hidden in this area. Let me explore...',
+                    'If I were speedrunning this, here\'s the route I\'d take...',
+                    'This achievement is tricky - let me show you the strategy...',
+                    'I\'m going to play this section differently than usual. Watch this...',
+                    'What\'s the most satisfying sound effect in this game? I love this one...'
+                ],
+                
+                // Milestones
+                first30min: 'First 30 Minutes',
+                firstHour: 'First Hour',
+                firstViewerMilestone: 'First Viewer',
+                first5Viewers: 'First 5 Viewers',
+                firstMessage: 'First Chat Message',
+                
+                // Status
+                starting: 'Starting',
+                offline: 'Offline',
+                online: 'Online',
+                notStreaming: 'Not streaming',
+                streaming: 'Streaming',
+                stable: 'Stable',
+                growing: 'Growing',
+                declining: 'Declining',
+                positive: 'Positive',
+                negative: 'Negative',
+                neutral: 'Neutral',
+                
+                // Strategy Analytics
+                strategicAnalytics: 'Strategic Analytics Dashboard',
+                strategicView: 'Strategic View',
+                healthScore: 'Health Score',
+                engagementRate: 'Engagement Rate',
+                retentionRate: 'Retention Rate',
+                growthRate: 'Growth Rate',
+                viewerGrowth: 'Viewer Growth',
+                contentQuality: 'Content Quality',
+                communityHealth: 'Community Health',
+                streamConsistency: 'Stream Consistency',
+                calculatingRecommendations: 'Calculating recommendations...',
+                uniqueViewers: 'Unique Viewers',
+                messagesSent: 'Messages Sent',
+                liveViewerCount: 'Live viewer count',
+                highestViewerCount: 'Highest viewer count',
+                today: 'Today',
+                
+                // Legacy translations
                 streamStatus: 'Stream Status',
                 currentViewers: 'Current Viewers',
                 peakViewers: 'Peak Viewers',
@@ -2790,19 +3137,143 @@
                 topUsers: 'Top Engaged Users',
                 aiPrompts: 'AI-Generated Prompts',
                 liveChatScore: 'Live Chat Score',
-                chatActivity: 'Chat Activity',
-                offline: 'Offline',
-                online: 'Online',
-                notStreaming: 'Not streaming',
-                streaming: 'Streaming',
-                stable: 'Stable',
-                growing: 'Growing',
-                declining: 'Declining',
-                positive: 'Positive',
-                negative: 'Negative',
-                neutral: 'Neutral'
+                chatActivity: 'Chat Activity'
             },
             fr: {
+                // Main Dashboard Elements
+                liveViewers: 'Spectateurs en Direct',
+                aiCoPilot: 'Votre Co-Pilote IA',
+                chatScore: 'Score du Chat',
+                zeroViewers: 'Zéro Spectateurs',
+                firstViewer: 'Premier Spectateur!',
+                buildingAudience: 'Construire l\'Audience',
+                
+                // ABT Coach
+                nextPromptIn: 'Prochain prompt dans',
+                mute: 'Muet',
+                unmute: 'Activer le son',
+                
+                // Gauge Levels
+                quiet: 'Calme',
+                low: 'Faible',
+                moderate: 'Modéré',
+                high: 'Élevé',
+                fire: 'Feu',
+                
+                // First Viewer Alert
+                firstViewerTitle: 'PREMIER SPECTATEUR!',
+                firstViewerMessage: 'Quelqu\'un vient de rejoindre votre stream!',
+                welcomeToStream: 'Bienvenue sur le stream!',
+                close: 'Fermer',
+                autoClosingIn: 'Fermeture automatique dans',
+                
+                // AI Prompt Messages
+                keepTalking: 'Continuez à parler! Votre audience vous trouvera.',
+                firstViewerDetected: '🎉 PREMIER SPECTATEUR DÉTECTÉ! Accueillez-les chaleureusement et faites-leur sentir qu\'ils sont spéciaux. C\'est le début de votre communauté!',
+                greatViewers: 'Parfait! Vous avez des spectateurs. Gardez l\'énergie avec du contenu engageant, posez des questions et construisez votre communauté!',
+                aiCoPilotReady: 'Le Co-Pilote IA est prêt à aider!',
+                
+                // ABT Coach Prompts
+                abtGameCommentary: [
+                    'Narrer vos pensées à voix haute. Expliquez pourquoi vous faites ce mouvement.',
+                    'Quelle est votre stratégie pour ce niveau/combat? Marchez-nous à travers votre réflexion.',
+                    'Cette partie est délicate - laissez-moi expliquer ce que j\'essaie de faire ici.',
+                    'J\'adore comment les développeurs ont conçu cette section. Remarquez les détails...',
+                    'Si j\'étais un nouveau joueur, voici ce que je voudrais savoir sur ce jeu.',
+                    'Cela me rappelle [autre jeu] - laissez-moi expliquer les similitudes.',
+                    'Je vais essayer une approche différente cette fois. Regardez cette stratégie...',
+                    'La musique dans cette zone est parfaite pour l\'atmosphère. Écoutez ça...',
+                    'Je me demande à quoi pensaient les développeurs quand ils ont créé cette mécanique.',
+                    'C\'est une de mes parties préférées du jeu parce que...'
+                ],
+                abtPersonalStories: [
+                    'Quel est le meilleur film que vous ayez vu récemment? Racontez l\'histoire.',
+                    'Partagez une histoire drôle de votre enfance qui se rapporte au gaming.',
+                    'Quelle est la chose la plus embarrassante qui vous soit arrivée en streaming?',
+                    'Parlez-nous de votre première console de jeu et de votre jeu d\'enfance préféré.',
+                    'Quel est le rêve le plus bizarre que vous ayez eu sur ce jeu?',
+                    'Partagez une histoire sur la rencontre d\'un autre streamer ou gamer dans la vraie vie.',
+                    'Quel est votre échec de jeu le plus épique dont vous puissiez rire maintenant?',
+                    'Parlez-nous d\'une fois où le gaming vous a aidé à traverser une situation difficile.',
+                    'Quelle est la chose la plus drôle que votre animal de compagnie ait faite pendant que vous streamiez?',
+                    'Partagez une histoire sur votre première fois à jouer à ce jeu - qu\'est-ce qui vous a surpris?'
+                ],
+                abtConversationStarters: [
+                    'Si vous pouviez dîner avec n\'importe quel développeur de jeu, qui serait-ce et pourquoi?',
+                    'Quel est votre jeu de plaisir coupable que vous n\'admettez généralement pas jouer?',
+                    'Si vous pouviez créer votre propre jeu, de quoi s\'agirait-il?',
+                    'Quel est le jeu le plus surévalué que tout le monde aime mais pas vous?',
+                    'Si vous pouviez vivre dans n\'importe quel monde de jeu vidéo, lequel choisiriez-vous?',
+                    'Quel est votre souvenir de gaming préféré de l\'année dernière?',
+                    'Si vous pouviez avoir n\'importe quel superpouvoir d\'un jeu vidéo, quel serait-il?',
+                    'Quel est le jeu le plus sous-évalué que plus de gens devraient connaître?',
+                    'Si vous pouviez poser une question aux développeurs de ce jeu, quelle serait-elle?',
+                    'Quelle est votre collaboration de rêve entre deux franchises de jeux différentes?'
+                ],
+                abtStreamingTips: [
+                    'Les nouveaux streamers me demandent souvent à propos de [sujet] - voici mon conseil...',
+                    'La plus grosse erreur que j\'ai faite quand j\'ai commencé à streamer était...',
+                    'Si je pouvais revenir en arrière et dire un conseil de streaming à mon moi du passé, ce serait...',
+                    'La chose la plus importante que j\'ai apprise sur la construction d\'une communauté est...',
+                    'Voici ce que j\'aurais aimé savoir sur l\'équipement de streaming quand j\'ai commencé...',
+                    'Le meilleur conseil qu\'un autre streamer m\'ait jamais donné était...',
+                    'Si vous pensez commencer à streamer, voici ce que vous devriez savoir...',
+                    'La partie la plus difficile du streaming pour moi était d\'apprendre à...',
+                    'Voici comment je reste motivé quand le chat est silencieux...',
+                    'La chose qui m\'a le plus surpris du streaming était...'
+                ],
+                abtInteractive: [
+                    'Je suis curieux - quelle est la partie préférée de tout le monde de ce jeu jusqu\'à présent?',
+                    'Si vous pouviez changer une chose à ce jeu, ce serait quoi?',
+                    'Quelle est la chose la plus créative que vous ayez vue quelqu\'un faire dans ce jeu?',
+                    'Je vais essayer quelque chose de nouveau - que pensez-vous qu\'il va se passer?',
+                    'C\'est un excellent endroit pour prendre une capture d\'écran. L\'éclairage est parfait!',
+                    'Je me demande quels secrets sont cachés dans cette zone. Laissez-moi explorer...',
+                    'Si je faisais du speedrun, voici l\'itinéraire que je prendrais...',
+                    'Ce succès est délicat - laissez-moi vous montrer la stratégie...',
+                    'Je vais jouer cette section différemment que d\'habitude. Regardez ça...',
+                    'Quel est l\'effet sonore le plus satisfaisant de ce jeu? J\'adore celui-ci...'
+                ],
+                
+                // Milestones
+                first30min: 'Premières 30 Minutes',
+                firstHour: 'Première Heure',
+                firstViewerMilestone: 'Premier Spectateur',
+                first5Viewers: 'Premiers 5 Spectateurs',
+                firstMessage: 'Premier Message Chat',
+                
+                // Status
+                starting: 'Démarrage',
+                offline: 'Hors ligne',
+                online: 'En ligne',
+                notStreaming: 'Pas de stream',
+                streaming: 'En stream',
+                stable: 'Stable',
+                growing: 'Croissant',
+                declining: 'Déclinant',
+                positive: 'Positif',
+                negative: 'Négatif',
+                neutral: 'Neutre',
+                
+                // Strategy Analytics
+                strategicAnalytics: 'Tableau de Bord d\'Analyses Stratégiques',
+                strategicView: 'Vue Stratégique',
+                healthScore: 'Score de Santé',
+                engagementRate: 'Taux d\'Engagement',
+                retentionRate: 'Taux de Rétention',
+                growthRate: 'Taux de Croissance',
+                viewerGrowth: 'Croissance des Spectateurs',
+                contentQuality: 'Qualité du Contenu',
+                communityHealth: 'Santé de la Communauté',
+                streamConsistency: 'Cohérence du Stream',
+                calculatingRecommendations: 'Calcul des recommandations...',
+                uniqueViewers: 'Spectateurs Uniques',
+                messagesSent: 'Messages Envoyés',
+                liveViewerCount: 'Nombre de spectateurs en direct',
+                highestViewerCount: 'Nombre le plus élevé de spectateurs',
+                today: 'Aujourd\'hui',
+                
+                // Legacy translations
                 streamStatus: 'Statut du Stream',
                 currentViewers: 'Spectateurs Actuels',
                 peakViewers: 'Pic de Spectateurs',
@@ -2819,19 +3290,143 @@
                 topUsers: 'Utilisateurs les Plus Engagés',
                 aiPrompts: 'Prompts Générés par IA',
                 liveChatScore: 'Score de Chat en Direct',
-                chatActivity: 'Activité du Chat',
-                offline: 'Hors ligne',
-                online: 'En ligne',
-                notStreaming: 'Pas de stream',
-                streaming: 'En stream',
-                stable: 'Stable',
-                growing: 'Croissant',
-                declining: 'Déclinant',
-                positive: 'Positif',
-                negative: 'Négatif',
-                neutral: 'Neutre'
+                chatActivity: 'Activité du Chat'
             },
             es: {
+                // Main Dashboard Elements
+                liveViewers: 'Espectadores en Vivo',
+                aiCoPilot: 'Tu Co-Piloto IA',
+                chatScore: 'Puntuación del Chat',
+                zeroViewers: 'Cero Espectadores',
+                firstViewer: '¡Primer Espectador!',
+                buildingAudience: 'Construyendo Audiencia',
+                
+                // ABT Coach
+                nextPromptIn: 'Siguiente prompt en',
+                mute: 'Silenciar',
+                unmute: 'Activar sonido',
+                
+                // Gauge Levels
+                quiet: 'Tranquilo',
+                low: 'Bajo',
+                moderate: 'Moderado',
+                high: 'Alto',
+                fire: 'Fuego',
+                
+                // First Viewer Alert
+                firstViewerTitle: '¡PRIMER ESPECTADOR!',
+                firstViewerMessage: '¡Alguien acaba de unirse a tu stream!',
+                welcomeToStream: '¡Bienvenido al stream!',
+                close: 'Cerrar',
+                autoClosingIn: 'Cierre automático en',
+                
+                // AI Prompt Messages
+                keepTalking: '¡Sigue hablando! Tu audiencia te encontrará.',
+                firstViewerDetected: '🎉 ¡PRIMER ESPECTADOR DETECTADO! Dales la bienvenida cálidamente y hazlos sentir especiales. ¡Este es el comienzo de tu comunidad!',
+                greatViewers: '¡Genial! Tienes espectadores. Mantén la energía con contenido atractivo, haz preguntas y construye tu comunidad!',
+                aiCoPilotReady: '¡El Co-Piloto IA está listo para ayudar!',
+                
+                // ABT Coach Prompts
+                abtGameCommentary: [
+                    'Narra tus pensamientos en voz alta. Explica por qué estás haciendo este movimiento.',
+                    '¿Cuál es tu estrategia para este nivel/batalla? Guíanos a través de tu pensamiento.',
+                    'Esta parte es complicada - déjame explicar lo que estoy tratando de hacer aquí.',
+                    'Me encanta cómo los desarrolladores diseñaron esta sección. Nota los detalles...',
+                    'Si fuera un jugador nuevo, esto es lo que querría saber sobre este juego.',
+                    'Esto me recuerda a [otro juego] - déjame explicar las similitudes.',
+                    'Voy a probar un enfoque diferente esta vez. Mira esta estrategia...',
+                    'La música en esta área es perfecta para la atmósfera. Escucha eso...',
+                    'Me pregunto en qué pensaban los desarrolladores cuando crearon esta mecánica.',
+                    'Esta es una de mis partes favoritas del juego porque...'
+                ],
+                abtPersonalStories: [
+                    '¿Cuál es la mejor película que has visto recientemente? Cuenta la historia.',
+                    'Comparte una historia divertida de tu infancia que se relacione con los videojuegos.',
+                    '¿Cuál es la cosa más embarazosa que te ha pasado mientras transmitías?',
+                    'Cuéntanos sobre tu primera consola de videojuegos y tu juego favorito de la infancia.',
+                    '¿Cuál es el sueño más extraño que has tenido sobre este juego?',
+                    'Comparte una historia sobre conocer a otro streamer o gamer en la vida real.',
+                    '¿Cuál es tu fallo de gaming más épico del que puedes reírte ahora?',
+                    'Cuéntanos sobre una vez que los videojuegos te ayudaron a superar una situación difícil.',
+                    '¿Cuál es la cosa más divertida que tu mascota ha hecho mientras transmitías?',
+                    'Comparte una historia sobre tu primera vez jugando este juego - ¿qué te sorprendió?'
+                ],
+                abtConversationStarters: [
+                    'Si pudieras cenar con cualquier desarrollador de juegos, ¿quién sería y por qué?',
+                    '¿Cuál es tu juego de placer culpable que no sueles admitir jugar?',
+                    'Si pudieras crear tu propio juego, ¿de qué trataría?',
+                    '¿Cuál es el juego más sobrevalorado que todos aman pero tú no?',
+                    'Si pudieras vivir en cualquier mundo de videojuego, ¿cuál elegirías?',
+                    '¿Cuál es tu memoria de gaming favorita del año pasado?',
+                    'Si pudieras tener cualquier superpoder de un videojuego, ¿cuál sería?',
+                    '¿Cuál es el juego más infravalorado que más gente debería conocer?',
+                    'Si pudieras hacer una pregunta a los desarrolladores de este juego, ¿cuál sería?',
+                    '¿Cuál es tu colaboración de ensueño entre dos franquicias de juegos diferentes?'
+                ],
+                abtStreamingTips: [
+                    'Los nuevos streamers me preguntan a menudo sobre [tema] - aquí está mi consejo...',
+                    'El mayor error que cometí cuando empecé a transmitir fue...',
+                    'Si pudiera volver atrás y decirme un consejo de streaming a mi yo del pasado, sería...',
+                    'Lo más importante que he aprendido sobre construir una comunidad es...',
+                    'Aquí está lo que desearía haber sabido sobre el equipo de streaming cuando empecé...',
+                    'El mejor consejo que otro streamer me dio fue...',
+                    'Si estás pensando en empezar a transmitir, aquí está lo que deberías saber...',
+                    'La parte más desafiante del streaming para mí fue aprender a...',
+                    'Aquí está cómo me mantengo motivado cuando el chat está silencioso...',
+                    'Lo que más me sorprendió del streaming fue...'
+                ],
+                abtInteractive: [
+                    'Tengo curiosidad - ¿cuál es la parte favorita de todos de este juego hasta ahora?',
+                    'Si pudieras cambiar una cosa de este juego, ¿qué sería?',
+                    '¿Cuál es la cosa más creativa que has visto hacer a alguien en este juego?',
+                    'Voy a probar algo nuevo - ¿qué crees que va a pasar?',
+                    'Este es un gran lugar para tomar una captura de pantalla. ¡La iluminación es perfecta!',
+                    'Me pregunto qué secretos están ocultos en esta área. Déjame explorar...',
+                    'Si estuviera haciendo speedrun, esta es la ruta que tomaría...',
+                    'Este logro es complicado - déjame mostrarte la estrategia...',
+                    'Voy a jugar esta sección de manera diferente a lo habitual. Mira esto...',
+                    '¿Cuál es el efecto de sonido más satisfactorio de este juego? Me encanta este...'
+                ],
+                
+                // Milestones
+                first30min: 'Primeros 30 Minutos',
+                firstHour: 'Primera Hora',
+                firstViewerMilestone: 'Primer Espectador',
+                first5Viewers: 'Primeros 5 Espectadores',
+                firstMessage: 'Primer Mensaje de Chat',
+                
+                // Status
+                starting: 'Iniciando',
+                offline: 'Desconectado',
+                online: 'En línea',
+                notStreaming: 'No transmitiendo',
+                streaming: 'Transmitiendo',
+                stable: 'Estable',
+                growing: 'Creciente',
+                declining: 'Declinando',
+                positive: 'Positivo',
+                negative: 'Negativo',
+                neutral: 'Neutral',
+                
+                // Strategy Analytics
+                strategicAnalytics: 'Panel de Análisis Estratégico',
+                strategicView: 'Vista Estratégica',
+                healthScore: 'Puntuación de Salud',
+                engagementRate: 'Tasa de Compromiso',
+                retentionRate: 'Tasa de Retención',
+                growthRate: 'Tasa de Crecimiento',
+                viewerGrowth: 'Crecimiento de Espectadores',
+                contentQuality: 'Calidad del Contenido',
+                communityHealth: 'Salud de la Comunidad',
+                streamConsistency: 'Consistencia del Stream',
+                calculatingRecommendations: 'Calculando recomendaciones...',
+                uniqueViewers: 'Espectadores Únicos',
+                messagesSent: 'Mensajes Enviados',
+                liveViewerCount: 'Número de espectadores en vivo',
+                highestViewerCount: 'Mayor número de espectadores',
+                today: 'Hoy',
+                
+                // Legacy translations
                 streamStatus: 'Estado del Stream',
                 currentViewers: 'Espectadores Actuales',
                 peakViewers: 'Pico de Espectadores',
@@ -2848,19 +3443,143 @@
                 topUsers: 'Usuarios Más Comprometidos',
                 aiPrompts: 'Prompts Generados por IA',
                 liveChatScore: 'Puntuación de Chat en Vivo',
-                chatActivity: 'Actividad del Chat',
-                offline: 'Desconectado',
-                online: 'En línea',
-                notStreaming: 'No transmitiendo',
-                streaming: 'Transmitiendo',
-                stable: 'Estable',
-                growing: 'Creciente',
-                declining: 'Declinando',
-                positive: 'Positivo',
-                negative: 'Negativo',
-                neutral: 'Neutral'
+                chatActivity: 'Actividad del Chat'
             },
             de: {
+                // Main Dashboard Elements
+                liveViewers: 'Live Zuschauer',
+                aiCoPilot: 'Dein KI Co-Pilot',
+                chatScore: 'Chat Bewertung',
+                zeroViewers: 'Null Zuschauer',
+                firstViewer: 'Erster Zuschauer!',
+                buildingAudience: 'Publikum Aufbauen',
+                
+                // ABT Coach
+                nextPromptIn: 'Nächster Prompt in',
+                mute: 'Stumm',
+                unmute: 'Ton einschalten',
+                
+                // Gauge Levels
+                quiet: 'Ruhig',
+                low: 'Niedrig',
+                moderate: 'Moderat',
+                high: 'Hoch',
+                fire: 'Feuer',
+                
+                // First Viewer Alert
+                firstViewerTitle: 'ERSTER ZUSCHAUER!',
+                firstViewerMessage: 'Jemand ist gerade deinem Stream beigetreten!',
+                welcomeToStream: 'Willkommen im Stream!',
+                close: 'Schließen',
+                autoClosingIn: 'Automatisches Schließen in',
+                
+                // AI Prompt Messages
+                keepTalking: 'Sprich weiter! Dein Publikum wird dich finden.',
+                firstViewerDetected: '🎉 ERSTER ZUSCHAUER ERKANNT! Begrüße sie herzlich und lass sie sich besonders fühlen. Das ist der Anfang deiner Community!',
+                greatViewers: 'Großartig! Du hast Zuschauer. Behalte die Energie mit fesselndem Inhalt, stelle Fragen und baue deine Community auf!',
+                aiCoPilotReady: 'Der KI Co-Pilot ist bereit zu helfen!',
+                
+                // ABT Coach Prompts
+                abtGameCommentary: [
+                    'Erzähle deine Gedanken laut. Erkläre, warum du diesen Zug machst.',
+                    'Was ist deine Strategie für dieses Level/diesen Kampf? Führe uns durch dein Denken.',
+                    'Dieser Teil ist knifflig - lass mich erklären, was ich hier versuche zu tun.',
+                    'Ich liebe, wie die Entwickler diesen Abschnitt gestaltet haben. Achte auf die Details...',
+                    'Wenn ich ein neuer Spieler wäre, würde ich das über dieses Spiel wissen wollen.',
+                    'Das erinnert mich an [anderes Spiel] - lass mich die Ähnlichkeiten erklären.',
+                    'Ich werde diesmal einen anderen Ansatz versuchen. Schau dir diese Strategie an...',
+                    'Die Musik in diesem Bereich ist perfekt für die Atmosphäre. Hör dir das an...',
+                    'Ich frage mich, was die Entwickler dachten, als sie diese Mechanik erstellt haben.',
+                    'Das ist einer meiner Lieblingsteile des Spiels, weil...'
+                ],
+                abtPersonalStories: [
+                    'Was ist der beste Film, den du kürzlich gesehen hast? Erzähle die Geschichte.',
+                    'Teile eine lustige Geschichte aus deiner Kindheit, die sich auf Gaming bezieht.',
+                    'Was ist das Peinlichste, was dir beim Streamen passiert ist?',
+                    'Erzähl uns von deiner ersten Spielekonsole und deinem Lieblingsspiel aus der Kindheit.',
+                    'Was ist der seltsamste Traum, den du über dieses Spiel hattest?',
+                    'Teile eine Geschichte über das Treffen eines anderen Streamers oder Gamers im echten Leben.',
+                    'Was ist dein epischster Gaming-Fail, über den du jetzt lachen kannst?',
+                    'Erzähl uns von einer Zeit, als Gaming dir durch eine schwere Situation geholfen hat.',
+                    'Was ist das Lustigste, was dein Haustier gemacht hat, während du gestreamt hast?',
+                    'Teile eine Geschichte über dein erstes Mal, dieses Spiel zu spielen - was hat dich überrascht?'
+                ],
+                abtConversationStarters: [
+                    'Wenn du mit einem Spieleentwickler essen gehen könntest, wer wäre es und warum?',
+                    'Was ist dein Schuldspiel, das du normalerweise nicht zugibst zu spielen?',
+                    'Wenn du dein eigenes Spiel erstellen könntest, worum würde es gehen?',
+                    'Was ist das überbewertetste Spiel, das alle lieben, aber du nicht?',
+                    'Wenn du in einer Videospielwelt leben könntest, welche würdest du wählen?',
+                    'Was ist deine liebste Gaming-Erinnerung aus dem letzten Jahr?',
+                    'Wenn du eine Superkraft aus einem Videospiel haben könntest, welche wäre es?',
+                    'Was ist das unterschätzteste Spiel, das mehr Leute kennen sollten?',
+                    'Wenn du den Entwicklern dieses Spiels eine Frage stellen könntest, welche wäre es?',
+                    'Was ist deine Traumkollaboration zwischen zwei verschiedenen Spielfranchises?'
+                ],
+                abtStreamingTips: [
+                    'Neue Streamer fragen mich oft nach [Thema] - hier ist mein Rat...',
+                    'Der größte Fehler, den ich beim Streamen gemacht habe, war...',
+                    'Wenn ich zurückgehen und meinem vergangenen Ich einen Streaming-Tipp geben könnte, wäre es...',
+                    'Das Wichtigste, was ich über den Aufbau einer Community gelernt habe, ist...',
+                    'Hier ist, was ich über Streaming-Ausrüstung gewusst hätte, als ich anfing...',
+                    'Der beste Rat, den mir jemals ein anderer Streamer gegeben hat, war...',
+                    'Wenn du darüber nachdenkst, mit dem Streamen anzufangen, hier ist, was du wissen solltest...',
+                    'Der herausforderndste Teil des Streamens für mich war das Lernen...',
+                    'Hier ist, wie ich motiviert bleibe, wenn der Chat ruhig ist...',
+                    'Das, was mich am meisten am Streamen überrascht hat, war...'
+                ],
+                abtInteractive: [
+                    'Ich bin neugierig - was ist der Lieblingsteil von allen an diesem Spiel bisher?',
+                    'Wenn du eine Sache an diesem Spiel ändern könntest, was wäre es?',
+                    'Was ist das Kreativste, was du jemanden in diesem Spiel machen gesehen hast?',
+                    'Ich werde etwas Neues ausprobieren - was denkst du wird passieren?',
+                    'Das ist ein großartiger Ort für einen Screenshot. Die Beleuchtung ist perfekt!',
+                    'Ich frage mich, welche Geheimnisse in diesem Bereich versteckt sind. Lass mich erkunden...',
+                    'Wenn ich das speedrunnen würde, wäre das die Route, die ich nehmen würde...',
+                    'Dieser Erfolg ist knifflig - lass mich dir die Strategie zeigen...',
+                    'Ich werde diesen Abschnitt anders als gewöhnlich spielen. Schau dir das an...',
+                    'Was ist der befriedigendste Soundeffekt in diesem Spiel? Ich liebe diesen...'
+                ],
+                
+                // Milestones
+                first30min: 'Erste 30 Minuten',
+                firstHour: 'Erste Stunde',
+                firstViewerMilestone: 'Erster Zuschauer',
+                first5Viewers: 'Erste 5 Zuschauer',
+                firstMessage: 'Erste Chat Nachricht',
+                
+                // Status
+                starting: 'Startend',
+                offline: 'Offline',
+                online: 'Online',
+                notStreaming: 'Nicht am Streamen',
+                streaming: 'Am Streamen',
+                stable: 'Stabil',
+                growing: 'Wachsend',
+                declining: 'Abnehmend',
+                positive: 'Positiv',
+                negative: 'Negativ',
+                neutral: 'Neutral',
+                
+                // Strategy Analytics
+                strategicAnalytics: 'Strategisches Analyse-Dashboard',
+                strategicView: 'Strategische Ansicht',
+                healthScore: 'Gesundheits-Score',
+                engagementRate: 'Engagement-Rate',
+                retentionRate: 'Retention-Rate',
+                growthRate: 'Wachstumsrate',
+                viewerGrowth: 'Zuschauer-Wachstum',
+                contentQuality: 'Content-Qualität',
+                communityHealth: 'Community-Gesundheit',
+                streamConsistency: 'Stream-Konsistenz',
+                calculatingRecommendations: 'Empfehlungen werden berechnet...',
+                uniqueViewers: 'Eindeutige Zuschauer',
+                messagesSent: 'Gesendete Nachrichten',
+                liveViewerCount: 'Live-Zuschauerzahl',
+                highestViewerCount: 'Höchste Zuschauerzahl',
+                today: 'Heute',
+                
+                // Legacy translations
                 streamStatus: 'Stream-Status',
                 currentViewers: 'Aktuelle Zuschauer',
                 peakViewers: 'Höchste Zuschauerzahl',
@@ -2877,17 +3596,7 @@
                 topUsers: 'Top Engagierte Benutzer',
                 aiPrompts: 'KI-Generierte Prompts',
                 liveChatScore: 'Live-Chat-Bewertung',
-                chatActivity: 'Chat-Aktivität',
-                offline: 'Offline',
-                online: 'Online',
-                notStreaming: 'Nicht am Streamen',
-                streaming: 'Am Streamen',
-                stable: 'Stabil',
-                growing: 'Wachsend',
-                declining: 'Abnehmend',
-                positive: 'Positiv',
-                negative: 'Negativ',
-                neutral: 'Neutral'
+                chatActivity: 'Chat-Aktivität'
             }
         };
 
@@ -2916,6 +3625,8 @@
                 case 'zero_viewers':
                     startABTCoach();
                     document.getElementById('milestonesSection').style.display = 'block';
+                    // Initialize Persistence Engine
+                    initializePersistenceEngine();
                     break;
                 case 'first_viewer':
                     stopABTCoach();
@@ -3382,6 +4093,9 @@
 
             // Update Live Viewers count
             updateLiveViewers(data.currentViewerCount || 0);
+            
+            // FLAGSHIP FEATURE: First Viewer Catcher Logic
+            checkForFirstViewers(data.currentViewerCount || 0);
 
             // Update chat score gauge - use backend calculated score
             const newChatScore = data.chatScore || calculateChatScore(data);
@@ -3577,7 +4291,12 @@
             document.querySelectorAll('.language-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            // Find and activate the correct button
+            const targetButton = document.querySelector(`[onclick="setLanguage('${lang}')"]`);
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
             
             // Send language preference to server
             fetch('/api/set-language', {
@@ -3598,16 +4317,96 @@
         function updateLanguage() {
             const t = translations[currentLanguage];
             
-            // Update metric titles
-            document.querySelectorAll('.metric-title').forEach((title, index) => {
-            const titles = [
-                t.streamStatus, t.currentViewers, t.peakViewers, t.totalSubs,
-                t.newFollowers, t.streamRevenue, t.streamInfo, t.chatSentiment
-            ];
-                if (titles[index]) {
-                    title.textContent = titles[index];
+            // Update all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (t[key]) {
+                    // Special handling for elements with dynamic content
+                    if (element.id === 'aiPromptPhase') {
+                        // Don't translate phase as it's set dynamically
+                        return;
+                    }
+                    if (element.id === 'firstViewerMessage' || element.id === 'firstViewerGreeting') {
+                        // Don't translate these as they're set dynamically with viewer names
+                        return;
+                    }
+                    if (element.id === 'autoHideCountdown') {
+                        // Handle countdown text specially
+                        const countdownNumber = element.querySelector('#countdownNumber');
+                        if (countdownNumber) {
+                            element.innerHTML = t[key] + ' <span id="countdownNumber">' + countdownNumber.textContent + '</span>s';
+                        }
+                        return;
+                    }
+                    
+                    // Special handling for gauge levels to preserve emojis
+                    if (element.classList.contains('gauge-level')) {
+                        const emoji = element.getAttribute('data-emoji');
+                        if (emoji) {
+                            element.textContent = emoji + ' ' + t[key];
+                        } else {
+                            element.textContent = t[key];
+                        }
+                        return;
+                    }
+                    
+                    element.textContent = t[key];
                 }
             });
+            
+            // Update ABT Coach timer text
+            const timerText = document.querySelector('.abt-timer-text');
+            if (timerText && t.nextPromptIn) {
+                timerText.textContent = t.nextPromptIn;
+            }
+            
+            // Update mute button text
+            const muteButton = document.getElementById('abtMuteToggle');
+            if (muteButton) {
+                if (muteButton.textContent.includes('Mute')) {
+                    muteButton.textContent = '🔊 ' + t.mute;
+                } else {
+                    muteButton.textContent = '🔊 ' + t.unmute;
+                }
+            }
+            
+            // Update gauge status
+            const gaugeStatus = document.getElementById('gaugeStatus');
+            if (gaugeStatus && t.starting) {
+                if (gaugeStatus.textContent === 'Starting') {
+                    gaugeStatus.textContent = t.starting;
+                }
+            }
+            
+            // Update strategic view button
+            const strategicToggle = document.getElementById('strategicToggle');
+            if (strategicToggle && t.strategicView) {
+                strategicToggle.textContent = '📊 ' + t.strategicView;
+            }
+            
+            // Update strategic panel close button
+            const strategicCloseBtn = document.querySelector('#strategicPanel button[onclick="toggleStrategicView()"]');
+            if (strategicCloseBtn && t.close) {
+                strategicCloseBtn.textContent = '✕ ' + t.close;
+            }
+            
+            // Update "Today" text in strategic panel
+            const todayElements = document.querySelectorAll('#peakViewerTime, #peakViewerTimeStrategic');
+            todayElements.forEach(element => {
+                if (element && t.today) {
+                    element.textContent = t.today;
+                }
+            });
+            
+            // Update calculating recommendations text
+            const calculatingElements = document.querySelectorAll('.recommendation-text');
+            calculatingElements.forEach(element => {
+                if (element && element.textContent.includes('Calculating recommendations')) {
+                    element.textContent = t.calculatingRecommendations;
+                }
+            });
+            
+            console.log('🌍 Language updated to:', currentLanguage);
         }
 
         // Format number with commas
@@ -3902,13 +4701,23 @@
         function triggerABTPrompt() {
             if (abtMuted) return;
             
+            // Get translated prompts based on current language
+            const t = translations[currentLanguage];
+            const translatedPrompts = {
+                gameCommentary: t.abtGameCommentary || abtPrompts.gameCommentary,
+                personalStories: t.abtPersonalStories || abtPrompts.personalStories,
+                conversationStarters: t.abtConversationStarters || abtPrompts.conversationStarters,
+                streamingTips: t.abtStreamingTips || abtPrompts.streamingTips,
+                interactive: t.abtInteractive || abtPrompts.interactive
+            };
+            
             // Get a random prompt from a random category
-            const categories = Object.keys(abtPrompts);
+            const categories = Object.keys(translatedPrompts);
             const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-            const categoryPrompts = abtPrompts[randomCategory];
+            const categoryPrompts = translatedPrompts[randomCategory];
             const randomPrompt = categoryPrompts[Math.floor(Math.random() * categoryPrompts.length)];
             
-            console.log('💬 ABT Prompt triggered:', randomPrompt, 'Category:', randomCategory);
+            console.log('💬 ABT Prompt triggered:', randomPrompt, 'Category:', randomCategory, 'Language:', currentLanguage);
             
             updateAIPromptArea('zero_viewers', {
                 message: randomPrompt,
@@ -3917,9 +4726,371 @@
             });
         }
 
-        // First Viewer Catcher Functions
+        // PERSISTENCE ENGINE FUNCTIONS - Emotional Support & Validation
+        function initializePersistenceEngine() {
+            console.log('💪 Initializing Persistence Engine...');
+            persistenceEngine.sessionData.startTime = Date.now();
+            persistenceEngine.sessionData.totalStreamTime = 0;
+            persistenceEngine.sessionData.milestonesReached = 0;
+            
+            // Start milestone checking interval
+            setInterval(checkMilestones, 30000); // Check every 30 seconds
+            
+            console.log('✅ Persistence Engine initialized');
+        }
+
+        function checkMilestones() {
+            const currentTime = Date.now();
+            const streamDuration = Math.floor((currentTime - persistenceEngine.sessionData.startTime) / 60000); // minutes
+            const currentViewers = parseInt(document.getElementById('viewersCount').textContent) || 0;
+            
+            // Check time-based milestones
+            checkTimeMilestones(streamDuration);
+            
+            // Check viewer-based milestones
+            checkViewerMilestones(currentViewers);
+            
+            // Update session data
+            updateSessionData(streamDuration, currentViewers);
+        }
+
+        function checkTimeMilestones(streamDuration) {
+            const timeMilestones = [30, 60, 120, 180]; // minutes
+            
+            timeMilestones.forEach(minutes => {
+                if (streamDuration >= minutes && !persistenceEngine.milestones.streamTime[minutes]) {
+                    persistenceEngine.milestones.streamTime[minutes] = true;
+                    showMilestoneCelebration('time', minutes);
+                    persistenceEngine.sessionData.milestonesReached++;
+                }
+            });
+        }
+
+        function checkViewerMilestones(currentViewers) {
+            const viewerMilestones = [1, 5, 10, 25];
+            
+            viewerMilestones.forEach(count => {
+                if (currentViewers >= count && !persistenceEngine.milestones.viewers[count]) {
+                    persistenceEngine.milestones.viewers[count] = true;
+                    showMilestoneCelebration('viewers', count);
+                    persistenceEngine.sessionData.milestonesReached++;
+                }
+            });
+        }
+
+        function showMilestoneCelebration(type, value) {
+            console.log(`🎉 Milestone reached: ${type} - ${value}`);
+            
+            let message = '';
+            let icon = '';
+            
+            if (type === 'time') {
+                const timeText = value >= 60 ? `${Math.floor(value/60)} hour${Math.floor(value/60) > 1 ? 's' : ''}` : `${value} minutes`;
+                message = getRandomEncouragement('timeBased', { time: timeText });
+                icon = '⏰';
+            } else if (type === 'viewers') {
+                message = getRandomEncouragement('viewerBased', { count: value });
+                icon = '👥';
+            }
+            
+            // Show milestone notification
+            showMilestoneNotification(icon, message);
+        }
+
+        function getRandomEncouragement(category, data) {
+            const messages = persistenceEngine.encouragementMessages[category];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            // Replace placeholders with actual data
+            return randomMessage.replace(/\{(\w+)\}/g, (match, key) => data[key] || match);
+        }
+
+        function showMilestoneNotification(icon, message) {
+            // Create milestone notification element
+            const notification = document.createElement('div');
+            notification.className = 'milestone-notification';
+            notification.innerHTML = `
+                <div class="milestone-content">
+                    <div class="milestone-icon">${icon}</div>
+                    <div class="milestone-message">${message}</div>
+                    <div class="milestone-close">✕</div>
+                </div>
+            `;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Show animation
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 8000);
+            
+            // Close button functionality
+            notification.querySelector('.milestone-close').addEventListener('click', () => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            });
+        }
+
+        function updateSessionData(streamDuration, currentViewers) {
+            persistenceEngine.sessionData.totalStreamTime = streamDuration;
+            persistenceEngine.sessionData.peakViewers = Math.max(persistenceEngine.sessionData.peakViewers, currentViewers);
+            persistenceEngine.sessionData.uniqueViewersToday = uniqueViewers.size;
+            persistenceEngine.sessionData.totalMessages = messagesSent;
+            
+            // Calculate engagement rate (messages per minute)
+            if (streamDuration > 0) {
+                persistenceEngine.sessionData.engagementRate = (messagesSent / streamDuration).toFixed(2);
+            }
+        }
+
+        function generateStreamSummary() {
+            const data = persistenceEngine.sessionData;
+            const t = translations[currentLanguage];
+            
+            let summary = `
+                <div class="stream-summary">
+                    <h3>📊 Stream Summary - You Did Great!</h3>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <div class="stat-value">${data.totalStreamTime} min</div>
+                            <div class="stat-label">Total Stream Time</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="stat-value">${data.peakViewers}</div>
+                            <div class="stat-label">Peak Viewers</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="stat-value">${data.uniqueViewersToday}</div>
+                            <div class="stat-label">Unique Viewers</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="stat-value">${data.milestonesReached}</div>
+                            <div class="stat-label">Milestones Reached</div>
+                        </div>
+                    </div>
+                    <div class="encouragement-message">
+                        ${generateEncouragementMessage(data)}
+                    </div>
+                </div>
+            `;
+            
+            return summary;
+        }
+
+        function generateEncouragementMessage(data) {
+            const messages = [];
+            
+            // Time-based encouragement
+            if (data.totalStreamTime >= 30) {
+                messages.push(getRandomEncouragement('timeBased', { time: `${data.totalStreamTime} minutes` }));
+            }
+            
+            // Viewer-based encouragement
+            if (data.uniqueViewersToday > 0) {
+                messages.push(getRandomEncouragement('viewerBased', { count: data.uniqueViewersToday }));
+            }
+            
+            // Engagement-based encouragement
+            if (data.engagementRate > 0) {
+                messages.push(getRandomEncouragement('engagementBased', { time: data.engagementRate }));
+            }
+            
+            // Always include resilience message
+            messages.push(getRandomEncouragement('resilience', {}));
+            
+            return messages.join('<br><br>');
+        }
+
+        // First Viewer Catcher Functions - FLAGSHIP FEATURE
         // Global variable to track auto-hide timeout
         let overlayAutoHideTimeout = null;
+        let firstViewerThreshold = 5; // Detect first few viewers (1-4)
+        let lastViewerCount = 0;
+        let firstViewerDetected = false;
+        let viewerJoinTimes = []; // Track when viewers join
+
+        // FLAGSHIP FEATURE: Enhanced First Viewer Detection
+        function checkForFirstViewers(currentViewerCount) {
+            // Detect viewer increase (new viewers joining)
+            if (currentViewerCount > lastViewerCount && currentViewerCount <= firstViewerThreshold) {
+                const newViewers = currentViewerCount - lastViewerCount;
+                const timestamp = Date.now();
+                
+                // Track join times for better detection
+                viewerJoinTimes.push(timestamp);
+                
+                // Clean old join times (older than 30 seconds)
+                viewerJoinTimes = viewerJoinTimes.filter(time => timestamp - time < 30000);
+                
+                console.log(`🎯 First Viewer Catcher: ${newViewers} new viewer(s) detected! Total: ${currentViewerCount}`);
+                
+                // Show enhanced first viewer alert
+                showEnhancedFirstViewerAlert(currentViewerCount, newViewers);
+                
+                // Update phase if this is the very first viewer
+                if (currentViewerCount === 1 && !firstViewerDetected) {
+                    firstViewerDetected = true;
+                    updatePhase('first_viewer');
+                }
+            }
+            
+            // Reset detection if viewers drop to zero
+            if (currentViewerCount === 0) {
+                firstViewerDetected = false;
+                viewerJoinTimes = [];
+            }
+            
+            lastViewerCount = currentViewerCount;
+        }
+
+        function generatePersonalizedGreetings(totalViewers, newViewers) {
+            const t = translations[currentLanguage];
+            
+            if (totalViewers === 1) {
+                return [
+                    {
+                        message: t.firstViewerDetected || "🎉 FIRST VIEWER DETECTED! Welcome them warmly and make them feel special. This is the start of your community!",
+                        greeting: "Say: 'Welcome to the stream! What brought you here today?'"
+                    },
+                    {
+                        message: "Your first viewer has arrived! Be ready to give them a personal greeting!",
+                        greeting: "Try: 'Hey there! Thanks for being my first viewer today!'"
+                    },
+                    {
+                        message: "This is it! Your first viewer is here - make them feel special!",
+                        greeting: "Say: 'Welcome! I'm so glad you're here. What's your name?'"
+                    },
+                    {
+                        message: "Moment of truth! Your first viewer just joined - engage them now!",
+                        greeting: "Ask: 'What games do you like to watch? I'd love to know!'"
+                    }
+                ];
+            } else if (totalViewers <= 3) {
+                return [
+                    {
+                        message: `Great! You now have ${totalViewers} viewers. Keep the momentum going!`,
+                        greeting: "Say: 'Welcome everyone! Thanks for joining the stream!'"
+                    },
+                    {
+                        message: `Awesome! ${newViewers} more viewer(s) just joined. Build that community!`,
+                        greeting: "Try: 'Hey new people! What brought you here today?'"
+                    },
+                    {
+                        message: `Community growing! You have ${totalViewers} viewers now. Keep engaging!`,
+                        greeting: "Ask: 'How's everyone doing? What should we play next?'"
+                    }
+                ];
+            } else {
+                return [
+                    {
+                        message: `Fantastic! Your community is growing - ${totalViewers} viewers now!`,
+                        greeting: "Say: 'Welcome to all the new people! Great to have you here!'"
+                    },
+                    {
+                        message: `Amazing growth! ${newViewers} more viewer(s) joined. Keep the energy up!`,
+                        greeting: "Try: 'Thanks for the support everyone! What do you want to see?'"
+                    }
+                ];
+            }
+        }
+
+        function showEnhancedFirstViewerAlert(totalViewers, newViewers) {
+            console.log('🎉 ENHANCED First viewer detected!', { totalViewers, newViewers });
+            const alert = document.getElementById('firstViewerAlert');
+            const message = document.getElementById('firstViewerMessage');
+            const greeting = document.getElementById('firstViewerGreeting');
+            
+            if (alert && message && greeting) {
+                // Clear any existing timeout
+                if (overlayAutoHideTimeout) {
+                    clearTimeout(overlayAutoHideTimeout);
+                    overlayAutoHideTimeout = null;
+                }
+                
+                // Generate highly personalized and actionable greetings
+                const personalizedGreetings = generatePersonalizedGreetings(totalViewers, newViewers);
+                const randomGreeting = personalizedGreetings[Math.floor(Math.random() * personalizedGreetings.length)];
+                
+                // Update message with actionable content
+                message.textContent = randomGreeting.message;
+                greeting.textContent = randomGreeting.greeting;
+                
+                // Add visual emphasis for flagship feature
+                alert.style.animation = 'firstViewerCelebration 3s ease-in-out, urgentPulse 1s infinite';
+                alert.style.border = '3px solid #ff6b6b';
+                alert.style.boxShadow = '0 0 30px rgba(255, 107, 107, 0.8)';
+                
+                // Show the alert
+                alert.classList.add('show');
+                
+                // Setup button handlers
+                setupOverlayButtons();
+                
+                // Enhanced countdown with visual feedback
+                showEnhancedCountdown();
+                
+                // Trigger confetti effect
+                triggerConfettiEffect();
+                
+                console.log('✅ Enhanced first viewer alert shown - FLAGSHIP FEATURE');
+            } else {
+                console.log('❌ First viewer alert elements not found');
+            }
+        }
+
+        function showEnhancedCountdown() {
+            const countdownElement = document.getElementById('autoHideCountdown');
+            const countdownNumber = document.getElementById('countdownNumber');
+            
+            if (countdownElement && countdownNumber) {
+                countdownElement.style.display = 'block';
+                countdownElement.style.background = 'rgba(255, 107, 107, 0.2)';
+                countdownElement.style.border = '1px solid #ff6b6b';
+                countdownElement.style.borderRadius = '10px';
+                countdownElement.style.padding = '8px 12px';
+                
+                let countdown = 8;
+                countdownNumber.textContent = countdown;
+                countdownNumber.style.color = '#ff6b6b';
+                countdownNumber.style.fontWeight = 'bold';
+                
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    countdownNumber.textContent = countdown;
+                    
+                    // Change color as countdown approaches zero
+                    if (countdown <= 3) {
+                        countdownNumber.style.color = '#ff4757';
+                        countdownElement.style.background = 'rgba(255, 71, 87, 0.3)';
+                    }
+                    
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+                
+                // Auto-hide after 8 seconds (longer for flagship feature)
+                overlayAutoHideTimeout = setTimeout(() => {
+                    console.log('⏰ Auto-hiding enhanced overlay after 8 seconds');
+                    clearInterval(countdownInterval);
+                    hideFirstViewerAlert();
+                }, 8000);
+            }
+        }
+
+        function triggerConfettiEffect() {
+            // Enhanced confetti for flagship feature
+            const confettiElements = document.querySelectorAll('.confetti');
+            confettiElements.forEach((confetti, index) => {
+                confetti.style.animation = `confettiFall ${2 + index * 0.5}s linear infinite`;
+                confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            });
+        }
 
         function showFirstViewerAlert(viewerName = 'New Viewer') {
             console.log('🎉 First viewer detected:', viewerName);
@@ -3958,9 +5129,34 @@
                 // Setup button handlers
                 setupOverlayButtons();
                 
+                // Show countdown and start auto-hide
+                const countdown = document.getElementById('autoHideCountdown');
+                const countdownNumber = document.getElementById('countdownNumber');
+                
+                if (countdown) {
+                    countdown.style.display = 'block';
+                }
+                
+                let countdownValue = 5;
+                if (countdownNumber) {
+                    countdownNumber.textContent = countdownValue;
+                }
+                
+                // Start countdown
+                const countdownInterval = setInterval(() => {
+                    countdownValue--;
+                    if (countdownNumber) {
+                        countdownNumber.textContent = countdownValue;
+                    }
+                    if (countdownValue <= 0) {
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+                
                 // Auto-hide after 5 seconds
                 overlayAutoHideTimeout = setTimeout(() => {
                     console.log('⏰ Auto-hiding overlay after 5 seconds');
+                    clearInterval(countdownInterval);
                     hideFirstViewerAlert();
                 }, 5000);
             }
@@ -3968,9 +5164,16 @@
 
         function hideFirstViewerAlert() {
             const alert = document.getElementById('firstViewerAlert');
+            const countdown = document.getElementById('autoHideCountdown');
+            
             if (alert) {
                 alert.classList.remove('show');
                 console.log('✅ First viewer alert hidden');
+                
+                // Hide countdown
+                if (countdown) {
+                    countdown.style.display = 'none';
+                }
                 
                 // Clear auto-hide timeout
                 if (overlayAutoHideTimeout) {
@@ -3981,69 +5184,37 @@
             }
         }
 
-        function copyGreeting() {
-            const greeting = document.getElementById('firstViewerGreeting');
-            const btn = document.getElementById('copyGreetingBtn');
-            
-            if (greeting && btn) {
-                navigator.clipboard.writeText(greeting.textContent).then(() => {
-                    console.log('📋 Greeting copied to clipboard');
-                    // Show feedback
-                    const originalText = btn.textContent;
-                    btn.textContent = '✅ Copied!';
-                    btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-                    
-                    setTimeout(() => {
-                        btn.textContent = originalText;
-                        btn.style.background = '';
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy greeting:', err);
-                    btn.textContent = '❌ Failed';
-                    setTimeout(() => {
-                        btn.textContent = '📋 Copy Greeting';
-                    }, 2000);
-                });
-            }
-        }
 
         // Add event listeners for buttons
         document.addEventListener('DOMContentLoaded', function() {
-            const copyBtn = document.getElementById('copyGreetingBtn');
-            const continueBtn = document.getElementById('continueBtn');
-            
-            if (copyBtn) {
-                copyBtn.addEventListener('click', copyGreeting);
-                console.log('✅ Copy button event listener attached');
-            } else {
-                console.log('❌ Copy button not found');
-            }
-            
-            if (continueBtn) {
-                continueBtn.addEventListener('click', function() {
-                    console.log('🔄 Continue button clicked');
-                    hideFirstViewerAlert();
-                });
-                console.log('✅ Continue button event listener attached');
-            } else {
-                console.log('❌ Continue button not found');
-            }
+            console.log('🎯 Setting up first viewer alert button handlers');
+            setupOverlayButtons();
         });
 
-        // Also add direct onclick handlers as backup
+        // Setup overlay button handlers
         function setupOverlayButtons() {
-            const copyBtn = document.getElementById('copyGreetingBtn');
-            const continueBtn = document.getElementById('continueBtn');
+            const closeBtn = document.getElementById('closeAlertBtn');
             
-            if (copyBtn) {
-                copyBtn.onclick = copyGreeting;
-            }
-            
-            if (continueBtn) {
-                continueBtn.onclick = function() {
-                    console.log('🔄 Continue button clicked (onclick)');
+            if (closeBtn) {
+                // Remove any existing event listeners
+                closeBtn.replaceWith(closeBtn.cloneNode(true));
+                const newCloseBtn = document.getElementById('closeAlertBtn');
+                
+                // Add click event listener
+                newCloseBtn.addEventListener('click', function() {
+                    console.log('✕ Close button clicked');
+                    hideFirstViewerAlert();
+                });
+                
+                // Also add onclick as backup
+                newCloseBtn.onclick = function() {
+                    console.log('✕ Close button clicked (onclick)');
                     hideFirstViewerAlert();
                 };
+                
+                console.log('✅ Close button event listeners attached');
+            } else {
+                console.log('❌ Close button not found');
             }
         }
 
@@ -4373,6 +5544,93 @@
         window.testFirstViewerAlert = function() {
             console.log('🧪 Testing first viewer alert...');
             showFirstViewerAlert('TestViewer');
+        };
+
+        // Test First Viewer Catcher - FLAGSHIP FEATURE
+        window.testFirstViewerCatcher = function() {
+            console.log('🎯 Testing First Viewer Catcher - FLAGSHIP FEATURE');
+            // Simulate viewer count increase
+            const currentCount = parseInt(document.getElementById('viewersCount').textContent) || 0;
+            const newCount = currentCount + 1;
+            
+            // Update viewer count
+            document.getElementById('viewersCount').textContent = newCount;
+            
+            // Trigger first viewer detection
+            checkForFirstViewers(newCount);
+            
+            console.log(`✅ Simulated viewer increase: ${currentCount} → ${newCount}`);
+        };
+
+        // Test multiple viewers joining
+        window.testMultipleViewers = function() {
+            console.log('🎯 Testing Multiple Viewers - FLAGSHIP FEATURE');
+            const currentCount = parseInt(document.getElementById('viewersCount').textContent) || 0;
+            const newCount = currentCount + 2; // Simulate 2 viewers joining
+            
+            document.getElementById('viewersCount').textContent = newCount;
+            checkForFirstViewers(newCount);
+            
+            console.log(`✅ Simulated multiple viewers: ${currentCount} → ${newCount}`);
+        };
+
+        // Test Persistence Engine - Milestone Celebrations
+        window.testPersistenceEngine = function() {
+            console.log('💪 Testing Persistence Engine...');
+            initializePersistenceEngine();
+            
+            // Simulate 30-minute milestone
+            setTimeout(() => {
+                showMilestoneCelebration('time', 30);
+            }, 1000);
+            
+            // Simulate 5 viewers milestone
+            setTimeout(() => {
+                showMilestoneCelebration('viewers', 5);
+            }, 3000);
+            
+            console.log('✅ Persistence Engine test initiated');
+        };
+
+        // Test Stream Summary
+        window.testStreamSummary = function() {
+            console.log('📊 Testing Stream Summary...');
+            
+            // Update session data for testing
+            persistenceEngine.sessionData.totalStreamTime = 45;
+            persistenceEngine.sessionData.peakViewers = 8;
+            persistenceEngine.sessionData.uniqueViewersToday = 12;
+            persistenceEngine.sessionData.totalMessages = 25;
+            persistenceEngine.sessionData.engagementRate = 0.56;
+            persistenceEngine.sessionData.milestonesReached = 3;
+            
+            const summary = generateStreamSummary();
+            console.log('Stream Summary:', summary);
+            
+            // Show summary in a modal or alert
+            const summaryDiv = document.createElement('div');
+            summaryDiv.innerHTML = summary;
+            summaryDiv.style.position = 'fixed';
+            summaryDiv.style.top = '50%';
+            summaryDiv.style.left = '50%';
+            summaryDiv.style.transform = 'translate(-50%, -50%)';
+            summaryDiv.style.zIndex = '10003';
+            summaryDiv.style.maxWidth = '600px';
+            summaryDiv.style.maxHeight = '80vh';
+            summaryDiv.style.overflow = 'auto';
+            summaryDiv.style.background = 'rgba(0, 0, 0, 0.9)';
+            summaryDiv.style.padding = '2rem';
+            summaryDiv.style.borderRadius = '20px';
+            summaryDiv.style.border = '2px solid #4ecdc4';
+            
+            document.body.appendChild(summaryDiv);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                summaryDiv.remove();
+            }, 10000);
+            
+            console.log('✅ Stream Summary test completed');
         };
         
         // Test live viewers update
