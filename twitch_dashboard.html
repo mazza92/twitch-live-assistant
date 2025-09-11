@@ -569,25 +569,6 @@
             }
         }
 
-        /* First Viewer Alert - Full Screen Celebration */
-        .first-viewer-alert {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, var(--phase-first) 0%, #2c3e50 100%);
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            animation: firstViewerCelebration 3s ease-in-out;
-        }
-
-        .first-viewer-alert.show {
-            display: flex;
-        }
 
         .first-viewer-content {
             text-align: center;
@@ -1282,9 +1263,6 @@
             display: none !important;
         }
 
-        .phase-first_viewer .first-viewer-alert {
-            display: flex;
-        }
 
         .phase-building_audience .metric-card,
         .phase-building_audience .revenue-metrics,
@@ -3618,7 +3596,8 @@
                 case 'first_viewer':
                     stopABTCoach();
                     if (!firstViewerAlertShown) {
-                showFirstViewerAlert();
+                        showEnhancedFirstViewerAlert(1, 1);
+                        firstViewerAlertShown = true;
                     }
                     break;
                 case 'building_audience':
@@ -3733,7 +3712,7 @@
             if (data.currentViewerCount > lastViewerCount && data.currentViewerCount >= 1 && data.currentViewerCount <= 5) {
                 const viewerName = data.newViewerName || 'New Viewer';
                 uniqueViewers.add(viewerName);
-                showFirstViewerAlert(viewerName);
+                showEnhancedFirstViewerAlert(uniqueViewers.size, 1);
             }
             
             // Update last viewer count
@@ -5536,7 +5515,7 @@
         // Test first viewer alert
         window.testFirstViewerAlert = function() {
             console.log('🧪 Testing first viewer alert...');
-            showFirstViewerAlert('TestViewer');
+            showEnhancedFirstViewerAlert(1, 1);
         };
 
         // Test First Viewer Catcher - FLAGSHIP FEATURE
