@@ -1389,14 +1389,67 @@
 
         <!-- Central Chat Score Gauge - Single Instance -->
         <div class="chat-score-gauge-enhanced" id="chatScoreGaugeEnhanced">
-            <!-- GAUGE VISUAL COMPONENT -->
-            <div class="gauge-visual-container">
-                <div class="gauge-circle-visual">
-                    <div class="gauge-inner-visual">
-                        <div class="gauge-score-visual" id="gaugeScoreEnhanced">0</div>
-                    </div>
-                    <div class="gauge-needle-visual" id="gaugeNeedleEnhanced"></div>
+            <!-- SIMPLE FALLBACK GAUGE - GUARANTEED TO SHOW -->
+            <div style="
+                width: 250px; 
+                height: 250px; 
+                margin: 20px auto; 
+                position: relative; 
+                display: block !important; 
+                visibility: visible !important; 
+                opacity: 1 !important;
+                background: #333;
+                border: 5px solid #9146ff;
+                border-radius: 50%;
+                box-shadow: 0 0 20px rgba(145, 70, 255, 0.5);
+            ">
+                <!-- INNER CIRCLE -->
+                <div style="
+                    position: absolute;
+                    top: 25px;
+                    left: 25px;
+                    width: 200px;
+                    height: 200px;
+                    background: #000;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 2;
+                ">
+                    <!-- SCORE -->
+                    <div id="gaugeScoreEnhanced" style="
+                        font-size: 3rem;
+                        font-weight: 700;
+                        color: #ffffff;
+                        text-shadow: 0 0 15px rgba(145, 70, 255, 0.8);
+                        background: #222;
+                        border-radius: 50%;
+                        width: 100px;
+                        height: 100px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 3px solid #9146ff;
+                        z-index: 4;
+                    ">0</div>
                 </div>
+                
+                <!-- NEEDLE -->
+                <div id="gaugeNeedleEnhanced" style="
+                    position: absolute;
+                    top: 10px;
+                    left: 50%;
+                    width: 6px;
+                    height: 100px;
+                    background: #fff;
+                    border-radius: 3px;
+                    transform-origin: bottom center;
+                    transform: translateX(-50%) rotate(-90deg);
+                    z-index: 3;
+                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+                    transition: transform 0.5s ease;
+                "></div>
             </div>
             
             <!-- GAUGE LABELS -->
@@ -3054,19 +3107,17 @@
 
         // Quick test function for immediate gauge testing
         function testGaugeNow(score = 85) {
-            console.log('🧪 Testing gauge immediately with score:', score);
+            console.log('🧪 Testing BULLETPROOF gauge immediately with score:', score);
             
-            // Debug gauge visibility with new class names
-            const gaugeContainer = document.querySelector('.gauge-visual-container');
-            const gaugeCircle = document.querySelector('.gauge-circle-visual');
-            const gaugeInner = document.querySelector('.gauge-inner-visual');
+            // Debug gauge visibility with inline styles
+            const gaugeContainer = document.querySelector('.chat-score-gauge-enhanced');
             const gaugeScore = document.getElementById('gaugeScoreEnhanced');
+            const gaugeNeedle = document.getElementById('gaugeNeedleEnhanced');
             
-            console.log('🔍 Gauge Debug Info:');
+            console.log('🔍 BULLETPROOF Gauge Debug Info:');
             console.log('- Gauge Container:', gaugeContainer);
-            console.log('- Gauge Circle:', gaugeCircle);
-            console.log('- Gauge Inner:', gaugeInner);
-            console.log('- Gauge Score:', gaugeScore);
+            console.log('- Gauge Score Element:', gaugeScore);
+            console.log('- Gauge Needle Element:', gaugeNeedle);
             
             if (gaugeContainer) {
                 console.log('- Container computed style:', window.getComputedStyle(gaugeContainer));
@@ -3074,10 +3125,15 @@
                 console.log('- Container visibility:', window.getComputedStyle(gaugeContainer).visibility);
             }
             
-            if (gaugeCircle) {
-                console.log('- Circle computed style:', window.getComputedStyle(gaugeCircle));
-                console.log('- Circle display:', window.getComputedStyle(gaugeCircle).display);
-                console.log('- Circle visibility:', window.getComputedStyle(gaugeCircle).visibility);
+            if (gaugeScore) {
+                console.log('- Score element found:', gaugeScore);
+                console.log('- Score text:', gaugeScore.textContent);
+                console.log('- Score computed style:', window.getComputedStyle(gaugeScore));
+            }
+            
+            if (gaugeNeedle) {
+                console.log('- Needle element found:', gaugeNeedle);
+                console.log('- Needle computed style:', window.getComputedStyle(gaugeNeedle));
             }
             
             updateChatScoreGauge(score);
