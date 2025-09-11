@@ -46,6 +46,18 @@ const promptTranslations = {
         fallback_engagement_poll: "📊 **Quick Poll**: Perfect for engagement! Say: \"Let's do a quick poll! Type your favorite [topic] and I'll count the votes!\" or \"I'm curious - what's your opinion on this? Share your thoughts!\"",
         fallback_engagement_challenge: "🎯 **Interactive Challenge**: Let's get creative! Say: \"Challenge time! Type the most creative [topic] and I'll pick the best ones!\" or \"Who can come up with the funniest [topic]? Let's see what you've got!\"",
         
+        // Zero to One Engine - "Always Be Talking" prompts for zero_viewers phase
+        always_be_talking_1: "🎤 **Always Be Talking**: Chat is quiet, but that's okay! Keep talking about what you're doing, your thoughts, or ask questions. Say: \"I know chat is quiet right now, but I'm going to keep talking because you never know who might be lurking!\"",
+        always_be_talking_2: "🗣️ **Keep the Energy Up**: Even with no visible chat, keep the conversation flowing! Say: \"I'm going to keep talking because I love what I do! Feel free to jump in anytime!\"",
+        always_be_talking_3: "💭 **Share Your Thoughts**: Use this quiet time to share your process. Say: \"I'm thinking out loud here - this is actually really helpful for me to process what I'm doing!\"",
+        always_be_talking_4: "❓ **Ask Questions**: Even if no one answers, ask questions! Say: \"I'm curious - what do you think about this? Even if you don't type, I'd love to hear your thoughts!\"",
+        always_be_talking_5: "🎯 **Set Goals**: Share your streaming goals. Say: \"My goal today is to [goal]. Even if it's just me here, I'm going to work towards it!\"",
+        
+        // First Viewer Catcher prompts
+        first_viewer_welcome: "🎉 **FIRST VIEWER ALERT!**: Welcome to the stream! Say: \"Hey there! Thanks for being my first viewer today! I really appreciate you stopping by!\"",
+        first_viewer_engagement: "🤝 **First Connection**: Make them feel special! Say: \"You're the first person to join me today - that makes you special! What brought you here?\"",
+        first_viewer_community: "🏠 **Build Community**: Start building from the first person! Say: \"Welcome to our little community! Even if it's just us two, let's make it awesome!\"",
+        
         fallback_growth_welcome: "👋 **Welcome New Viewers**: Great to see new faces! Say: \"Welcome to all the new faces! Drop a message and tell me where you're from!\" or \"I love seeing new people join! What brought you here today?\"",
         fallback_growth_community: "🤝 **Build Community**: Perfect time to connect! Say: \"I love this community we're building! Share something about yourself in the chat!\" or \"Let's get to know each other better - what's your favorite thing about this stream?\"",
         fallback_growth_share: "📢 **Encourage Sharing**: Great momentum! Say: \"If you're enjoying this, share it with your friends! Tag someone who would love this!\" or \"Help me grow this community - share this stream with someone who needs to see it!\"",
@@ -222,6 +234,15 @@ function createEmptyMetrics() {
         // AI and prompts
         promptHistory: [],
         lastPromptTime: null,
+        
+        // Zero to One Engine - Stream Phase State Machine
+        streamPhase: 'zero_viewers', // 'zero_viewers' -> 'first_viewer' -> 'building_audience'
+        phaseTransitionTime: null,
+        firstViewerTime: null,
+        streamUptime: 0,
+        
+        // Chat Score - Single metric for engagement
+        chatScore: 0,
         
         // Viewer retention
         viewerRetention: 0,
@@ -875,6 +896,72 @@ function calculateRollingMetrics(metrics) {
             `Increase interactive segments to boost by ${Math.round((metrics.peerAvgViewers - metrics.currentViewerCount) / metrics.peerAvgViewers * 100)}%` : "Viewership above average!";
         
         metrics.growthRec = metrics.sessionFollowersGained < 10 ? "Collaborate with similar-sized streamers" : "Strong growth - keep promoting!";
+        
+        // Update stream uptime for Zero to One Engine
+        metrics.streamUptime = streamDuration;
+        
+        // Calculate Chat Score (0-100)
+        calculateChatScore(metrics);
+        
+        // Update stream phase based on viewer count and uptime
+        updateStreamPhase(metrics);
+    }
+}
+
+// Calculate Chat Score - Single metric for engagement (0-100)
+function calculateChatScore(metrics) {
+    const messageWeight = 0.4; // 40% weight for message activity
+    const sentimentWeight = 0.3; // 30% weight for chat sentiment
+    const uniqueWeight = 0.3; // 30% weight for unique chatters
+    
+    // Message activity score (0-40 points)
+    const messageScore = Math.min(metrics.messagesPerMinute * 2, 40);
+    
+    // Sentiment score (0-30 points) - normalize from -1 to 1 range to 0-30
+    const sentimentScore = Math.max(0, (metrics.rollingSentimentScore + 1) * 15);
+    
+    // Unique chatters score (0-30 points)
+    const uniqueChattersCount = metrics.uniqueChatters.size;
+    const uniqueScore = Math.min(uniqueChattersCount * 3, 30);
+    
+    // Calculate final chat score
+    metrics.chatScore = Math.round(messageScore + sentimentScore + uniqueScore);
+    
+    // Ensure score is between 0-100
+    metrics.chatScore = Math.max(0, Math.min(100, metrics.chatScore));
+}
+
+// Update stream phase based on viewer count and stream uptime
+function updateStreamPhase(metrics) {
+    const previousPhase = metrics.streamPhase;
+    const viewerCount = metrics.currentViewerCount;
+    const uptime = metrics.streamUptime;
+    
+    // Phase transition logic
+    if (viewerCount === 0 && uptime < 5) {
+        // Still in zero viewers phase if stream just started
+        metrics.streamPhase = 'zero_viewers';
+    } else if (viewerCount > 0 && previousPhase === 'zero_viewers') {
+        // First viewer detected!
+        metrics.streamPhase = 'first_viewer';
+        metrics.firstViewerTime = Date.now();
+        metrics.phaseTransitionTime = Date.now();
+        console.log(`🎉 [PHASE] Zero to One! First viewer detected! Phase: ${previousPhase} -> ${metrics.streamPhase}`);
+    } else if (viewerCount >= 3 && previousPhase === 'first_viewer') {
+        // Building audience phase
+        metrics.streamPhase = 'building_audience';
+        metrics.phaseTransitionTime = Date.now();
+        console.log(`📈 [PHASE] Building audience! Phase: ${previousPhase} -> ${metrics.streamPhase}`);
+    } else if (viewerCount === 0 && previousPhase !== 'zero_viewers') {
+        // Back to zero viewers
+        metrics.streamPhase = 'zero_viewers';
+        metrics.phaseTransitionTime = Date.now();
+        console.log(`🔄 [PHASE] Back to zero viewers. Phase: ${previousPhase} -> ${metrics.streamPhase}`);
+    }
+    
+    // Log phase changes
+    if (previousPhase !== metrics.streamPhase) {
+        console.log(`🔄 [PHASE] Stream phase changed: ${previousPhase} -> ${metrics.streamPhase} (Viewers: ${viewerCount}, Uptime: ${uptime.toFixed(1)}min)`);
     }
 }
 
@@ -916,51 +1003,146 @@ function updateTopEngagedUsers(metrics) {
     metrics.topEngagedUsers = userArray;
 }
 
-// Generate AI prompt based on current metrics for a specific session
+// Zero to One Engine - Generate AI prompt based on stream phase
 async function generateAIPrompt(session) {
     try {
-        const prompt = await geminiService.generatePrompt(session.metrics, currentLanguage);
+        const metrics = session.metrics;
+        const phase = metrics.streamPhase;
         
-        // Assume prompt is {type: 'some_type', message: 'some_key'}
-        // Format the message using translations
-        let fullMessage = promptTranslations[currentLanguage][prompt.message] || prompt.message;
+        console.log(`🤖 [AI] Generating prompt for phase: ${phase} (Viewers: ${metrics.currentViewerCount}, Chat Score: ${metrics.chatScore})`);
         
-        const replacements = {
-            '{viewerCount}': session.metrics.currentViewerCount,
-            '{messageRate}': session.metrics.messagesPerMinute.toFixed(1),
-            '{followRate}': session.metrics.followersGainsPerMinute.toFixed(1)
-            // Add more placeholders as needed from translations
-        };
+        let prompt = null;
         
-        Object.keys(replacements).forEach(key => {
-            fullMessage = fullMessage.replace(new RegExp(key, 'g'), replacements[key]);
-        });
+        // Phase-specific prompt generation
+        if (phase === 'zero_viewers') {
+            prompt = generateZeroViewersPrompt(metrics);
+        } else if (phase === 'first_viewer') {
+            prompt = generateFirstViewerPrompt(metrics);
+        } else if (phase === 'building_audience') {
+            prompt = await generateBuildingAudiencePrompt(metrics);
+        }
         
-        prompt.message = fullMessage;
+        if (!prompt) {
+            console.log('🤖 [AI] No prompt generated, using fallback');
+            return null;
+        }
         
         // Add to prompt history
-        session.metrics.promptHistory.push({
+        metrics.promptHistory.push({
             timestamp: Date.now(),
             prompt: prompt,
+            phase: phase,
             metrics: {
-                viewerCount: session.metrics.currentViewerCount,
-                messageRate: session.metrics.messagesPerMinute,
-                sentiment: session.metrics.rollingSentimentScore
+                viewerCount: metrics.currentViewerCount,
+                messageRate: metrics.messagesPerMinute,
+                sentiment: metrics.rollingSentimentScore,
+                chatScore: metrics.chatScore
             }
         });
         
         // Keep only last 50 prompts
-        if (session.metrics.promptHistory.length > 50) {
-            session.metrics.promptHistory = session.metrics.promptHistory.slice(-50);
+        if (metrics.promptHistory.length > 50) {
+            metrics.promptHistory = metrics.promptHistory.slice(-50);
         }
         
-        session.metrics.lastPromptTime = Date.now();
+        metrics.lastPromptTime = Date.now();
         
         return prompt;
     } catch (error) {
         console.error('Error generating AI prompt:', error);
         return null;
     }
+}
+
+// Generate "Always Be Talking" prompts for zero_viewers phase
+function generateZeroViewersPrompt(metrics) {
+    const alwaysBeTalkingPrompts = [
+        'always_be_talking_1',
+        'always_be_talking_2', 
+        'always_be_talking_3',
+        'always_be_talking_4',
+        'always_be_talking_5'
+    ];
+    
+    // Select random prompt
+    const randomPrompt = alwaysBeTalkingPrompts[Math.floor(Math.random() * alwaysBeTalkingPrompts.length)];
+    
+    return {
+        type: 'zero_viewers',
+        message: randomPrompt,
+        priority: 'high',
+        phase: 'zero_viewers'
+    };
+}
+
+// Generate high-priority first viewer prompts
+function generateFirstViewerPrompt(metrics) {
+    const firstViewerPrompts = [
+        'first_viewer_welcome',
+        'first_viewer_engagement',
+        'first_viewer_community'
+    ];
+    
+    // Select random prompt
+    const randomPrompt = firstViewerPrompts[Math.floor(Math.random() * firstViewerPrompts.length)];
+    
+    return {
+        type: 'first_viewer',
+        message: randomPrompt,
+        priority: 'urgent',
+        phase: 'first_viewer'
+    };
+}
+
+// Generate AI-powered prompts for building_audience phase
+async function generateBuildingAudiencePrompt(metrics) {
+    try {
+        // Try AI-powered prompt first
+        const aiPrompt = await geminiService.generatePrompt(metrics, currentLanguage);
+        
+        if (aiPrompt && aiPrompt.message) {
+            return {
+                type: 'ai_powered',
+                message: aiPrompt.message,
+                priority: 'medium',
+                phase: 'building_audience'
+            };
+        }
+    } catch (error) {
+        console.log('🤖 [AI] Gemini API failed, using fallback:', error.message);
+    }
+    
+    // Fallback to dynamic library
+    const fallbackPrompts = [
+        'chatActivation',
+        'followBoost',
+        'communityGrowth',
+        'aiEngagementBoost',
+        'aiInteraction',
+        'aiMomentum',
+        'bitsBoost',
+        'subBoost',
+        'raidBoost'
+    ];
+    
+    // Select based on metrics
+    let selectedPrompt;
+    if (metrics.messagesPerMinute < 1) {
+        selectedPrompt = 'chatActivation';
+    } else if (metrics.sessionFollowersGained > 0) {
+        selectedPrompt = 'followBoost';
+    } else if (metrics.rollingSentimentScore > 0.5) {
+        selectedPrompt = 'aiMomentum';
+    } else {
+        selectedPrompt = fallbackPrompts[Math.floor(Math.random() * fallbackPrompts.length)];
+    }
+    
+    return {
+        type: 'fallback',
+        message: selectedPrompt,
+        priority: 'medium',
+        phase: 'building_audience'
+    };
 }
 
 // Broadcast metrics to a specific session's dashboard clients
@@ -1532,22 +1714,37 @@ setInterval(() => {
     }
 }, 2000); // Every 2 seconds for dashboard responsiveness
 
-// AI prompt generation interval - run for all active sessions
+// Zero to One Engine - Generate AI prompts based on stream phase
 setInterval(async () => {
     userSessions.forEach(async (session) => {
-        if (session.isConnected && session.channel && session.metrics.isLive && session.metrics.currentViewerCount > 0) {
-            const timeSinceLastPrompt = Date.now() - session.metrics.lastPromptTime;
-        const shouldGeneratePrompt = timeSinceLastPrompt > 60000; // 1 minute minimum
-        
-        if (shouldGeneratePrompt) {
+        if (session.isConnected && session.channel && session.metrics.isLive) {
+            const metrics = session.metrics;
+            const timeSinceLastPrompt = Date.now() - metrics.lastPromptTime;
+            
+            let shouldGeneratePrompt = false;
+            let promptInterval = 60000; // Default 1 minute
+            
+            // Phase-specific prompt timing
+            if (metrics.streamPhase === 'zero_viewers') {
+                promptInterval = 30000; // 30 seconds for zero viewers
+                shouldGeneratePrompt = timeSinceLastPrompt > promptInterval;
+            } else if (metrics.streamPhase === 'first_viewer') {
+                promptInterval = 10000; // 10 seconds for first viewer (urgent)
+                shouldGeneratePrompt = timeSinceLastPrompt > promptInterval;
+            } else if (metrics.streamPhase === 'building_audience') {
+                promptInterval = 60000; // 1 minute for building audience
+                shouldGeneratePrompt = timeSinceLastPrompt > promptInterval && metrics.currentViewerCount > 0;
+            }
+            
+            if (shouldGeneratePrompt) {
                 const prompt = await generateAIPrompt(session);
-            if (prompt) {
-                    console.log(`🤖 [AI] Generated prompt for session ${session.sessionId}:`, prompt.message);
+                if (prompt) {
+                    console.log(`🤖 [AI] Generated ${prompt.type} prompt for ${metrics.streamPhase} phase:`, prompt.message);
+                }
             }
         }
-    }
     });
-}, 30000); // Check every 30 seconds
+}, 15000); // Check every 15 seconds for responsiveness
 
 // Graceful shutdown
 process.on('SIGINT', () => {
