@@ -546,7 +546,7 @@
             }
             
             /* Mobile Overlay Adjustments */
-            .first-viewer-alert {
+        .first-viewer-alert {
                 padding: 2rem 1rem;
             }
             
@@ -559,7 +559,7 @@
             }
             
             .alert-buttons {
-                flex-direction: column;
+            flex-direction: column;
                 gap: 1rem;
             }
             
@@ -2270,14 +2270,14 @@
                 <div class="ai-prompt-phase" id="aiPromptPhase" data-translate="zeroViewers">Zero Viewers</div>
             </div>
             <div class="ai-prompt-content">
-                <div class="ai-prompt-message" id="aiPromptMessage">Keep talking! Your audience will find you.</div>
+                <div class="ai-prompt-message" id="aiPromptMessage">🤖 AI is analyzing news and facts to generate your next prompt...</div>
                 <div class="ai-prompt-meta">
                 <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
                     <div class="ai-prompt-category" id="aiPromptCategory" style="display: none;"></div>
                     <div class="ai-analysis-indicator" id="aiAnalysisIndicator" style="display: none;">
                         🤖 AI Analyzed
-                    </div>
             </div>
+        </div>
         </div>
                 </div>
                 
@@ -5058,7 +5058,8 @@
                 
                 // Only trigger if: zero viewers AND (no messages in 30+ seconds OR timer reached 0)
                 if (currentViewers === 0 && (timeSinceLastMessage > 30000 || abtTimer <= 0)) {
-                    triggerABTPrompt();
+                    // Use intelligent prompts instead of old static prompts
+                    triggerIntelligentABTPrompt();
                     abtTimer = 30; // Reset timer
                     if (timerDisplay) {
                         timerDisplay.textContent = abtTimer;
@@ -5108,7 +5109,8 @@
             }
         }
 
-        async function triggerABTPrompt() {
+        // New intelligent ABT prompt function
+        async function triggerIntelligentABTPrompt() {
             if (abtMuted) return;
             
             // Check cooldown to prevent rapid-fire prompts
@@ -5132,7 +5134,9 @@
                 updateAIPromptArea('zero_viewers', {
                     message: intelligentPrompt.message,
                     priority: intelligentPrompt.priority,
-                    category: intelligentPrompt.category
+                    category: intelligentPrompt.category,
+                    relevance: intelligentPrompt.relevance,
+                    engagement: intelligentPrompt.engagement
                 });
                 
             } catch (error) {
@@ -5165,6 +5169,11 @@
                     category: randomCategory
                 });
             }
+        }
+
+        // Keep old function for backward compatibility
+        async function triggerABTPrompt() {
+            return triggerIntelligentABTPrompt();
         }
 
         // PERSISTENCE ENGINE FUNCTIONS - Emotional Support & Validation
@@ -6393,6 +6402,20 @@
             // Initialize Zero to One features
             initializeMilestones();
             startStreamTimeTracking();
+            
+            // Initialize AI Intelligence with first prompt
+            setTimeout(async () => {
+                try {
+                    const intelligentPrompt = await generateIntelligentPrompt();
+                    updateAIPromptArea('zero_viewers', {
+                        message: intelligentPrompt.message,
+                        priority: intelligentPrompt.priority,
+                        category: intelligentPrompt.category
+                    });
+                } catch (error) {
+                    console.log('⚠️ Initial AI prompt failed, using fallback');
+                }
+            }, 2000);
             
             // Force gauge display on desktop
             setTimeout(() => {
