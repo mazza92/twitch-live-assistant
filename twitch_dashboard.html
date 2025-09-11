@@ -5061,6 +5061,12 @@
                     return cachedNews;
                 }
 
+                // Check if API key is valid
+                if (!newsApiKey || newsApiKey === 'your_news_api_key_here' || newsApiKey.length < 10) {
+                    console.warn('🚨 NewsAPI key not configured or invalid, using fallback news');
+                    return getFallbackNews();
+                }
+
                 // Fetch news from multiple relevant categories for streamers
                 const categories = ['technology', 'entertainment', 'gaming', 'business'];
                 const allNews = [];
@@ -5081,10 +5087,28 @@
                                 }));
                                 allNews.push(...processedArticles);
                             }
+                        } else if (response.status === 426) {
+                            console.warn(`🚨 NewsAPI returned 426 (Upgrade Required) for category ${category}. This usually means the API key is invalid or the account needs to be upgraded.`);
+                            // Don't try other categories if we get 426 - the API key is likely invalid
+                            break;
+                        } else if (response.status === 401) {
+                            console.warn(`🚨 NewsAPI returned 401 (Unauthorized) for category ${category}. The API key is invalid.`);
+                            break;
+                        } else if (response.status === 429) {
+                            console.warn(`🚨 NewsAPI returned 429 (Too Many Requests) for category ${category}. Rate limit exceeded.`);
+                            break;
+                        } else {
+                            console.warn(`⚠️ NewsAPI failed for category ${category}:`, response.status, response.statusText);
                         }
                     } catch (catError) {
                         console.log(`⚠️ Failed to fetch ${category} news:`, catError.message);
                     }
+                }
+                
+                // If we got no news from API, use fallback
+                if (allNews.length === 0) {
+                    console.log('📰 No news from API, using fallback news');
+                    return getFallbackNews();
                 }
                 
                 // Sort by streamer relevance and engagement potential
@@ -6856,6 +6880,35 @@
         window.testApiConfig = function() {
             console.log('⚙️ Testing API Configuration...');
             toggleApiConfig();
+        };
+
+        // Test NewsAPI Status
+        window.testNewsApiStatus = async function() {
+            console.log('🔍 Testing NewsAPI Status...');
+            
+            if (!newsApiKey || newsApiKey === 'your_news_api_key_here') {
+                console.log('❌ NewsAPI key not configured');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=1&apiKey=${newsApiKey}`);
+                console.log('📊 NewsAPI Response Status:', response.status, response.statusText);
+                
+                if (response.status === 426) {
+                    console.log('🚨 NewsAPI Error 426: Upgrade Required - Your API key may be invalid or account needs upgrade');
+                } else if (response.status === 401) {
+                    console.log('🚨 NewsAPI Error 401: Unauthorized - API key is invalid');
+                } else if (response.status === 429) {
+                    console.log('🚨 NewsAPI Error 429: Too Many Requests - Rate limit exceeded');
+                } else if (response.ok) {
+                    console.log('✅ NewsAPI is working correctly');
+                } else {
+                    console.log('⚠️ NewsAPI returned unexpected status:', response.status);
+                }
+            } catch (error) {
+                console.log('❌ NewsAPI test failed:', error.message);
+            }
         };
 
         // Test Gamification Features
