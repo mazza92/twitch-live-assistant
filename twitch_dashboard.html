@@ -4735,6 +4735,33 @@
             
             // Update text content
             updateLanguage();
+            
+            // Regenerate AI prompts with new language
+            setTimeout(async () => {
+                try {
+                    const intelligentPrompt = await generateIntelligentPrompt();
+                    updateAIPromptArea('zero_viewers', {
+                        message: intelligentPrompt.message,
+                        priority: intelligentPrompt.priority,
+                        category: intelligentPrompt.category,
+                        relevance: intelligentPrompt.relevance,
+                        engagement: intelligentPrompt.engagement
+                    });
+                    console.log('🌍 AI prompt regenerated for language:', lang);
+                } catch (error) {
+                    console.log('⚠️ Failed to regenerate AI prompt for language change:', error.message);
+                }
+            }, 500);
+            
+            // Regenerate milestone cards with new language
+            setTimeout(() => {
+                try {
+                    updateMilestoneCards();
+                    console.log('🏆 Milestone cards regenerated for language:', lang);
+                } catch (error) {
+                    console.log('⚠️ Failed to regenerate milestone cards for language change:', error.message);
+                }
+            }, 600);
         }
 
         // Update language
@@ -6908,6 +6935,31 @@
                 }
             } catch (error) {
                 console.log('❌ NewsAPI test failed:', error.message);
+            }
+        };
+
+        // Test Language-Specific AI Prompts
+        window.testLanguagePrompts = async function(lang = 'fr') {
+            console.log(`🌍 Testing AI prompts for language: ${lang}`);
+            
+            // Set the language
+            currentLanguage = lang;
+            
+            try {
+                const intelligentPrompt = await generateIntelligentPrompt();
+                console.log('✅ Generated prompt:', intelligentPrompt.message);
+                
+                updateAIPromptArea('zero_viewers', {
+                    message: intelligentPrompt.message,
+                    priority: intelligentPrompt.priority,
+                    category: intelligentPrompt.category,
+                    relevance: intelligentPrompt.relevance,
+                    engagement: intelligentPrompt.engagement
+                });
+                
+                console.log(`🎉 AI prompt updated for ${lang} language`);
+            } catch (error) {
+                console.log('❌ Failed to generate language-specific prompt:', error.message);
             }
         };
 
