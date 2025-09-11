@@ -2251,14 +2251,19 @@
             <div class="api-config" id="apiConfig" style="display: none;">
                 <h4>🔧 API Configuration</h4>
                 <div class="config-item">
-                    <label for="newsApiKey">NewsAPI Key:</label>
-                    <input type="text" id="newsApiKey" placeholder="Enter your NewsAPI key" value="db94af2f4bac408ab8084f22a7a2c9c6" />
-                    <small>For international news (currently has 426 error)</small>
+                    <label>🆓 Free News APIs (No Key Required):</label>
+                    <small style="color: #4CAF50;">✅ Saurav.tech NewsAPI - Completely free, no limits!</small><br>
+                    <small style="color: #4CAF50;">✅ Abhishek NewsAPI - Free alternative</small>
                 </div>
                 <div class="config-item">
-                    <label for="gnewsApiKey">GNews API Key (Better French):</label>
+                    <label for="gnewsApiKey">GNews API Key (Optional):</label>
                     <input type="text" id="gnewsApiKey" placeholder="Enter your GNews API key" value="" />
-                    <small>Get free key at <a href="https://gnews.io" target="_blank" style="color: #4CAF50;">gnews.io</a> for better French news</small>
+                    <small>Get free key at <a href="https://gnews.io" target="_blank" style="color: #4CAF50;">gnews.io</a> for premium news</small>
+                </div>
+                <div class="config-item">
+                    <label for="newsApiKey">NewsAPI Key (Backup):</label>
+                    <input type="text" id="newsApiKey" placeholder="Enter your NewsAPI key" value="db94af2f4bac408ab8084f22a7a2c9c6" />
+                    <small>Backup API (has 426 error on free tier)</small>
                 </div>
                 <div class="config-item">
                     <label for="factsApiUrl">Facts API URL:</label>
@@ -2953,7 +2958,7 @@
         let promptCooldown = 30000; // 30 seconds minimum between prompts
         
         // AI Intelligence - External APIs
-        let newsApiKey = 'db94af2f4bac408ab8084f22a7a2c9c6'; // Your NewsAPI key
+        let newsApiKey = 'db94af2f4bac408ab8084f22a7a2c9c6'; // Your NewsAPI key (backup)
         let gnewsApiKey = ''; // GNews API key for better French support
         let factsApiUrl = 'https://uselessfacts.jsph.pl/random.json?language=en';
         let cachedNews = [];
@@ -2961,6 +2966,12 @@
         let lastNewsFetch = 0;
         let lastFactsFetch = 0;
         const CACHE_DURATION = 300000; // 5 minutes cache
+        
+        // Free News API alternatives (no key required)
+        const FREE_NEWS_APIS = {
+            saurav: 'https://saurav.tech/NewsAPI/top-headlines/category',
+            abhishek: 'https://newsapi.abhisheksurela79.workers.dev/top-headlines'
+        };
 
         // PERSISTENCE ENGINE - Emotional Support & Validation
         let persistenceEngine = {
@@ -5109,12 +5120,6 @@
                     return cachedNews;
                 }
 
-                // Check if API key is valid
-                if (!newsApiKey || newsApiKey === 'your_news_api_key_here' || newsApiKey.length < 10) {
-                    console.warn('🚨 NewsAPI key not configured or invalid, using fallback news');
-                    return getFallbackNews();
-                }
-
                 // Determine country and language based on current language setting
                 let country = 'us';
                 let language = 'en';
@@ -5129,10 +5134,60 @@
                     language = 'de';
                 }
 
-                // Try GNews API first for better French support
-                if (currentLanguage === 'fr' && gnewsApiKey && gnewsApiKey.length > 10) {
+                // Try FREE News APIs first (no key required)
+                console.log('🆓 Trying free news APIs...');
+                
+                // Try Saurav.tech NewsAPI (completely free, no key required)
+                try {
+                    const categories = ['technology', 'entertainment', 'gaming', 'business'];
+                    const allNews = [];
+                    
+                    for (const category of categories) {
+                        try {
+                            const freeApiUrl = `${FREE_NEWS_APIS.saurav}/${category}/${country}.json`;
+                            console.log(`📰 Fetching from free API: ${freeApiUrl}`);
+                            
+                            const response = await fetch(freeApiUrl);
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.articles && data.articles.length > 0) {
+                                    const processedArticles = data.articles.map(article => ({
+                                        title: article.title,
+                                        description: article.description || '',
+                                        url: article.url || '#',
+                                        publishedAt: article.publishedAt || new Date().toISOString(),
+                                        source: article.source?.name || 'Free News API',
+                                        category: category,
+                                        streamerRelevance: analyzeNewsForStreamers(article),
+                                        engagementPotential: calculateEngagementPotential(article),
+                                        isFreeAPI: true
+                                    }));
+                                    allNews.push(...processedArticles);
+                                    console.log(`✅ Free API success for ${category}: ${processedArticles.length} articles`);
+                                }
+                            } else {
+                                console.warn(`⚠️ Free API failed for ${category}: ${response.status}`);
+                            }
+                        } catch (error) {
+                            console.warn(`⚠️ Free API error for ${category}:`, error.message);
+                        }
+                    }
+                    
+                    if (allNews.length > 0) {
+                        cachedNews = allNews;
+                        lastNewsFetch = currentTime;
+                        console.log('🎉 Free News API success:', allNews.length, 'total articles');
+                        return cachedNews;
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Free News API failed:', error.message);
+                }
+
+                // Try GNews API as secondary option
+                if (gnewsApiKey && gnewsApiKey.length > 10) {
                     try {
-                        console.log('🌍 Trying GNews API for French content...');
+                        console.log('🌍 Trying GNews API...');
                         const gnewsResponse = await fetch(`https://gnews.io/api/v4/top-headlines?lang=${language}&country=${country}&max=10&apikey=${gnewsApiKey}`);
                         
                         if (gnewsResponse.ok) {
@@ -5152,7 +5207,7 @@
                                 
                                 cachedNews = processedArticles;
                                 lastNewsFetch = currentTime;
-                                console.log('✅ GNews API success:', processedArticles.length, 'French articles');
+                                console.log('✅ GNews API success:', processedArticles.length, 'articles');
                                 return cachedNews;
                             }
                         } else {
@@ -5163,81 +5218,79 @@
                     }
                 }
 
-                // Fallback to NewsAPI
-                const categories = ['technology', 'entertainment', 'gaming', 'business'];
-                const allNews = [];
+                // Fallback to original NewsAPI (if key is valid)
+                if (newsApiKey && newsApiKey !== 'your_news_api_key_here' && newsApiKey.length > 10) {
+                    console.log('🔄 Trying original NewsAPI as fallback...');
+                    const categories = ['technology', 'entertainment', 'gaming', 'business'];
+                    const allNews = [];
                 
-                for (const category of categories) {
-                    try {
-                        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            if (data.articles) {
-                                // Add category tag and AI analysis
-                                const processedArticles = data.articles.map(article => ({
-                                    ...article,
-                                    category: category,
-                                    streamerRelevance: analyzeNewsForStreamers(article),
-                                    engagementPotential: calculateEngagementPotential(article)
-                                }));
-                                allNews.push(...processedArticles);
-                            }
-                        } else if (response.status === 426) {
-                            console.warn(`🚨 NewsAPI returned 426 (Upgrade Required) for category ${category} (${country}). Trying US fallback...`);
-                            // Try US news as fallback for international content
-                            try {
-                                const usResponse = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
-                                if (usResponse.ok) {
-                                    const usData = await usResponse.json();
-                                    if (usData.articles && usData.articles.length > 0) {
-                                        const processedArticles = usData.articles.map(article => ({
-                                            ...article,
-                                            category: category,
-                                            streamerRelevance: analyzeNewsForStreamers(article),
-                                            engagementPotential: calculateEngagementPotential(article),
-                                            isFallback: true // Mark as fallback content
-                                        }));
-                                        allNews.push(...processedArticles);
-                                        console.log(`✅ US fallback news fetched for ${category}: ${usData.articles.length} articles`);
-                                    }
-                                } else {
-                                    console.warn(`⚠️ US fallback also failed for ${category}: ${usResponse.status}`);
+                    for (const category of categories) {
+                        try {
+                            const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.articles) {
+                                    const processedArticles = data.articles.map(article => ({
+                                        ...article,
+                                        category: category,
+                                        streamerRelevance: analyzeNewsForStreamers(article),
+                                        engagementPotential: calculateEngagementPotential(article)
+                                    }));
+                                    allNews.push(...processedArticles);
                                 }
-                            } catch (fallbackError) {
-                                console.warn(`⚠️ US fallback error for ${category}:`, fallbackError.message);
+                            } else if (response.status === 426) {
+                                console.warn(`🚨 NewsAPI returned 426 (Upgrade Required) for category ${category} (${country}). Trying US fallback...`);
+                                // Try US news as fallback for international content
+                                try {
+                                    const usResponse = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
+                                    if (usResponse.ok) {
+                                        const usData = await usResponse.json();
+                                        if (usData.articles && usData.articles.length > 0) {
+                                            const processedArticles = usData.articles.map(article => ({
+                                                ...article,
+                                                category: category,
+                                                streamerRelevance: analyzeNewsForStreamers(article),
+                                                engagementPotential: calculateEngagementPotential(article),
+                                                isFallback: true
+                                            }));
+                                            allNews.push(...processedArticles);
+                                            console.log(`✅ US fallback news fetched for ${category}: ${usData.articles.length} articles`);
+                                        }
+                                    } else {
+                                        console.warn(`⚠️ US fallback also failed for ${category}: ${usResponse.status}`);
+                                    }
+                                } catch (fallbackError) {
+                                    console.warn(`⚠️ US fallback error for ${category}:`, fallbackError.message);
+                                }
+                            } else if (response.status === 401) {
+                                console.warn(`🚨 NewsAPI returned 401 (Unauthorized) for category ${category}. The API key is invalid.`);
+                                break;
+                            } else if (response.status === 429) {
+                                console.warn(`🚨 NewsAPI returned 429 (Too Many Requests) for category ${category}. Rate limit exceeded.`);
+                                break;
+                            } else {
+                                console.warn(`⚠️ NewsAPI failed for category ${category}:`, response.status, response.statusText);
                             }
-                            // Continue with other categories instead of breaking
-                        } else if (response.status === 401) {
-                            console.warn(`🚨 NewsAPI returned 401 (Unauthorized) for category ${category}. The API key is invalid.`);
-                            break;
-                        } else if (response.status === 429) {
-                            console.warn(`🚨 NewsAPI returned 429 (Too Many Requests) for category ${category}. Rate limit exceeded.`);
-                            break;
-                        } else {
-                            console.warn(`⚠️ NewsAPI failed for category ${category}:`, response.status, response.statusText);
+                        } catch (catError) {
+                            console.log(`⚠️ Failed to fetch ${category} news:`, catError.message);
                         }
-                    } catch (catError) {
-                        console.log(`⚠️ Failed to fetch ${category} news:`, catError.message);
+                    }
+                    
+                    if (allNews.length > 0) {
+                        cachedNews = allNews
+                            .filter(article => article.title && article.description)
+                            .sort((a, b) => (b.streamerRelevance + b.engagementPotential) - (a.streamerRelevance + a.engagementPotential))
+                            .slice(0, 10);
+                        lastNewsFetch = currentTime;
+                        console.log('✅ Original NewsAPI success:', cachedNews.length, 'articles');
+                        return cachedNews;
                     }
                 }
                 
-                // If we got no news from API, use fallback
-                if (allNews.length === 0) {
-                    console.log('📰 No news from API, using fallback news');
-                    return getFallbackNews();
-                }
-                
-                // Sort by streamer relevance and engagement potential
-                cachedNews = allNews
-                    .filter(article => article.title && article.description)
-                    .sort((a, b) => (b.streamerRelevance + b.engagementPotential) - (a.streamerRelevance + a.engagementPotential))
-                    .slice(0, 10); // Keep top 10 most relevant articles
-                
-                lastNewsFetch = currentTime;
-                
-                console.log('📰 News fetched and analyzed successfully:', cachedNews.length, 'articles');
-                return cachedNews;
+                // Final fallback - use local news
+                console.log('📰 All APIs failed, using fallback news');
+                return getFallbackNews();
             } catch (error) {
                 console.log('⚠️ News API failed, using fallback:', error.message);
                 return getFallbackNews();
@@ -7143,19 +7196,42 @@
         window.testLanguageApis = async function(lang = 'fr') {
             console.log(`🔍 Testing APIs for language: ${lang}`);
             
-            // Test News API
-            console.log('📰 Testing News API...');
+            // Test FREE News APIs first
+            console.log('🆓 Testing FREE News APIs...');
             try {
                 const country = lang === 'fr' ? 'fr' : lang === 'es' ? 'es' : lang === 'de' ? 'de' : 'us';
-                const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=technology&pageSize=1&apiKey=${newsApiKey}`);
-                console.log(`📊 News API (${country}):`, response.status, response.statusText);
+                const freeApiUrl = `${FREE_NEWS_APIS.saurav}/technology/${country}.json`;
+                console.log(`📰 Testing: ${freeApiUrl}`);
+                
+                const response = await fetch(freeApiUrl);
+                console.log(`📊 Free News API (${country}):`, response.status, response.statusText);
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('📰 Sample news title:', data.articles?.[0]?.title || 'No articles');
+                    console.log('✅ Free API success! Sample title:', data.articles?.[0]?.title || 'No articles');
+                    console.log('📊 Total articles:', data.articles?.length || 0);
+                } else {
+                    console.log('❌ Free API failed:', response.status, response.statusText);
                 }
             } catch (error) {
-                console.log('❌ News API failed:', error.message);
+                console.log('❌ Free API error:', error.message);
+            }
+            
+            // Test Original NewsAPI
+            console.log('📰 Testing Original NewsAPI...');
+            try {
+                const country = lang === 'fr' ? 'fr' : lang === 'es' ? 'es' : lang === 'de' ? 'de' : 'us';
+                const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=technology&pageSize=1&apiKey=${newsApiKey}`);
+                console.log(`📊 NewsAPI (${country}):`, response.status, response.statusText);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ NewsAPI success! Sample title:', data.articles?.[0]?.title || 'No articles');
+                } else {
+                    console.log('❌ NewsAPI failed:', response.status, response.statusText);
+                }
+            } catch (error) {
+                console.log('❌ NewsAPI error:', error.message);
             }
             
             // Test Facts API
@@ -7166,10 +7242,12 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('🧠 Sample fact:', data.text || data.fact || 'No fact');
+                    console.log('✅ Facts API success! Sample fact:', data.text || data.fact || 'No fact');
+                } else {
+                    console.log('❌ Facts API failed:', response.status, response.statusText);
                 }
             } catch (error) {
-                console.log('❌ Facts API failed:', error.message);
+                console.log('❌ Facts API error:', error.message);
             }
         };
 
