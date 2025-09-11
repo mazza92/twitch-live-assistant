@@ -31,13 +31,12 @@
             background: linear-gradient(135deg, #9146ff 0%, #0e0e10 50%, #18181b 100%);
             color: white;
             overflow-x: hidden;
-            padding-top: 100px; /* Space for fixed urgent action bar */
         }
 
         /* Zero to One Phase System - Single Layout with Phase Control */
         #dashboard-container {
             transition: all var(--transition-duration) ease-in-out;
-            min-height: calc(100vh - 100px);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -375,205 +374,6 @@
             display: block;
         }
 
-        /* Tier 1: Urgent Action Bar */
-        .urgent-action-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100px;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 3px solid var(--twitch-purple);
-            box-shadow: 0 4px 20px rgba(145, 70, 255, 0.4);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            padding: 0 30px;
-        }
-
-        .urgent-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 1600px;
-            margin: 0 auto;
-            gap: 40px;
-        }
-
-        .ai-prompt-area {
-            flex: 2;
-            background: rgba(145, 70, 255, 0.1);
-            border: 2px solid rgba(145, 70, 255, 0.3);
-            border-radius: 15px;
-            padding: 20px 25px;
-            animation: urgentPulse 2s infinite;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        @keyframes urgentPulse {
-            0%, 100% { border-color: rgba(145, 70, 255, 0.3); }
-            50% { border-color: rgba(145, 70, 255, 0.8); }
-        }
-
-        .ai-prompt-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .ai-prompt-icon {
-            font-size: 1.2rem;
-            filter: drop-shadow(0 0 5px rgba(145, 70, 255, 0.6));
-        }
-
-        .ai-prompt-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--twitch-purple);
-        }
-
-        .ai-prompt-message {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .prompt-content {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #ffffff;
-            flex: 1;
-        }
-
-        .prompt-timestamp {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-left: 10px;
-        }
-
-        .urgent-chat-score {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 0 0 auto;
-            min-width: 120px;
-        }
-
-        .urgent-gauge-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-        }
-
-        .urgent-gauge-circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(
-                from 0deg,
-                #ff4444 0deg,
-                #ffaa00 60deg,
-                #00ff00 120deg,
-                #00aaff 180deg,
-                #aa00ff 240deg,
-                #ff00aa 300deg,
-                #ff4444 360deg
-            );
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .urgent-gauge-inner {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .urgent-gauge-score {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(145, 70, 255, 0.8);
-            position: relative;
-            z-index: 4;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid rgba(145, 70, 255, 0.5);
-        }
-
-        .urgent-gauge-needle {
-            position: absolute;
-            width: 3px;
-            height: 35px;
-            background: linear-gradient(to top, #ffffff, #ff6b6b);
-            border-radius: 2px;
-            transform-origin: bottom center;
-            transition: transform 0.5s ease;
-            z-index: 3;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-            top: 5px;
-        }
-
-        .urgent-gauge-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-top: 5px;
-            text-align: center;
-        }
-
-        .urgent-viewers {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(145, 70, 255, 0.3);
-            border-radius: 15px;
-            padding: 20px 25px;
-            min-width: 140px;
-            flex: 0 0 auto;
-            min-height: 80px;
-            justify-content: center;
-        }
-
-        .urgent-viewers-icon {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .urgent-viewers-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(145, 70, 255, 0.6);
-            line-height: 1;
-        }
-
-        .urgent-viewers-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-top: 5px;
-        }
 
         /* Header Styles */
         .header {
@@ -1215,45 +1015,9 @@
                 margin-bottom: 10px;
             }
             
-            .urgent-chat-score,
-            .urgent-viewers {
-                margin: 0 10px;
-                flex: 1;
-            }
         }
 
         @media (max-width: 768px) {
-            body {
-                padding-top: 140px; /* More space for stacked urgent bar */
-            }
-            
-            .urgent-action-bar {
-                height: auto;
-                min-height: 140px;
-                padding: 0 20px;
-            }
-            
-            .urgent-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .ai-prompt-area {
-                order: 1;
-                flex: 1;
-            }
-            
-            .urgent-chat-score {
-                order: 2;
-                margin: 0;
-                flex: 1;
-            }
-            
-            .urgent-viewers {
-                order: 3;
-                margin: 0;
-                flex: 1;
-            }
             
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -1277,32 +1041,6 @@
         }
 
         @media (max-width: 480px) {
-            .urgent-gauge-container {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .urgent-gauge-inner {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .urgent-gauge-score {
-                font-size: 1.2rem;
-                width: 40px;
-                height: 40px;
-            }
-            
-            .urgent-gauge-needle {
-                width: 2px;
-                height: 25px;
-                top: 3px;
-            }
-            
-            .urgent-viewers-value {
-                font-size: 1.5rem;
-            }
-        }
 
         /* Loading Animation */
         .loading {
@@ -1574,42 +1312,6 @@
         </div>
     </div>
 
-    <!-- Tier 1: Urgent Action Bar -->
-    <div class="urgent-action-bar">
-        <div class="urgent-content">
-            <!-- AI Prompts Area -->
-            <div class="ai-prompt-area">
-                <div class="ai-prompt-header">
-                    <span class="ai-prompt-icon">🤖</span>
-                    <span class="ai-prompt-title">AI Assistant</span>
-                </div>
-                <div class="ai-prompt-message" id="urgentAiPrompt">
-                    <div class="prompt-content">Waiting for AI prompts...</div>
-                    <div class="prompt-timestamp">--:--</div>
-                </div>
-            </div>
-            
-            <!-- Live Chat Score -->
-            <div class="urgent-chat-score">
-                <div class="urgent-gauge-container">
-                    <div class="urgent-gauge-circle">
-                        <div class="urgent-gauge-inner">
-                            <div class="urgent-gauge-score" id="urgentChatScore">0</div>
-                        </div>
-                        <div class="urgent-gauge-needle" id="urgentGaugeNeedle"></div>
-                    </div>
-                </div>
-                <div class="urgent-gauge-label">Chat Score</div>
-            </div>
-            
-            <!-- Current Viewers -->
-            <div class="urgent-viewers">
-                <div class="urgent-viewers-icon">👥</div>
-                <div class="urgent-viewers-value" id="urgentCurrentViewers">0</div>
-                <div class="urgent-viewers-label">Live Viewers</div>
-            </div>
-        </div>
-    </div>
 
     <div class="header">
         <h1><span class="emoji">🎮</span>Twitch Live Dashboard</h1>
@@ -2777,38 +2479,6 @@
             }
         }
 
-        // Update urgent action bar
-        function updateUrgentActionBar(data) {
-            // Update urgent AI prompt
-            if (data.promptHistory && data.promptHistory.length > 0) {
-                const latestPrompt = data.promptHistory[data.promptHistory.length - 1];
-                const promptContent = document.querySelector('.prompt-content');
-                const promptTimestamp = document.querySelector('.urgent-action-bar .prompt-timestamp');
-                
-                if (promptContent && promptTimestamp) {
-                    promptContent.textContent = latestPrompt.prompt?.message || 'No message';
-                    promptTimestamp.textContent = new Date(latestPrompt.timestamp || Date.now()).toLocaleTimeString();
-                }
-            }
-
-            // Update urgent chat score
-            const newChatScore = calculateChatScore(data);
-            const urgentScoreElement = document.getElementById('urgentChatScore');
-            const urgentNeedleElement = document.getElementById('urgentGaugeNeedle');
-            
-            if (urgentScoreElement && urgentNeedleElement) {
-                urgentScoreElement.textContent = newChatScore;
-                const rotation = (newChatScore / 100) * 180 - 90;
-                urgentNeedleElement.style.transform = `rotate(${rotation}deg)`;
-            }
-
-            // Update urgent viewers
-            const currentViewers = data.currentViewerCount || 0;
-            const urgentViewersElement = document.getElementById('urgentCurrentViewers');
-            if (urgentViewersElement) {
-                urgentViewersElement.textContent = formatNumber(currentViewers);
-            }
-        }
 
         // Update dashboard with new data
         function updateDashboard(data) {
@@ -2817,9 +2487,6 @@
             
             // Update phase system first
             updatePhaseFromData(data);
-            
-            // Update urgent action bar
-            updateUrgentActionBar(data);
             
             // Update last update timestamp
             document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
