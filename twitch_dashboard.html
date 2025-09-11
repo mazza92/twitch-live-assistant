@@ -1877,20 +1877,14 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: conic-gradient(
-                from -90deg,
-                #ff4757 0deg,
-                #ff6b35 20deg,
-                #feca57 40deg,
-                #48dbfb 60deg,
-                #0abde3 80deg,
-                #3742fa 100deg,
-                transparent 100deg,
-                transparent 360deg
-            );
-            mask: radial-gradient(circle at center, transparent 60%, black 60%);
-            -webkit-mask: radial-gradient(circle at center, transparent 60%, black 60%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 8px solid transparent;
+            border-top: 8px solid #ff4757;
+            border-right: 8px solid #ff6b35;
+            border-bottom: 8px solid #feca57;
+            border-left: 8px solid #48dbfb;
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
         }
 
         .gauge-progress-fill {
@@ -1911,10 +1905,11 @@
                 transparent 100deg,
                 transparent 360deg
             );
-            mask: radial-gradient(circle at center, transparent 60%, black 60%);
-            -webkit-mask: radial-gradient(circle at center, transparent 60%, black 60%);
+            mask: radial-gradient(circle at center, transparent 75%, black 75%);
+            -webkit-mask: radial-gradient(circle at center, transparent 75%, black 75%);
             transform: rotate(0deg);
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
         }
 
         .gauge-center-content {
@@ -4403,9 +4398,35 @@
         // Make test functions globally available
         window.testGauge = testGauge;
         window.testGaugeNow = testGaugeNow;
+        // Test function for modern gauge visibility
+        function testModernGauge() {
+            console.log('🔍 Testing modern gauge visibility...');
+            const gauge = document.getElementById('chatScoreGaugeEnhanced');
+            const container = document.querySelector('.modern-gauge-container');
+            const outerRing = document.querySelector('.gauge-outer-ring');
+            const progressRing = document.querySelector('.gauge-progress-ring');
+            const progressFill = document.querySelector('.gauge-progress-fill');
+            const score = document.getElementById('gaugeScoreEnhanced');
+
+            console.log('Gauge elements found:');
+            console.log('- Gauge container:', !!gauge);
+            console.log('- Modern container:', !!container);
+            console.log('- Outer ring:', !!outerRing);
+            console.log('- Progress ring:', !!progressRing);
+            console.log('- Progress fill:', !!progressFill);
+            console.log('- Score element:', !!score);
+
+            // Test gauge update
+            if (progressFill) {
+                console.log('Testing gauge update...');
+                updateChatScoreGauge(75);
+            }
+        }
+
         window.testGaugeVisibility = testGaugeVisibility;
         window.forceGaugeDisplay = forceGaugeDisplay;
         window.testSVGGauge = testSVGGauge;
+        window.testModernGauge = testModernGauge;
         
         // Test gauge visibility function
         function testGaugeVisibility() {
