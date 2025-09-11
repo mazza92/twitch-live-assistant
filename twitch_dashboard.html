@@ -660,6 +660,25 @@
             margin-bottom: 1rem;
             line-height: 1.5;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            animation: fadeInPrompt 0.5s ease-in-out;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        @keyframes fadeInPrompt {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .ai-prompt-meta {
@@ -2794,6 +2813,8 @@
         let abtMuted = false;
         let uniqueViewers = new Set();
         let streamTime = 0;
+        let lastPromptTime = 0;
+        let promptCooldown = 30000; // 30 seconds minimum between prompts
 
         // PERSISTENCE ENGINE - Emotional Support & Validation
         let persistenceEngine = {
@@ -4622,15 +4643,21 @@
                 if (currentViewers === 0 && (timeSinceLastMessage > 30000 || abtTimer <= 0)) {
                     triggerABTPrompt();
                     abtTimer = 30; // Reset timer
+                    if (timerDisplay) {
+                        timerDisplay.textContent = abtTimer;
+                    }
                 } else if (currentViewers > 0) {
                     // If viewers arrive, pause the timer but don't stop completely
                     console.log('👥 Viewers detected, pausing ABT timer');
                     return;
                 }
                 
-                abtTimer--;
-                if (timerDisplay) {
-                    timerDisplay.textContent = abtTimer;
+                // Only decrement if we haven't just reset
+                if (abtTimer > 0) {
+                    abtTimer--;
+                    if (timerDisplay) {
+                        timerDisplay.textContent = abtTimer;
+                    }
                 }
             }, 1000);
         }
@@ -4667,6 +4694,13 @@
         function triggerABTPrompt() {
             if (abtMuted) return;
             
+            // Check cooldown to prevent rapid-fire prompts
+            const currentTime = Date.now();
+            if (currentTime - lastPromptTime < promptCooldown) {
+                console.log('⏰ ABT Prompt on cooldown, skipping...');
+                return;
+            }
+            
             // Get translated prompts based on current language
             const t = translations[currentLanguage];
             const translatedPrompts = {
@@ -4685,6 +4719,9 @@
             
             console.log('💬 ABT Prompt triggered:', randomPrompt, 'Category:', randomCategory, 'Language:', currentLanguage);
             
+            // Update last prompt time
+            lastPromptTime = currentTime;
+            
             updateAIPromptArea('zero_viewers', {
                 message: randomPrompt,
                 priority: 'high',
@@ -4698,6 +4735,9 @@
             persistenceEngine.sessionData.startTime = Date.now();
             persistenceEngine.sessionData.totalStreamTime = 0;
             persistenceEngine.sessionData.milestonesReached = 0;
+            
+            // Initialize milestones display
+            initializeMilestones();
             
             // Start milestone checking interval
             setInterval(checkMilestones, 30000); // Check every 30 seconds
@@ -4728,6 +4768,8 @@
                     persistenceEngine.milestones.streamTime[minutes] = true;
                     showMilestoneCelebration('time', minutes);
                     persistenceEngine.sessionData.milestonesReached++;
+                    milestonesReached++;
+                    updateStreamSummary();
                 }
             });
         }
@@ -4740,6 +4782,8 @@
                     persistenceEngine.milestones.viewers[count] = true;
                     showMilestoneCelebration('viewers', count);
                     persistenceEngine.sessionData.milestonesReached++;
+                    milestonesReached++;
+                    updateStreamSummary();
                 }
             });
         }
@@ -5313,10 +5357,74 @@
         }
 
         function updateStreamSummary() {
-            document.getElementById('totalStreamTime').textContent = Math.floor(streamTime / 60) + 'm';
-            document.getElementById('uniqueViewers').textContent = uniqueViewers.size;
-            document.getElementById('messagesSent').textContent = messagesSent;
-            document.getElementById('milestonesReached').textContent = milestonesReached;
+            const totalStreamTimeEl = document.getElementById('totalStreamTime');
+            const uniqueViewersEl = document.getElementById('uniqueViewers');
+            const messagesSentEl = document.getElementById('messagesSent');
+            const milestonesReachedEl = document.getElementById('milestonesReached');
+            
+            if (totalStreamTimeEl) {
+                const streamDuration = Math.floor((Date.now() - persistenceEngine.sessionData.startTime) / 60000);
+                totalStreamTimeEl.textContent = streamDuration + 'm';
+            }
+            if (uniqueViewersEl) {
+                uniqueViewersEl.textContent = uniqueViewers.size;
+            }
+            if (messagesSentEl) {
+                messagesSentEl.textContent = messagesSent;
+            }
+            if (milestonesReachedEl) {
+                milestonesReachedEl.textContent = milestonesReached;
+            }
+            
+            // Update milestone cards
+            updateMilestoneCards();
+        }
+        
+        function updateMilestoneCards() {
+            milestones.forEach(milestone => {
+                const milestoneCard = document.getElementById(`milestone-${milestone.id}`);
+                if (milestoneCard) {
+                    const isCompleted = getMilestoneStatus(milestone);
+                    const progress = getMilestoneProgress(milestone);
+                    
+                    milestoneCard.innerHTML = `
+                        <div class="milestone-icon">${milestone.icon}</div>
+                        <div class="milestone-content">
+                            <div class="milestone-name">${milestone.name}</div>
+                            <div class="milestone-description">${milestone.description}</div>
+                            <div class="milestone-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                                <span class="progress-text">${progress}%</span>
+                            </div>
+                        </div>
+                        ${isCompleted ? '<div class="milestone-badge">COMPLETED</div>' : ''}
+                    `;
+                }
+            });
+        }
+        
+        function getMilestoneStatus(milestone) {
+            if (milestone.type === 'time') {
+                const streamDuration = Math.floor((Date.now() - persistenceEngine.sessionData.startTime) / 60000);
+                return streamDuration >= milestone.threshold;
+            } else if (milestone.type === 'viewers') {
+                const currentViewers = parseInt(document.getElementById('viewersCount')?.textContent || '0');
+                return currentViewers >= milestone.threshold;
+            }
+            return false;
+        }
+        
+        function getMilestoneProgress(milestone) {
+            if (milestone.type === 'time') {
+                const streamDuration = Math.floor((Date.now() - persistenceEngine.sessionData.startTime) / 60000);
+                return Math.min(100, (streamDuration / milestone.threshold) * 100);
+            } else if (milestone.type === 'viewers') {
+                const currentViewers = parseInt(document.getElementById('viewersCount')?.textContent || '0');
+                return Math.min(100, (currentViewers / milestone.threshold) * 100);
+            }
+            return 0;
         }
 
         // Stream time tracking
