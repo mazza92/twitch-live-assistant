@@ -777,6 +777,23 @@
             background: rgba(156, 39, 176, 0.1);
         }
 
+        /* AI Analysis Indicator */
+        .ai-analysis-indicator {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            animation: aiPulse 2s infinite;
+        }
+
+        @keyframes aiPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
         .ai-prompt-priority {
             font-size: 0.9rem;
             font-weight: 600;
@@ -2257,6 +2274,9 @@
                 <div class="ai-prompt-meta">
                 <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
                     <div class="ai-prompt-category" id="aiPromptCategory" style="display: none;"></div>
+                    <div class="ai-analysis-indicator" id="aiAnalysisIndicator" style="display: none;">
+                        🤖 AI Analyzed
+                    </div>
             </div>
         </div>
                 </div>
@@ -2920,7 +2940,7 @@
         let promptCooldown = 30000; // 30 seconds minimum between prompts
         
         // AI Intelligence - External APIs
-        let newsApiKey = 'YOUR_NEWS_API_KEY'; // Replace with actual API key
+        let newsApiKey = 'db94af2f4bac408ab8084f22a7a2c9c6'; // Your NewsAPI key
         let factsApiUrl = 'https://uselessfacts.jsph.pl/random.json?language=en';
         let cachedNews = [];
         let cachedFacts = [];
@@ -3781,6 +3801,7 @@
             const priorityElement = document.getElementById('aiPromptPriority');
             const categoryElement = document.getElementById('aiPromptCategory');
             const areaElement = document.getElementById('aiPromptAreaEnhanced');
+            const aiIndicator = document.getElementById('aiAnalysisIndicator');
             
             if (!phaseElement || !messageElement || !priorityElement || !areaElement) return;
             
@@ -3788,7 +3809,7 @@
             phaseElement.textContent = phase.replace('_', ' ').toUpperCase();
             
             // Update message and priority based on phase or custom data
-            let message, priority, className, category;
+            let message, priority, className, category, isAIAnalyzed = false;
             
             if (customData) {
                 // Use custom data (from ABT Coach)
@@ -3796,6 +3817,9 @@
                 priority = customData.priority || 'high';
                 category = customData.category || null;
                 className = priority === 'high' ? 'high-priority' : priority === 'urgent' ? 'urgent' : '';
+                
+                // Check if this is AI-analyzed content
+                isAIAnalyzed = customData.relevance !== undefined || customData.engagement !== undefined;
             } else {
                 // Use default phase-based messages
             switch (phase) {
@@ -3831,6 +3855,15 @@
                     categoryElement.style.display = 'inline-block';
                 } else {
                     categoryElement.style.display = 'none';
+                }
+            }
+            
+            // Show/hide AI analysis indicator
+            if (aiIndicator) {
+                if (isAIAnalyzed) {
+                    aiIndicator.style.display = 'block';
+                } else {
+                    aiIndicator.style.display = 'none';
                 }
             }
             
@@ -4732,23 +4765,105 @@
                     return cachedNews;
                 }
 
-                // Using a free news API (NewsAPI requires API key, so we'll use a free alternative)
-                const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=5&apiKey=' + newsApiKey);
+                // Fetch news from multiple relevant categories for streamers
+                const categories = ['technology', 'entertainment', 'gaming', 'business'];
+                const allNews = [];
                 
-                if (!response.ok) {
-                    throw new Error('News API failed');
+                for (const category of categories) {
+                    try {
+                        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.articles) {
+                                // Add category tag and AI analysis
+                                const processedArticles = data.articles.map(article => ({
+                                    ...article,
+                                    category: category,
+                                    streamerRelevance: analyzeNewsForStreamers(article),
+                                    engagementPotential: calculateEngagementPotential(article)
+                                }));
+                                allNews.push(...processedArticles);
+                            }
+                        }
+                    } catch (catError) {
+                        console.log(`⚠️ Failed to fetch ${category} news:`, catError.message);
+                    }
                 }
                 
-                const data = await response.json();
-                cachedNews = data.articles || [];
+                // Sort by streamer relevance and engagement potential
+                cachedNews = allNews
+                    .filter(article => article.title && article.description)
+                    .sort((a, b) => (b.streamerRelevance + b.engagementPotential) - (a.streamerRelevance + a.engagementPotential))
+                    .slice(0, 10); // Keep top 10 most relevant articles
+                
                 lastNewsFetch = currentTime;
                 
-                console.log('📰 News fetched successfully:', cachedNews.length, 'articles');
+                console.log('📰 News fetched and analyzed successfully:', cachedNews.length, 'articles');
                 return cachedNews;
             } catch (error) {
                 console.log('⚠️ News API failed, using fallback:', error.message);
                 return getFallbackNews();
             }
+        }
+
+        // AI Analysis function for news relevance to streamers
+        function analyzeNewsForStreamers(article) {
+            const title = (article.title || '').toLowerCase();
+            const description = (article.description || '').toLowerCase();
+            const content = `${title} ${description}`;
+            
+            // Keywords that are highly relevant to streamers
+            const streamerKeywords = [
+                'streaming', 'twitch', 'youtube', 'gaming', 'esports', 'content creator',
+                'influencer', 'social media', 'live stream', 'broadcast', 'audience',
+                'viewer', 'subscriber', 'follower', 'engagement', 'community',
+                'technology', 'software', 'platform', 'app', 'digital', 'online',
+                'entertainment', 'media', 'video', 'content', 'creator', 'monetization'
+            ];
+            
+            // Calculate relevance score
+            let relevanceScore = 0;
+            streamerKeywords.forEach(keyword => {
+                if (content.includes(keyword)) {
+                    relevanceScore += 1;
+                }
+            });
+            
+            // Bonus for gaming and tech news
+            if (content.includes('gaming') || content.includes('game')) relevanceScore += 2;
+            if (content.includes('technology') || content.includes('tech')) relevanceScore += 1.5;
+            if (content.includes('ai') || content.includes('artificial intelligence')) relevanceScore += 2;
+            if (content.includes('streaming') || content.includes('stream')) relevanceScore += 3;
+            
+            return Math.min(relevanceScore, 10); // Cap at 10
+        }
+
+        // Calculate engagement potential for news
+        function calculateEngagementPotential(article) {
+            const title = article.title || '';
+            const description = article.description || '';
+            
+            // Factors that make news more engaging for streamers
+            let engagementScore = 0;
+            
+            // Question words increase engagement
+            if (title.includes('?') || description.includes('?')) engagementScore += 2;
+            
+            // Controversial or trending topics
+            const trendingWords = ['new', 'latest', 'breaking', 'trending', 'viral', 'popular'];
+            trendingWords.forEach(word => {
+                if (title.toLowerCase().includes(word)) engagementScore += 1;
+            });
+            
+            // Numbers and statistics
+            if (/\d+/.test(title)) engagementScore += 1;
+            
+            // Length of content (not too short, not too long)
+            const titleLength = title.length;
+            if (titleLength > 20 && titleLength < 100) engagementScore += 1;
+            
+            return Math.min(engagementScore, 5); // Cap at 5
         }
 
         async function fetchFacts() {
@@ -4821,20 +4936,26 @@
                     fetchFacts()
                 ]);
 
-                // Randomly choose between news or facts (70% facts, 30% news for better engagement)
-                const useNews = Math.random() < 0.3 && news.length > 0;
+                // Smart selection based on news quality and relevance
+                const hasHighQualityNews = news.length > 0 && news.some(article => article.streamerRelevance > 5);
+                const useNews = hasHighQualityNews && Math.random() < 0.4; // 40% news if high quality
                 
                 if (useNews) {
-                    const randomNews = news[Math.floor(Math.random() * news.length)];
+                    // Select the most relevant news article
+                    const bestNews = news[0]; // Already sorted by relevance
+                    const prompt = generateNewsPrompt(bestNews);
                     return {
-                        message: `📰 Chat is quiet! Here's some interesting news: "${randomNews.title}" - ${randomNews.description} What do you think about this?`,
+                        message: prompt,
                         category: 'news',
-                        priority: 'high'
+                        priority: 'high',
+                        relevance: bestNews.streamerRelevance,
+                        engagement: bestNews.engagementPotential
                     };
                 } else {
                     const randomFact = facts[Math.floor(Math.random() * facts.length)];
+                    const prompt = generateFactPrompt(randomFact);
                     return {
-                        message: `🧠 Chat is quiet! Use this fun fact: "${randomFact}" - Ask your viewers if they knew this!`,
+                        message: prompt,
                         category: 'facts',
                         priority: 'high'
                     };
@@ -4842,6 +4963,47 @@
             } catch (error) {
                 console.log('⚠️ Intelligent prompt generation failed, using fallback:', error.message);
                 return getFallbackPrompt();
+            }
+        }
+
+        // Generate AI-optimized news prompts
+        function generateNewsPrompt(article) {
+            const category = article.category;
+            const title = article.title;
+            const description = article.description;
+            const relevance = article.streamerRelevance;
+            
+            // Different prompt styles based on category and relevance
+            if (category === 'gaming' && relevance > 7) {
+                return `🎮 GAMING NEWS: "${title}" - ${description} This could be perfect for your next stream! What do you think about this development?`;
+            } else if (category === 'technology' && relevance > 6) {
+                return `⚡ TECH BREAKTHROUGH: "${title}" - ${description} This might affect how we stream! Have you tried anything like this?`;
+            } else if (category === 'entertainment' && relevance > 5) {
+                return `🎬 ENTERTAINMENT UPDATE: "${title}" - ${description} Could this be content inspiration? What's your take on this?`;
+            } else if (relevance > 8) {
+                return `🔥 HOT TOPIC: "${title}" - ${description} This is trending and perfect for discussion! What do you think?`;
+            } else {
+                return `📰 INTERESTING NEWS: "${title}" - ${description} This caught my attention - what do you think about this?`;
+            }
+        }
+
+        // Generate AI-optimized fact prompts
+        function generateFactPrompt(fact) {
+            // Analyze fact type and create engaging prompts
+            const factLower = fact.toLowerCase();
+            
+            if (factLower.includes('brain') || factLower.includes('mind')) {
+                return `🧠 MIND-BLOWING FACT: "${fact}" - Ask your viewers: "Did you know this about the human brain?!"`;
+            } else if (factLower.includes('animal') || factLower.includes('creature')) {
+                return `🐾 WILD FACT: "${fact}" - Perfect conversation starter! Ask: "Who knew this about animals?!"`;
+            } else if (factLower.includes('space') || factLower.includes('universe')) {
+                return `🌌 COSMIC FACT: "${fact}" - This is out of this world! Ask your viewers: "Did you know this about space?!"`;
+            } else if (factLower.includes('history') || factLower.includes('ancient')) {
+                return `🏛️ HISTORICAL FACT: "${fact}" - Blast from the past! Ask: "Can you believe this happened in history?!"`;
+            } else if (factLower.includes('food') || factLower.includes('eat')) {
+                return `🍕 FOOD FACT: "${fact}" - This will surprise you! Ask: "Did you know this about food?!"`;
+            } else {
+                return `🤯 AMAZING FACT: "${fact}" - This is incredible! Ask your viewers: "Did you know this?!"`;
             }
         }
 
