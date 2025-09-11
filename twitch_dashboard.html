@@ -1632,7 +1632,33 @@
             width: 280px;
             height: 280px;
             border-radius: 50%;
-            background: #1a1a1a;
+            background: rgba(20, 20, 30, 0.8);
+            position: relative;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            visibility: visible !important;
+            opacity: 1 !important;
+            box-shadow: 
+                0 0 40px rgba(145, 70, 255, 0.6),
+                0 0 80px rgba(145, 70, 255, 0.3),
+                inset 0 0 20px rgba(0, 0, 0, 0.4);
+            animation: gaugeGlow 4s ease-in-out infinite alternate;
+            margin: 0 auto;
+            border: 4px solid rgba(145, 70, 255, 0.6);
+            min-width: 280px;
+            min-height: 280px;
+            max-width: 280px;
+            max-height: 280px;
+        }
+
+        .gauge-progress {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
             background: conic-gradient(
                 from -90deg,
                 #ff4757 0deg,
@@ -1655,23 +1681,11 @@
                 #48dbfb 340deg,
                 #0abde3 360deg
             );
-            position: relative;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            visibility: visible !important;
-            opacity: 1 !important;
-            box-shadow: 
-                0 0 40px rgba(145, 70, 255, 0.6),
-                0 0 80px rgba(145, 70, 255, 0.3),
-                inset 0 0 20px rgba(0, 0, 0, 0.4);
-            animation: gaugeGlow 4s ease-in-out infinite alternate;
-            margin: 0 auto;
-            border: 4px solid rgba(145, 70, 255, 0.6);
-            min-width: 280px;
-            min-height: 280px;
-            max-width: 280px;
-            max-height: 280px;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            mask: radial-gradient(circle at center, transparent 60%, black 60%);
+            -webkit-mask: radial-gradient(circle at center, transparent 60%, black 60%);
         }
 
         @keyframes gaugeGlow {
@@ -2015,6 +2029,7 @@
             <!-- Circular Gauge -->
             <div class="circular-gauge-container">
                 <div class="gauge-ring">
+                    <div class="gauge-progress" id="gaugeProgress"></div>
                     <div class="gauge-center">
                         <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
                     </div>
@@ -3702,22 +3717,39 @@
             // Update single gauge instance
             const scoreElement = document.getElementById('gaugeScoreEnhanced');
             const needleElement = document.getElementById('gaugeNeedleEnhanced');
+            const progressElement = document.getElementById('gaugeProgress');
             
             // Update score with animation
             if (score !== lastChatScore) {
                 if (scoreElement) {
                     // Add smooth number transition
                     scoreElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                scoreElement.textContent = score;
-                scoreElement.classList.add('updated');
+                    scoreElement.textContent = score;
+                    scoreElement.classList.add('updated');
                     
                     // Remove animation class after completion
-                setTimeout(() => {
-                    scoreElement.classList.remove('updated');
-                }, 600);
+                    setTimeout(() => {
+                        scoreElement.classList.remove('updated');
+                    }, 600);
                 }
                 
                 lastChatScore = score;
+            }
+            
+            // Update progress arc (0-100 maps to 0-360 degrees)
+            if (progressElement) {
+                const progressAngle = (score / 100) * 360;
+                progressElement.style.background = `conic-gradient(
+                    from -90deg,
+                    #ff4757 0deg,
+                    #ff6b35 ${progressAngle * 0.2}deg,
+                    #feca57 ${progressAngle * 0.4}deg,
+                    #48dbfb ${progressAngle * 0.6}deg,
+                    #0abde3 ${progressAngle * 0.8}deg,
+                    #3742fa ${progressAngle}deg,
+                    transparent ${progressAngle}deg,
+                    transparent 360deg
+                )`;
             }
             
             // Calculate needle rotation (-90deg to 90deg for half circle)
@@ -3726,7 +3758,7 @@
             // Update gauge needle with smooth animation
             if (needleElement) {
                 needleElement.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-                needleElement.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+                needleElement.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
                 console.log('✅ Modern needle rotated to:', rotation + 'deg');
             } else {
                 console.error('❌ Modern needle element not found!');
