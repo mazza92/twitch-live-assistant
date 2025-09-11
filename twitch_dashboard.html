@@ -49,7 +49,7 @@
 
         /* Chat Score Gauge - Single Instance */
         .chat-score-gauge-enhanced {
-            margin: 2rem auto;
+            margin: 3rem auto 2rem;
             transition: all var(--transition-duration) ease-in-out;
             width: 300px;
             position: relative;
@@ -62,7 +62,7 @@
 
         /* AI Prompt Area - Single Instance */
         .ai-prompt-area-enhanced {
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
             max-width: 600px;
             width: 100%;
             transition: all var(--transition-duration) ease-in-out;
@@ -113,7 +113,7 @@
 
         .phase-zero_viewers .ai-prompt-area-enhanced {
             transform: scale(1.1);
-            margin-bottom: 3rem;
+            margin-bottom: 5rem;
         }
 
         .phase-zero_viewers .ai-prompt-header {
@@ -152,7 +152,7 @@
         .phase-first_viewer .chat-score-gauge-enhanced {
             transform: scale(1.2);
             transform-origin: center center;
-            margin-bottom: 2rem;
+            margin: 4rem auto 2rem;
         }
 
         .phase-first_viewer .ai-prompt-area-enhanced {
@@ -186,6 +186,25 @@
             display: block;
         }
 
+        /* Desktop Spacing Enhancements */
+        @media (min-width: 1200px) {
+            .ai-prompt-area-enhanced {
+                margin-bottom: 5rem;
+            }
+            
+            .chat-score-gauge-enhanced {
+                margin: 4rem auto 3rem;
+            }
+            
+            .phase-zero_viewers .ai-prompt-area-enhanced {
+                margin-bottom: 6rem;
+            }
+            
+            .phase-zero_viewers .chat-score-gauge-enhanced {
+                margin: 5rem auto 3rem;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .analytics-grid {
@@ -209,6 +228,14 @@
             
             .key-metrics-row {
                 grid-template-columns: 1fr;
+            }
+            
+            .ai-prompt-area-enhanced {
+                margin-bottom: 3rem;
+            }
+            
+            .chat-score-gauge-enhanced {
+                margin: 2rem auto 1rem;
             }
         }
 
