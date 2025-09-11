@@ -1074,18 +1074,19 @@
             margin: 20px 0;
         }
 
-        .gauge-container {
+        /* NEW GAUGE VISUAL COMPONENTS - UNIQUE CLASS NAMES */
+        .gauge-visual-container {
             position: relative;
             width: 250px;
             height: 250px;
-            flex-shrink: 0;
-            order: 1;
+            margin: 20px auto;
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
+            order: 1;
         }
 
-        .gauge-circle {
+        .gauge-circle-visual {
             width: 100%;
             height: 100%;
             border-radius: 50%;
@@ -1103,25 +1104,26 @@
             display: flex !important;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(145, 70, 255, 0.3);
+            box-shadow: 0 0 20px rgba(145, 70, 255, 0.5);
             visibility: visible !important;
             opacity: 1 !important;
         }
 
-        .gauge-inner {
+        .gauge-inner-visual {
             width: 200px;
             height: 200px;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            flex-direction: column;
+            display: flex !important;
             align-items: center;
             justify-content: center;
             position: relative;
             z-index: 2;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
-        .gauge-needle {
+        .gauge-needle-visual {
             position: absolute;
             width: 4px;
             height: 90px;
@@ -1132,28 +1134,29 @@
             z-index: 3;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
-        .gauge-center {
-            display: none;
-        }
-
-        .gauge-score {
+        .gauge-score-visual {
             font-size: 2.2rem;
             font-weight: 700;
             color: #ffffff;
             text-shadow: 0 0 15px rgba(145, 70, 255, 0.8);
-            margin-bottom: 5px;
             position: relative;
             z-index: 4;
             background: rgba(0, 0, 0, 0.7);
             border-radius: 50%;
             width: 80px;
             height: 80px;
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
             border: 3px solid rgba(145, 70, 255, 0.5);
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
 
@@ -1386,18 +1389,23 @@
 
         <!-- Central Chat Score Gauge - Single Instance -->
         <div class="chat-score-gauge-enhanced" id="chatScoreGaugeEnhanced">
-            <div class="gauge-container">
-                <div class="gauge-circle">
-                    <div class="gauge-inner">
-                        <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
+            <!-- GAUGE VISUAL COMPONENT -->
+            <div class="gauge-visual-container">
+                <div class="gauge-circle-visual">
+                    <div class="gauge-inner-visual">
+                        <div class="gauge-score-visual" id="gaugeScoreEnhanced">0</div>
                     </div>
-                    <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
+                    <div class="gauge-needle-visual" id="gaugeNeedleEnhanced"></div>
                 </div>
             </div>
+            
+            <!-- GAUGE LABELS -->
             <div class="gauge-labels">
                 <div class="gauge-label">Chat Score</div>
                 <div class="gauge-subtitle" id="gaugeSubtitle">Keep Talking!</div>
             </div>
+            
+            <!-- GAUGE LEVELS -->
             <div class="gauge-levels">
                 <div class="level level-1" data-level="1">Low</div>
                 <div class="level level-2" data-level="2">Med</div>
@@ -2965,7 +2973,10 @@
             
             // Update gauge needle
             if (needleElement) {
-            needleElement.style.transform = `rotate(${rotation}deg)`;
+                needleElement.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+                console.log('✅ Needle rotated to:', rotation + 'deg');
+            } else {
+                console.error('❌ Needle element not found!');
             }
             
             // Update legacy gauges (if they exist)
@@ -3045,10 +3056,10 @@
         function testGaugeNow(score = 85) {
             console.log('🧪 Testing gauge immediately with score:', score);
             
-            // Debug gauge visibility
-            const gaugeContainer = document.querySelector('.gauge-container');
-            const gaugeCircle = document.querySelector('.gauge-circle');
-            const gaugeInner = document.querySelector('.gauge-inner');
+            // Debug gauge visibility with new class names
+            const gaugeContainer = document.querySelector('.gauge-visual-container');
+            const gaugeCircle = document.querySelector('.gauge-circle-visual');
+            const gaugeInner = document.querySelector('.gauge-inner-visual');
             const gaugeScore = document.getElementById('gaugeScoreEnhanced');
             
             console.log('🔍 Gauge Debug Info:');
