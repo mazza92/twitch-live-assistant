@@ -12,6 +12,12 @@
             --twitch-purple: #9146ff;
             --twitch-dark: #0e0e10;
             --twitch-gray: #18181b;
+            
+            /* Zero to One Phase Colors */
+            --phase-zero: #ff6b6b;
+            --phase-first: #4ecdc4;
+            --phase-building: #45b7d1;
+            --phase-urgent: #ff9f43;
         }
         
         * {
@@ -26,6 +32,171 @@
             color: white;
             overflow-x: hidden;
             padding-top: 100px; /* Space for fixed urgent action bar */
+        }
+
+        /* Zero to One Phase System */
+        .phase-container {
+            transition: all var(--transition-duration) ease-in-out;
+        }
+
+        .phase-zero_viewers {
+            /* Minimalist view - only chat score and prompts */
+        }
+
+        .phase-first_viewer {
+            /* Celebratory view with first viewer alert */
+        }
+
+        .phase-building_audience {
+            /* Full dashboard view */
+        }
+
+        /* First Viewer Alert - Full Screen Celebration */
+        .first-viewer-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--phase-first) 0%, #2c3e50 100%);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: firstViewerCelebration 3s ease-in-out;
+        }
+
+        .first-viewer-alert.show {
+            display: flex;
+        }
+
+        .first-viewer-content {
+            text-align: center;
+            animation: bounceIn 1s ease-out;
+        }
+
+        .first-viewer-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .first-viewer-message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .first-viewer-close {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .first-viewer-close:hover {
+            background: white;
+            color: var(--phase-first);
+        }
+
+        @keyframes firstViewerCelebration {
+            0% { opacity: 0; transform: scale(0.8); }
+            20% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Enhanced Chat Score Gauge for Zero to One */
+        .chat-score-gauge-enhanced {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin: 0 auto;
+            transform: scale(1.2);
+        }
+
+        .phase-zero_viewers .chat-score-gauge-enhanced {
+            transform: scale(1.5);
+        }
+
+        /* Enhanced AI Prompt Area */
+        .ai-prompt-area-enhanced {
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border: 2px solid var(--twitch-purple);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-prompt-area-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .ai-prompt-area-enhanced.urgent {
+            border-color: var(--phase-urgent);
+            background: linear-gradient(135deg, rgba(255, 159, 67, 0.2) 0%, rgba(0, 0, 0, 0.3) 100%);
+            animation: urgentPulse 1s infinite;
+        }
+
+        .ai-prompt-area-enhanced.high-priority {
+            border-color: var(--phase-first);
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2) 0%, rgba(0, 0, 0, 0.3) 100%);
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 159, 67, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 159, 67, 0.8); }
+        }
+
+        /* Phase-specific visibility */
+        .phase-zero_viewers .metric-card:not(.chat-score-card):not(.ai-prompt-card),
+        .phase-zero_viewers .revenue-metrics,
+        .phase-zero_viewers .top-users,
+        .phase-zero_viewers .chat-activity-log {
+            display: none !important;
+        }
+
+        .phase-first_viewer .first-viewer-alert {
+            display: flex;
+        }
+
+        .phase-building_audience .metric-card,
+        .phase-building_audience .revenue-metrics,
+        .phase-building_audience .top-users,
+        .phase-building_audience .chat-activity-log {
+            display: block;
         }
 
         /* Tier 1: Urgent Action Bar */
@@ -1190,6 +1361,20 @@
     </style>
 </head>
 <body>
+    <!-- First Viewer Alert - Full Screen Celebration -->
+    <div class="first-viewer-alert" id="firstViewerAlert">
+        <div class="first-viewer-content">
+            <div class="first-viewer-title">🎉 FIRST VIEWER! 🎉</div>
+            <div class="first-viewer-message" id="firstViewerMessage">
+                Someone just joined your stream!<br>
+                This is the beginning of your community!
+            </div>
+            <button class="first-viewer-close" onclick="closeFirstViewerAlert()">
+                Continue Streaming
+            </button>
+        </div>
+    </div>
+
     <!-- Tier 1: Urgent Action Bar -->
     <div class="urgent-action-bar">
         <div class="urgent-content">
@@ -1276,7 +1461,7 @@
     </div>
 
     <!-- Tier 2: Current State Panel -->
-    <div class="current-state-panel">
+    <div class="current-state-panel phase-container" id="phaseContainer">
         <div class="current-state-grid">
             <!-- Left Column: Community -->
             <div class="community-column">
@@ -1491,11 +1676,11 @@
             </div>
         </div>
 
-        <!-- Live Chat Score Gauge -->
-        <div class="chat-score-gauge">
+        <!-- Enhanced Live Chat Score Gauge for Zero to One -->
+        <div class="chat-score-gauge chat-score-card">
             <div class="metric-title">💬 Live Chat Score</div>
             <div class="gauge-container">
-                <div class="gauge-circle">
+                <div class="gauge-circle chat-score-gauge-enhanced">
                     <div class="gauge-inner">
                         <div class="gauge-score" id="chatScore">0</div>
                     </div>
@@ -1524,6 +1709,20 @@
                     <div class="gauge-level-dot"></div>
                     <span>🚀 Fire</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Enhanced AI Prompt Area for Zero to One -->
+        <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaEnhanced">
+            <div class="ai-prompt-header">
+                <h3>🤖 AI Co-Pilot</h3>
+                <div class="ai-prompt-phase" id="aiPromptPhase">Zero Viewers</div>
+            </div>
+            <div class="ai-prompt-content" id="aiPromptContent">
+                <div class="ai-prompt-message" id="aiPromptMessage">
+                    Keep talking! Even with no visible chat, you never know who might be lurking. Share your thoughts, ask questions, or talk about what you're passionate about!
+                </div>
+                <div class="ai-prompt-priority" id="aiPromptPriority">high</div>
             </div>
         </div>
 
@@ -1892,6 +2091,11 @@
         const maxReconnectAttempts = 5;
         let chatScore = 0;
         let lastChatScore = 0;
+        
+        // Zero to One Phase System
+        let currentPhase = 'zero_viewers';
+        let phaseTransitionTime = null;
+        let firstViewerAlertShown = false;
 
         // Language translations
         const translations = {
@@ -2012,6 +2216,143 @@
                 neutral: 'Neutral'
             }
         };
+
+        // Zero to One Phase System Functions
+        function updatePhase(phase) {
+            if (currentPhase === phase) return;
+            
+            console.log(`🔄 [PHASE] Transitioning from ${currentPhase} to ${phase}`);
+            
+            const previousPhase = currentPhase;
+            currentPhase = phase;
+            phaseTransitionTime = Date.now();
+            
+            // Update phase container class
+            const phaseContainer = document.getElementById('phaseContainer');
+            if (phaseContainer) {
+                phaseContainer.className = `current-state-panel phase-container phase-${phase}`;
+            }
+            
+            // Handle phase-specific transitions
+            if (phase === 'first_viewer' && !firstViewerAlertShown) {
+                showFirstViewerAlert();
+            } else if (phase === 'building_audience') {
+                hideFirstViewerAlert();
+            }
+            
+            // Update AI prompt area
+            updateAIPromptArea(phase);
+            
+            console.log(`✅ [PHASE] Successfully transitioned to ${phase}`);
+        }
+        
+        function showFirstViewerAlert() {
+            const alert = document.getElementById('firstViewerAlert');
+            const message = document.getElementById('firstViewerMessage');
+            
+            if (alert && message) {
+                message.innerHTML = `
+                    🎉 Someone just joined your stream!<br>
+                    This is the beginning of your community!<br>
+                    <small>Phase: ${currentPhase}</small>
+                `;
+                alert.classList.add('show');
+                firstViewerAlertShown = true;
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    hideFirstViewerAlert();
+                }, 5000);
+            }
+        }
+        
+        function hideFirstViewerAlert() {
+            const alert = document.getElementById('firstViewerAlert');
+            if (alert) {
+                alert.classList.remove('show');
+            }
+        }
+        
+        function closeFirstViewerAlert() {
+            hideFirstViewerAlert();
+        }
+        
+        function updateAIPromptArea(phase) {
+            const phaseElement = document.getElementById('aiPromptPhase');
+            const messageElement = document.getElementById('aiPromptMessage');
+            const priorityElement = document.getElementById('aiPromptPriority');
+            const areaElement = document.getElementById('aiPromptAreaEnhanced');
+            
+            if (!phaseElement || !messageElement || !priorityElement || !areaElement) return;
+            
+            // Update phase indicator
+            phaseElement.textContent = phase.replace('_', ' ').toUpperCase();
+            
+            // Update message and priority based on phase
+            let message, priority, className;
+            
+            switch (phase) {
+                case 'zero_viewers':
+                    message = "Keep talking! Even with no visible chat, you never know who might be lurking. Share your thoughts, ask questions, or talk about what you're passionate about!";
+                    priority = "high";
+                    className = "high-priority";
+                    break;
+                case 'first_viewer':
+                    message = "🎉 FIRST VIEWER DETECTED! Welcome them warmly and make them feel special. This is the start of your community!";
+                    priority = "urgent";
+                    className = "urgent";
+                    break;
+                case 'building_audience':
+                    message = "Great! You have viewers. Keep the energy up with engaging content, ask questions, and build your community!";
+                    priority = "medium";
+                    className = "";
+                    break;
+                default:
+                    message = "AI Co-Pilot is ready to help!";
+                    priority = "medium";
+                    className = "";
+            }
+            
+            messageElement.textContent = message;
+            priorityElement.textContent = priority;
+            
+            // Update styling
+            areaElement.className = `ai-prompt-area-enhanced ai-prompt-card ${className}`;
+        }
+        
+        function updatePhaseFromData(data) {
+            if (data.streamPhase && data.streamPhase !== currentPhase) {
+                updatePhase(data.streamPhase);
+            }
+        }
+        
+        function updateEnhancedAIPrompt(data) {
+            const messageElement = document.getElementById('aiPromptMessage');
+            const priorityElement = document.getElementById('aiPromptPriority');
+            const areaElement = document.getElementById('aiPromptAreaEnhanced');
+            
+            if (!messageElement || !priorityElement || !areaElement) return;
+            
+            // Get the latest prompt from prompt history
+            if (data.promptHistory && data.promptHistory.length > 0) {
+                const latestPrompt = data.promptHistory[data.promptHistory.length - 1];
+                
+                if (latestPrompt && latestPrompt.prompt) {
+                    messageElement.textContent = latestPrompt.prompt.message || messageElement.textContent;
+                    priorityElement.textContent = latestPrompt.prompt.priority || 'medium';
+                    
+                    // Update styling based on priority
+                    let className = 'ai-prompt-area-enhanced ai-prompt-card';
+                    if (latestPrompt.prompt.priority === 'urgent') {
+                        className += ' urgent';
+                    } else if (latestPrompt.prompt.priority === 'high') {
+                        className += ' high-priority';
+                    }
+                    
+                    areaElement.className = className;
+                }
+            }
+        }
 
         // Initialize WebSocket connection
         function initWebSocket() {
@@ -2161,7 +2502,10 @@
         function updateDashboard(data) {
             console.log('🔄 [DASHBOARD] Updating dashboard with data:', data);
             
-            // Update urgent action bar first
+            // Update phase system first
+            updatePhaseFromData(data);
+            
+            // Update urgent action bar
             updateUrgentActionBar(data);
             
             // Update last update timestamp
@@ -2320,9 +2664,12 @@
             if (data.promptHistory && data.promptHistory.length > 0) {
                 updateAIPrompts(data.promptHistory);
             }
+            
+            // Update enhanced AI prompt area with latest prompt
+            updateEnhancedAIPrompt(data);
 
-            // Update chat score gauge
-            const newChatScore = calculateChatScore(data);
+            // Update chat score gauge - use backend calculated score
+            const newChatScore = data.chatScore || calculateChatScore(data);
             updateChatScoreGauge(newChatScore);
             
             // Update revenue metrics
