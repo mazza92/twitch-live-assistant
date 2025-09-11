@@ -46,38 +46,94 @@
         }
 
 
-        /* Modern Circular Chat Score Gauge */
-        .chat-score-gauge-enhanced {
-            margin: 2rem auto 1.5rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-            display: flex !important;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            order: 2;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 10;
-            background: linear-gradient(135deg, rgba(12, 12, 22, 0.98), rgba(22, 22, 32, 0.98));
-            backdrop-filter: blur(25px);
-            border-radius: 24px;
-            padding: 2rem 1.5rem;
+        /* Clean Chat Score Gauge */
+        .chat-score-gauge {
+            margin: 2rem auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(15, 15, 25, 0.95), rgba(25, 25, 35, 0.95));
+            border-radius: 20px;
             border: 2px solid rgba(145, 70, 255, 0.4);
-            box-shadow: 
-                0 16px 50px rgba(0, 0, 0, 0.4),
-                0 6px 20px rgba(145, 70, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
         }
 
-        .chat-score-gauge-enhanced:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                0 8px 25px rgba(145, 70, 255, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        .gauge-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 0 1.5rem 0;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .gauge-container {
+            margin: 2rem 0;
+        }
+
+        .gauge-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(0, 212, 255, 0.2));
+            border: 4px solid rgba(145, 70, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 0 30px rgba(145, 70, 255, 0.3);
+        }
+
+        .gauge-score {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .gauge-status {
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gauge-levels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+
+        .gauge-level {
+            padding: 0.8rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 60px;
+        }
+
+        .gauge-level:hover {
+            background: rgba(145, 70, 255, 0.1);
+            border-color: rgba(145, 70, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .gauge-level.active {
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(0, 212, 255, 0.2));
+            border-color: rgba(145, 70, 255, 0.5);
+            box-shadow: 0 4px 15px rgba(145, 70, 255, 0.3);
+            color: #ffffff;
         }
 
         /* AI Prompt Area - Single Instance */
@@ -125,11 +181,6 @@
             text-align: center;
         }
 
-        .phase-zero_viewers .chat-score-gauge-enhanced {
-            transform: scale(1.5);
-            transform-origin: center center;
-            margin-bottom: 3rem;
-        }
 
         .phase-zero_viewers .ai-prompt-area-enhanced {
             transform: scale(1.1);
@@ -169,11 +220,6 @@
         }
 
 
-        .phase-first_viewer .chat-score-gauge-enhanced {
-            transform: scale(1.2);
-            transform-origin: center center;
-            margin: 4rem auto 2rem;
-        }
 
         .phase-first_viewer .ai-prompt-area-enhanced {
             background: rgba(255, 255, 255, 0.1);
@@ -192,10 +238,6 @@
         }
 
 
-        .phase-building_audience .chat-score-gauge-enhanced {
-            transform: scale(1);
-            margin-bottom: 1rem;
-        }
 
         .phase-building_audience .ai-prompt-area-enhanced {
             transform: scale(1);
@@ -212,17 +254,11 @@
                 margin-bottom: 5rem;
             }
             
-            .chat-score-gauge-enhanced {
-                margin: 4rem auto 3rem;
-            }
             
             .phase-zero_viewers .ai-prompt-area-enhanced {
                 margin-bottom: 6rem;
             }
             
-            .phase-zero_viewers .chat-score-gauge-enhanced {
-                margin: 5rem auto 3rem;
-            }
         }
 
         /* Responsive Design */
@@ -241,10 +277,6 @@
                 grid-template-columns: 1fr;
             }
             
-            .phase-zero_viewers .chat-score-gauge-enhanced {
-                transform: scale(1.2);
-                transform-origin: center center;
-            }
             
             .key-metrics-row {
                 grid-template-columns: 1fr;
@@ -254,81 +286,23 @@
                 margin-bottom: 3rem;
             }
             
-            .chat-score-gauge-enhanced {
-                margin: 2rem auto 1rem;
-                padding: 2rem 1.5rem;
-            }
             
-            .circular-gauge-container {
-                width: 220px;
-                height: 220px;
-            }
             
-            .gauge-center {
-                width: 160px;
-                height: 160px;
-            }
             
-            .gauge-score {
-                font-size: 2.2rem;
-            }
             
-            .gauge-needle {
-                height: 70px;
-            }
             
-            .gauge-levels-container {
-                max-width: 280px;
-                gap: 0.25rem;
-            }
             
-            .gauge-level {
-                min-width: 45px;
-                padding: 0.25rem;
-            }
             
-            .level-text {
-                font-size: 0.7rem;
-            }
         }
 
         @media (max-width: 480px) {
-            .chat-score-gauge-enhanced {
-                padding: 1.5rem 1rem;
-                margin: 1.5rem auto 1rem;
-            }
             
-            .circular-gauge-container {
-                width: 200px;
-                height: 200px;
-            }
             
-            .gauge-center {
-                width: 140px;
-                height: 140px;
-            }
             
-            .gauge-score {
-                font-size: 2rem;
-            }
             
-            .gauge-needle {
-                height: 60px;
-            }
             
-            .gauge-levels-container {
-                max-width: 240px;
-                gap: 0.1rem;
-            }
             
-            .gauge-level {
-                min-width: 40px;
-                padding: 0.2rem;
-            }
             
-            .level-text {
-                font-size: 0.65rem;
-            }
         }
 
         /* First Viewer Alert - Full Screen Celebration */
@@ -826,49 +800,11 @@
         }
 
         /* Phase-specific visibility */
-        .phase-zero_viewers .metric-card:not(.chat-score-card):not(.ai-prompt-card):not(.chat-score-gauge-enhanced),
+        .phase-zero_viewers .metric-card:not(.chat-score-card):not(.ai-prompt-card),
         .phase-zero_viewers .revenue-metrics,
         .phase-zero_viewers .top-users,
         .phase-zero_viewers .chat-activity-log {
             display: none !important;
-        }
-
-        /* Ensure gauge is always visible */
-        .chat-score-gauge-enhanced {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 10 !important;
-        }
-
-        .modern-gauge-container {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        .gauge-outer-ring {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        .gauge-inner-ring {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        .gauge-progress-ring {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        .gauge-progress-fill {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
         }
 
         .phase-first_viewer .first-viewer-alert {
@@ -1565,472 +1501,37 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Live Chat Score Gauge */
-        .chat-score-gauge {
-            grid-column: 1 / -1;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(145, 70, 255, 0.3);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            margin: 20px 0;
-        }
 
-        /* Gauge Title Section */
-        .gauge-title-section {
-            text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
-        }
 
-        .gauge-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin: 0 0 0.8rem 0;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(135deg, #ffffff, #e0e0e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 0.5px;
-        }
 
-        .gauge-subtitle {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0;
-            font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            letter-spacing: 0.3px;
-        }
 
-        /* Circular Gauge Container */
-        .circular-gauge-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 0 auto;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
 
-        /* Desktop-specific gauge styling */
-        @media (min-width: 769px) {
-            .circular-gauge-container {
-                width: 280px;
-                height: 280px;
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-            
-            .gauge-ring {
-                width: 280px;
-                height: 280px;
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-            
-            .gauge-center {
-                width: 200px;
-                height: 200px;
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-            
-            .gauge-score {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-            
-            .gauge-needle {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-            }
-        }
 
-        .gauge-svg {
-            width: 300px;
-            height: 300px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
 
-        .gauge-ring {
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            background: rgba(20, 20, 30, 0.8);
-            position: relative;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            visibility: visible !important;
-            opacity: 1 !important;
-            box-shadow: 
-                0 0 40px rgba(145, 70, 255, 0.6),
-                0 0 80px rgba(145, 70, 255, 0.3),
-                inset 0 0 20px rgba(0, 0, 0, 0.4);
-            animation: gaugeGlow 4s ease-in-out infinite alternate;
-            margin: 0 auto;
-            border: 4px solid rgba(145, 70, 255, 0.6);
-            min-width: 280px;
-            min-height: 280px;
-            max-width: 280px;
-            max-height: 280px;
-        }
 
-        @keyframes gaugeGlow {
-            0% { box-shadow: 0 0 25px rgba(145, 70, 255, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.3); }
-            100% { box-shadow: 0 0 35px rgba(145, 70, 255, 0.6), inset 0 0 20px rgba(0, 0, 0, 0.4); }
-        }
 
-        .gauge-progress {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(
-                from -90deg,
-                transparent 0deg,
-                transparent 180deg,
-                rgba(145, 70, 255, 0.3) 180deg,
-                rgba(145, 70, 255, 0.3) 360deg
-            );
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
 
-        .gauge-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(8, 8, 18, 0.98), rgba(18, 18, 28, 0.98));
-            display: flex !important;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            visibility: visible !important;
-            opacity: 1 !important;
-            border: 3px solid rgba(145, 70, 255, 0.4);
-            box-shadow: 
-                inset 0 0 30px rgba(0, 0, 0, 0.7),
-                0 0 25px rgba(145, 70, 255, 0.3),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-            transform: translate(-50%, -50%);
-        }
 
-        .gauge-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
 
-        .gauge-score {
-            font-size: 2.8rem;
-            font-weight: 900;
-            color: #ffffff;
-            text-shadow: 
-                0 0 20px rgba(255, 255, 255, 0.8),
-                0 0 40px rgba(145, 70, 255, 0.5),
-                0 2px 4px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 4;
-            visibility: visible !important;
-            opacity: 1 !important;
-            display: block !important;
-            background: linear-gradient(135deg, #ffffff, #f0f0f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            margin: 0;
-            line-height: 1;
-        }
 
-        .gauge-score.updated {
-            animation: scorePulse 0.6s ease;
-        }
 
-        @keyframes scorePulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
 
-        .gauge-needle {
-            position: absolute;
-            width: 4px;
-            height: 80px;
-            background: linear-gradient(to top, #ffffff, #ff6b6b, #9146ff, #00d4ff);
-            border-radius: 2px;
-            transform-origin: bottom center;
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 3;
-            visibility: visible !important;
-            opacity: 1 !important;
-            display: block !important;
-            box-shadow: 
-                0 0 10px rgba(255, 255, 255, 0.8),
-                0 0 20px rgba(145, 70, 255, 0.6),
-                0 0 30px rgba(0, 212, 255, 0.4);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-90deg);
-        }
 
-        /* Gauge Levels */
-        .gauge-levels-container {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 350px;
-            margin: 0 auto;
-            gap: 0.8rem;
-            padding: 1rem 0;
-        }
 
-        .gauge-level {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            padding: 0.8rem;
-            border-radius: 12px;
-            min-width: 60px;
-        }
 
-        .gauge-level:hover {
-            color: rgba(255, 255, 255, 0.8);
-            transform: translateY(-2px);
-            background: rgba(145, 70, 255, 0.1);
-        }
 
-        .gauge-level.active {
-            color: #ffffff;
-            transform: translateY(-2px) scale(1.05);
-            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(145, 70, 255, 0.1));
-            box-shadow: 0 4px 12px rgba(145, 70, 255, 0.3);
-        }
 
-        .level-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            margin-bottom: 0.5rem;
-            background: rgba(255, 255, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-            border: 3px solid rgba(255, 255, 255, 0.3);
-        }
 
-        .gauge-level.active .level-dot {
-            background: linear-gradient(135deg, #ffffff, #9146ff, #00d4ff);
-            box-shadow: 
-                0 0 20px rgba(255, 255, 255, 0.9),
-                0 0 40px rgba(145, 70, 255, 0.6),
-                0 0 60px rgba(0, 212, 255, 0.4);
-            transform: scale(1.3);
-            border: 3px solid rgba(255, 255, 255, 0.8);
-        }
 
-        .level-text {
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
 
-        /* Modern Gauge Design */
-        .modern-gauge-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            margin: 0 auto;
-            max-width: 400px;
-        }
 
-        .gauge-outer-ring {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(0, 212, 255, 0.2));
-            padding: 8px;
-            position: relative;
-            box-shadow: 
-                0 0 30px rgba(145, 70, 255, 0.3),
-                inset 0 0 20px rgba(0, 0, 0, 0.2);
-        }
 
-        .gauge-inner-ring {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(15, 15, 25, 0.95), rgba(25, 25, 35, 0.95));
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
 
-        .gauge-progress-ring {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 8px solid transparent;
-            border-top: 8px solid #ff4757;
-            border-right: 8px solid #ff6b35;
-            border-bottom: 8px solid #feca57;
-            border-left: 8px solid #48dbfb;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
-        }
 
-        .gauge-progress-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(
-                from -90deg,
-                #ff4757 0deg,
-                #ff6b35 20deg,
-                #feca57 40deg,
-                #48dbfb 60deg,
-                #0abde3 80deg,
-                #3742fa 100deg,
-                transparent 100deg,
-                transparent 360deg
-            );
-            mask: radial-gradient(circle at center, transparent 75%, black 75%);
-            -webkit-mask: radial-gradient(circle at center, transparent 75%, black 75%);
-            transform: rotate(0deg);
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
-        }
 
-        .gauge-center-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: white;
-        }
 
-        .gauge-score-large {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffffff, #e0e0e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            margin: 0;
-            line-height: 1;
-        }
 
-        .gauge-status {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
 
-        .gauge-levels {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            gap: 0.5rem;
-        }
-
-        .gauge-level-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.8rem 0.5rem;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            min-width: 60px;
-        }
-
-        .gauge-level-item:hover {
-            background: rgba(145, 70, 255, 0.1);
-            border-color: rgba(145, 70, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .gauge-level-item.active {
-            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(0, 212, 255, 0.2));
-            border-color: rgba(145, 70, 255, 0.5);
-            box-shadow: 0 4px 15px rgba(145, 70, 255, 0.3);
-        }
-
-        .level-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .level-name {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0.2rem;
-        }
-
-        .level-range {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: 500;
-        }
-
-        /* Chat Score Animation */
-        .gauge-score.updated {
-            animation: scorePulse 0.6s ease;
-        }
-
-        @keyframes scorePulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
 
         /* Strategic Metrics Styling */
         .strategic-metrics-grid {
@@ -2188,57 +1689,23 @@
             </div>
         </div>
 
-        <!-- Modern Circular Chat Score Gauge -->
-        <div class="chat-score-gauge-enhanced" id="chatScoreGaugeEnhanced">
-            <!-- Gauge Title -->
-            <div class="gauge-title-section">
-                <h3 class="gauge-title">Chat Score</h3>
-                <p class="gauge-subtitle" id="gaugeSubtitle">Keep the conversation flowing!</p>
-                </div>
-                
-            <!-- Modern Gauge Design -->
-            <div class="modern-gauge-container">
-                <div class="gauge-outer-ring">
-                    <div class="gauge-inner-ring">
-                        <div class="gauge-progress-ring" id="gaugeProgressRing">
-                            <div class="gauge-progress-fill" id="gaugeProgressFill"></div>
-                        </div>
-                        <div class="gauge-center-content">
-                            <div class="gauge-score-large" id="gaugeScoreEnhanced">0</div>
-                            <div class="gauge-status" id="gaugeStatus">Starting</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="gauge-levels">
-                    <div class="gauge-level-item" data-level="0">
-                        <div class="level-icon">😴</div>
-                        <div class="level-name">Quiet</div>
-                        <div class="level-range">0-20</div>
-                    </div>
-                    <div class="gauge-level-item" data-level="1">
-                        <div class="level-icon">📊</div>
-                        <div class="level-name">Low</div>
-                        <div class="level-range">20-40</div>
-                    </div>
-                    <div class="gauge-level-item" data-level="2">
-                        <div class="level-icon">📈</div>
-                        <div class="level-name">Moderate</div>
-                        <div class="level-range">40-60</div>
-                    </div>
-                    <div class="gauge-level-item" data-level="3">
-                        <div class="level-icon">🔥</div>
-                        <div class="level-name">High</div>
-                        <div class="level-range">60-80</div>
-                    </div>
-                    <div class="gauge-level-item" data-level="4">
-                        <div class="level-icon">🚀</div>
-                        <div class="level-name">Fire</div>
-                        <div class="level-range">80-100</div>
-                    </div>
+        <!-- Clean Chat Score Gauge -->
+        <div class="chat-score-gauge" id="chatScoreGauge">
+            <h3 class="gauge-title">Chat Score</h3>
+            <div class="gauge-container">
+                <div class="gauge-circle">
+                    <div class="gauge-score" id="gaugeScore">0</div>
+                    <div class="gauge-status" id="gaugeStatus">Starting</div>
                 </div>
             </div>
-            
+            <div class="gauge-levels">
+                <div class="gauge-level" data-level="0">😴 Quiet</div>
+                <div class="gauge-level" data-level="1">📊 Low</div>
+                <div class="gauge-level" data-level="2">📈 Moderate</div>
+                <div class="gauge-level" data-level="3">🔥 High</div>
+                <div class="gauge-level" data-level="4">🚀 Fire</div>
             </div>
+        </div>
             
         <!-- First Viewer Catcher Alert -->
         <div class="first-viewer-alert" id="firstViewerAlert">
@@ -3890,35 +3357,24 @@
 
         // Update chat score gauge
         function updateChatScoreGauge(score) {
-            console.log('🎯 Updating modern chat score gauge with score:', score);
+            console.log('🎯 Updating clean chat score gauge with score:', score);
             
-            // Update single gauge instance
-            const scoreElement = document.getElementById('gaugeScoreEnhanced');
+            // Update gauge score
+            const scoreElement = document.getElementById('gaugeScore');
             const statusElement = document.getElementById('gaugeStatus');
-            const progressFill = document.getElementById('gaugeProgressFill');
             
             // Update score with animation
             if (score !== lastChatScore) {
                 if (scoreElement) {
-                    // Add smooth number transition
-                    scoreElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                scoreElement.textContent = score;
-                scoreElement.classList.add('updated');
-                    
-                    // Remove animation class after completion
-                setTimeout(() => {
-                    scoreElement.classList.remove('updated');
-                }, 600);
+                    scoreElement.textContent = score;
+                    scoreElement.style.transition = 'all 0.3s ease';
+                    scoreElement.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        scoreElement.style.transform = 'scale(1)';
+                    }, 300);
                 }
                 
                 lastChatScore = score;
-            }
-            
-            // Update progress fill rotation (0-100 maps to 0-360 degrees)
-            if (progressFill) {
-                const rotation = (score / 100) * 360;
-                progressFill.style.transform = `rotate(${rotation}deg)`;
-                progressFill.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
             }
             
             // Update status text based on score
@@ -3933,7 +3389,7 @@
                 statusElement.textContent = status;
             }
             
-            // Update gauge levels with modern styling
+            // Update gauge levels
             updateGaugeLevels(score);
             
             // Update legacy gauges (if they exist)
@@ -4029,9 +3485,9 @@
             }
         }
         
-        // Update gauge levels with modern styling
+        // Update gauge levels
         function updateGaugeLevels(score) {
-            const levels = document.querySelectorAll('.gauge-level-item');
+            const levels = document.querySelectorAll('.gauge-level');
             const levelThresholds = [0, 20, 40, 60, 80, 100];
             
             levels.forEach((level, index) => {
