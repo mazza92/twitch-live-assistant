@@ -46,35 +46,17 @@
             margin: 0 auto;
         }
 
-        /* Zero Viewers Encouragement Message */
-        .zero-viewers-encouragement {
-            text-align: center;
-            margin-bottom: 2rem;
-            max-width: 600px;
-        }
-
-        .zero-viewers-encouragement h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--phase-zero);
-        }
-
-        .zero-viewers-encouragement p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            opacity: 0.8;
-        }
 
         /* Chat Score Gauge - Single Instance */
         .chat-score-gauge-enhanced {
             margin: 2rem auto;
             transition: all var(--transition-duration) ease-in-out;
             width: 300px;
-            height: auto;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 15px;
         }
 
         /* AI Prompt Area - Single Instance */
@@ -120,10 +102,6 @@
             text-align: center;
         }
 
-        .phase-zero_viewers .zero-viewers-encouragement {
-            display: block;
-        }
-
         .phase-zero_viewers .chat-score-gauge-enhanced {
             transform: scale(1.5);
             transform-origin: center center;
@@ -132,6 +110,28 @@
 
         .phase-zero_viewers .ai-prompt-area-enhanced {
             transform: scale(1.1);
+            margin-top: 1rem;
+        }
+
+        .phase-zero_viewers .ai-prompt-header {
+            background: linear-gradient(135deg, var(--phase-zero) 0%, #ff8a80 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .phase-zero_viewers .ai-prompt-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .phase-zero_viewers .ai-prompt-phase {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
         }
 
         .phase-zero_viewers .main-metrics-grid {
@@ -145,9 +145,6 @@
             padding: 3rem;
         }
 
-        .phase-first_viewer .zero-viewers-encouragement {
-            display: none;
-        }
 
         .phase-first_viewer .chat-score-gauge-enhanced {
             transform: scale(1.2);
@@ -171,9 +168,6 @@
             text-align: left;
         }
 
-        .phase-building_audience .zero-viewers-encouragement {
-            display: none;
-        }
 
         .phase-building_audience .chat-score-gauge-enhanced {
             transform: scale(1);
@@ -1314,8 +1308,8 @@
             position: relative;
             width: 250px;
             height: 250px;
-            margin: 0 auto;
             flex-shrink: 0;
+            order: 1;
         }
 
         .gauge-circle {
@@ -1390,18 +1384,18 @@
         .gauge-levels {
             display: flex;
             justify-content: space-between;
-            margin-top: 15px;
             padding: 0 10px;
             width: 100%;
             max-width: 280px;
             flex-shrink: 0;
+            order: 3;
         }
 
         .gauge-labels {
             text-align: center;
-            margin-top: 10px;
             flex-shrink: 0;
             width: 100%;
+            order: 2;
         }
 
         .gauge-label {
@@ -1638,12 +1632,6 @@
     <!-- Main Dashboard Container - Single Layout with Phase Control -->
     <div id="dashboard-container" class="phase-zero_viewers">
         
-        <!-- Zero Viewers Encouragement Message -->
-        <div class="zero-viewers-encouragement">
-            <h2>🎯 Zero to One Journey</h2>
-            <p>Every great streamer started with zero viewers. Keep talking, stay consistent, and your community will find you!</p>
-        </div>
-
         <!-- Central Chat Score Gauge - Single Instance -->
         <div class="chat-score-gauge-enhanced" id="chatScoreGaugeEnhanced">
             <div class="gauge-container">
@@ -1651,10 +1639,10 @@
                     <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
                     <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
                 </div>
-                <div class="gauge-labels">
-                    <div class="gauge-label">Chat Score</div>
-                    <div class="gauge-subtitle" id="gaugeSubtitle">Keep Talking!</div>
-                </div>
+            </div>
+            <div class="gauge-labels">
+                <div class="gauge-label">Chat Score</div>
+                <div class="gauge-subtitle" id="gaugeSubtitle">Keep Talking!</div>
             </div>
             <div class="gauge-levels">
                 <div class="level level-1" data-level="1">Low</div>
