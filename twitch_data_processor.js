@@ -22,6 +22,95 @@ const sentiment = new Sentiment();
 const geminiService = new GeminiService();
 console.log('🤖 [GEMINI] Service initialized:', geminiService.getHealthStatus());
 
+// External Data Integration - News and Trivia APIs
+const EXTERNAL_DATA_CACHE = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Fetch trending news from NewsAPI (free tier)
+async function fetchTrendingNews() {
+    try {
+        const cacheKey = 'trending_news';
+        const cached = EXTERNAL_DATA_CACHE.get(cacheKey);
+        
+        if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+            return cached.data;
+        }
+        
+        // Using a free news API - NewsAPI requires API key, so using alternative
+        const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=5&apiKey=demo');
+        
+        if (!response.ok) {
+            // Fallback to a different free API
+            const fallbackResponse = await fetch('https://api.quotable.io/random');
+            const fallbackData = await fallbackResponse.json();
+            
+            const data = {
+                articles: [{
+                    title: fallbackData.content,
+                    description: `Inspirational quote: "${fallbackData.content}" - ${fallbackData.author}`,
+                    url: 'https://quotable.io'
+                }]
+            };
+            
+            EXTERNAL_DATA_CACHE.set(cacheKey, { data, timestamp: Date.now() });
+            return data;
+        }
+        
+        const data = await response.json();
+        EXTERNAL_DATA_CACHE.set(cacheKey, { data, timestamp: Date.now() });
+        return data;
+    } catch (error) {
+        console.log('📰 [NEWS] Error fetching news, using fallback:', error.message);
+        return {
+            articles: [{
+                title: "Streaming Tips",
+                description: "Keep talking about what you're passionate about!",
+                url: '#'
+            }]
+        };
+    }
+}
+
+// Fetch random trivia/facts
+async function fetchRandomTrivia() {
+    try {
+        const cacheKey = 'random_trivia';
+        const cached = EXTERNAL_DATA_CACHE.get(cacheKey);
+        
+        if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+            return cached.data;
+        }
+        
+        const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
+        const data = await response.json();
+        
+        EXTERNAL_DATA_CACHE.set(cacheKey, { data, timestamp: Date.now() });
+        return data;
+    } catch (error) {
+        console.log('🧠 [TRIVIA] Error fetching trivia, using fallback:', error.message);
+        return {
+            text: "Did you know that streaming can help you build amazing communities?",
+            source: "Streaming Facts"
+        };
+    }
+}
+
+// Fetch current time and date info
+function getTimeContext() {
+    const now = new Date();
+    const hour = now.getHours();
+    const dayOfWeek = now.toLocaleDateString('en-US', { weekday: 'long' });
+    const timeOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
+    
+    return {
+        hour,
+        dayOfWeek,
+        timeOfDay,
+        isWeekend: now.getDay() === 0 || now.getDay() === 6,
+        isPrimeTime: hour >= 19 && hour <= 22
+    };
+}
+
 // Global language setting for AI prompts (default: English)
 let currentLanguage = 'en';
 
@@ -57,6 +146,33 @@ const promptTranslations = {
         first_viewer_welcome: "🎉 **FIRST VIEWER ALERT!**: Welcome to the stream! Say: \"Hey there! Thanks for being my first viewer today! I really appreciate you stopping by!\"",
         first_viewer_engagement: "🤝 **First Connection**: Make them feel special! Say: \"You're the first person to join me today - that makes you special! What brought you here?\"",
         first_viewer_community: "🏠 **Build Community**: Start building from the first person! Say: \"Welcome to our little community! Even if it's just us two, let's make it awesome!\"",
+        
+        // Dynamic External Data Prompts with placeholders
+        news_discussion: "📰 **News Discussion**: Chat is quiet! Try talking about this news story: \"{newsTitle}\" - What do you think about this?",
+        trivia_engagement: "🧠 **Fun Fact**: Here's something interesting: \"{triviaText}\" - Did you know this? Share your thoughts!",
+        time_based_greeting: "⏰ **Time-Based**: Good {timeOfDay}! It's {dayOfWeek} and we're {timeContext}. What are you up to today?",
+        weather_chat: "🌤️ **Weather Chat**: It's a {timeOfDay} {dayOfWeek} - perfect for streaming! How's the weather where you are?",
+        weekend_energy: "🎉 **Weekend Energy**: It's {dayOfWeek} - the perfect time to relax and chat! What are your weekend plans?",
+        prime_time_boost: "🔥 **Prime Time**: It's prime time for streaming! With {viewerCount} viewers, let's make this session amazing!",
+        
+        // High-priority event prompts
+        raid_celebration: "⚔️ **RAID INCOMING!**: Welcome raiders! Say: \"Welcome everyone! Thanks for the raid! Let's show them what we're all about!\"",
+        sub_bomb_celebration: "💥 **SUB BOMB!**: Multiple subs! Say: \"Wow! Multiple subs at once! You all are amazing! Thank you so much!\"",
+        bits_storm: "💰 **BITS STORM**: Bits are flying! Say: \"The bits are raining! Thank you all for the amazing support!\"",
+        follower_surge: "👥 **FOLLOWER SURGE**: New followers coming in! Say: \"Welcome to all the new followers! I'm so excited to have you here!\"",
+        
+        // Context-aware prompts
+        low_engagement_boost: "💬 **Engagement Boost**: With {viewerCount} viewers and {messageRate} messages/min, let's get this chat moving! Say: \"I want to hear from you! What's on your mind?\"",
+        high_engagement_maintain: "🎯 **Maintain Momentum**: Great energy with {viewerCount} viewers! Say: \"I love this energy! Let's keep it going - what do you think about this?\"",
+        sentiment_positive: "😊 **Positive Vibes**: The chat is feeling great! Say: \"I love the positive energy here! You all are amazing!\"",
+        sentiment_neutral: "🤔 **Neutral Chat**: Let's spice things up! Say: \"I want to hear your opinions! What do you think about this topic?\"",
+        sentiment_negative: "🔄 **Reset Energy**: Let's turn this around! Say: \"I want to focus on the positive! What's something good that happened to you today?\"",
+        
+        // Interactive prompts
+        poll_question: "📊 **Quick Poll**: Let's do a poll! Say: \"Quick question: {pollQuestion}? Type your answer and I'll count the votes!\"",
+        challenge_activity: "🎯 **Challenge Time**: Let's get interactive! Say: \"Challenge: {challengeDescription}. Who's up for it?\"",
+        story_sharing: "📖 **Share Stories**: Let's connect! Say: \"I'd love to hear your stories! What's the most interesting thing that happened to you this week?\"",
+        question_time: "❓ **Q&A Session**: Time for questions! Say: \"I'm opening the floor for questions! What would you like to know?\"",
         
         fallback_growth_welcome: "👋 **Welcome New Viewers**: Great to see new faces! Say: \"Welcome to all the new faces! Drop a message and tell me where you're from!\" or \"I love seeing new people join! What brought you here today?\"",
         fallback_growth_community: "🤝 **Build Community**: Perfect time to connect! Say: \"I love this community we're building! Share something about yourself in the chat!\" or \"Let's get to know each other better - what's your favorite thing about this stream?\"",
@@ -1003,7 +1119,7 @@ function updateTopEngagedUsers(metrics) {
     metrics.topEngagedUsers = userArray;
 }
 
-// Zero to One Engine - Generate AI prompt based on stream phase
+// Infinite Prompt Engine - Generate AI prompt with external data integration
 async function generateAIPrompt(session) {
     try {
         const metrics = session.metrics;
@@ -1013,9 +1129,16 @@ async function generateAIPrompt(session) {
         
         let prompt = null;
         
-        // Phase-specific prompt generation
+        // Step 1: Check for high-priority events first
+        prompt = await checkHighPriorityEvents(metrics);
+        if (prompt) {
+            console.log(`🚨 [AI] High-priority event prompt: ${prompt.type}`);
+            return await finalizePrompt(prompt, session);
+        }
+        
+        // Step 2: Phase-specific prompt generation with external data
         if (phase === 'zero_viewers') {
-            prompt = generateZeroViewersPrompt(metrics);
+            prompt = await generateZeroViewersPrompt(metrics);
         } else if (phase === 'first_viewer') {
             prompt = generateFirstViewerPrompt(metrics);
         } else if (phase === 'building_audience') {
@@ -1027,35 +1150,66 @@ async function generateAIPrompt(session) {
             return null;
         }
         
-        // Add to prompt history
-        metrics.promptHistory.push({
-            timestamp: Date.now(),
-            prompt: prompt,
-            phase: phase,
-            metrics: {
-                viewerCount: metrics.currentViewerCount,
-                messageRate: metrics.messagesPerMinute,
-                sentiment: metrics.rollingSentimentScore,
-                chatScore: metrics.chatScore
-            }
-        });
-        
-        // Keep only last 50 prompts
-        if (metrics.promptHistory.length > 50) {
-            metrics.promptHistory = metrics.promptHistory.slice(-50);
-        }
-        
-        metrics.lastPromptTime = Date.now();
-        
-        return prompt;
+        return await finalizePrompt(prompt, session);
     } catch (error) {
         console.error('Error generating AI prompt:', error);
         return null;
     }
 }
 
-// Generate "Always Be Talking" prompts for zero_viewers phase
-function generateZeroViewersPrompt(metrics) {
+// Check for high-priority events that need immediate attention
+async function checkHighPriorityEvents(metrics) {
+    const recentTime = Date.now() - 30000; // Last 30 seconds
+    
+    // Check for recent raids
+    const recentRaids = metrics.recentRaids.filter(raid => raid.timestamp > recentTime);
+    if (recentRaids.length > 0) {
+        return {
+            type: 'raid_celebration',
+            message: 'raid_celebration',
+            priority: 'urgent',
+            phase: 'event'
+        };
+    }
+    
+    // Check for sub bombs (multiple subs in short time)
+    const recentSubs = metrics.newSubs.filter(sub => sub.timestamp > recentTime);
+    if (recentSubs.length >= 3) {
+        return {
+            type: 'sub_bomb_celebration',
+            message: 'sub_bomb_celebration',
+            priority: 'urgent',
+            phase: 'event'
+        };
+    }
+    
+    // Check for bits storm
+    const recentBits = metrics.recentBits.filter(bit => bit.timestamp > recentTime);
+    if (recentBits.length >= 5) {
+        return {
+            type: 'bits_storm',
+            message: 'bits_storm',
+            priority: 'urgent',
+            phase: 'event'
+        };
+    }
+    
+    // Check for follower surge
+    const recentFollowers = metrics.newFollowers.filter(follower => follower.timestamp > recentTime);
+    if (recentFollowers.length >= 5) {
+        return {
+            type: 'follower_surge',
+            message: 'follower_surge',
+            priority: 'urgent',
+            phase: 'event'
+        };
+    }
+    
+    return null;
+}
+
+// Generate prompts for zero_viewers phase with external data
+async function generateZeroViewersPrompt(metrics) {
     const alwaysBeTalkingPrompts = [
         'always_be_talking_1',
         'always_be_talking_2', 
@@ -1064,7 +1218,29 @@ function generateZeroViewersPrompt(metrics) {
         'always_be_talking_5'
     ];
     
-    // Select random prompt
+    // 30% chance to use external data prompts
+    if (Math.random() < 0.3) {
+        const externalData = await fetchExternalData();
+        if (externalData.news) {
+            return {
+                type: 'news_discussion',
+                message: 'news_discussion',
+                priority: 'high',
+                phase: 'zero_viewers',
+                externalData: externalData.news
+            };
+        } else if (externalData.trivia) {
+            return {
+                type: 'trivia_engagement',
+                message: 'trivia_engagement',
+                priority: 'high',
+                phase: 'zero_viewers',
+                externalData: externalData.trivia
+            };
+        }
+    }
+    
+    // Fallback to always be talking prompts
     const randomPrompt = alwaysBeTalkingPrompts[Math.floor(Math.random() * alwaysBeTalkingPrompts.length)];
     
     return {
@@ -1074,6 +1250,202 @@ function generateZeroViewersPrompt(metrics) {
         phase: 'zero_viewers'
     };
 }
+
+// Generate AI-powered prompts for building_audience phase with external data
+async function generateBuildingAudiencePrompt(metrics) {
+    // Build context object with stream phase, metrics, and external data
+    const context = await buildPromptContext(metrics);
+    
+    try {
+        // Try AI-powered prompt with rich context
+        const aiPrompt = await geminiService.generatePromptWithContext(context, currentLanguage);
+        
+        if (aiPrompt && aiPrompt.message) {
+            return {
+                type: 'ai_powered',
+                message: aiPrompt.message,
+                priority: 'medium',
+                phase: 'building_audience',
+                context: context
+            };
+        }
+    } catch (error) {
+        console.log('🤖 [AI] Gemini API failed, using dynamic fallback:', error.message);
+    }
+    
+    // Fallback to dynamic library with external data
+    return await generateDynamicFallbackPrompt(metrics);
+}
+
+// Build rich context object for AI prompts
+async function buildPromptContext(metrics) {
+    const timeContext = getTimeContext();
+    const externalData = await fetchExternalData();
+    
+    return {
+        streamPhase: metrics.streamPhase,
+        viewerCount: metrics.currentViewerCount,
+        messageRate: metrics.messagesPerMinute,
+        chatScore: metrics.chatScore,
+        sentiment: metrics.rollingSentimentScore,
+        uniqueChatters: metrics.uniqueChatters.size,
+        timeContext: timeContext,
+        externalData: externalData,
+        recentActivity: {
+            messages: metrics.recentMessages.slice(-5),
+            followers: metrics.newFollowers.slice(-3),
+            subs: metrics.newSubs.slice(-3),
+            bits: metrics.recentBits.slice(-3)
+        }
+    };
+}
+
+// Fetch external data (news, trivia, etc.)
+async function fetchExternalData() {
+    try {
+        const [news, trivia] = await Promise.all([
+            fetchTrendingNews(),
+            fetchRandomTrivia()
+        ]);
+        
+        return {
+            news: news.articles?.[0] || null,
+            trivia: trivia || null,
+            timestamp: Date.now()
+        };
+    } catch (error) {
+        console.log('📡 [EXTERNAL] Error fetching external data:', error.message);
+        return { news: null, trivia: null, timestamp: Date.now() };
+    }
+}
+
+// Generate dynamic fallback prompts with external data
+async function generateDynamicFallbackPrompt(metrics) {
+    const externalData = await fetchExternalData();
+    const timeContext = getTimeContext();
+    
+    // Select prompt based on metrics and context
+    let selectedPrompt;
+    
+    if (metrics.messagesPerMinute < 1) {
+        selectedPrompt = 'low_engagement_boost';
+    } else if (metrics.rollingSentimentScore > 0.5) {
+        selectedPrompt = 'sentiment_positive';
+    } else if (metrics.rollingSentimentScore < -0.3) {
+        selectedPrompt = 'sentiment_negative';
+    } else if (timeContext.isPrimeTime) {
+        selectedPrompt = 'prime_time_boost';
+    } else if (timeContext.isWeekend) {
+        selectedPrompt = 'weekend_energy';
+    } else if (externalData.news) {
+        selectedPrompt = 'news_discussion';
+    } else if (externalData.trivia) {
+        selectedPrompt = 'trivia_engagement';
+    } else {
+        selectedPrompt = 'time_based_greeting';
+    }
+    
+    return {
+        type: 'dynamic_fallback',
+        message: selectedPrompt,
+        priority: 'medium',
+        phase: 'building_audience',
+        externalData: externalData,
+        timeContext: timeContext
+    };
+}
+
+// Finalize prompt with placeholder replacement and history
+async function finalizePrompt(prompt, session) {
+    const metrics = session.metrics;
+    
+    // Get the base message from translations
+    let fullMessage = promptTranslations[currentLanguage][prompt.message] || prompt.message;
+    
+    // Prepare replacement data
+    const replacements = {
+        '{viewerCount}': metrics.currentViewerCount,
+        '{messageRate}': metrics.messagesPerMinute.toFixed(1),
+        '{followRate}': metrics.followersGainsPerMinute.toFixed(1),
+        '{chatScore}': metrics.chatScore,
+        '{sentiment}': metrics.rollingSentimentScore.toFixed(2),
+        '{uniqueChatters}': metrics.uniqueChatters.size
+    };
+    
+    // Add external data replacements
+    if (prompt.externalData) {
+        if (prompt.externalData.news) {
+            replacements['{newsTitle}'] = prompt.externalData.news.title || 'this interesting story';
+        }
+        if (prompt.externalData.trivia) {
+            replacements['{triviaText}'] = prompt.externalData.trivia.text || 'something interesting';
+        }
+    }
+    
+    // Add time context replacements
+    if (prompt.timeContext) {
+        replacements['{timeOfDay}'] = prompt.timeContext.timeOfDay;
+        replacements['{dayOfWeek}'] = prompt.timeContext.dayOfWeek;
+        replacements['{timeContext}'] = prompt.timeContext.isPrimeTime ? 'in prime time' : 'having a great time';
+    }
+    
+    // Add interactive content replacements
+    replacements['{pollQuestion}'] = getRandomPollQuestion();
+    replacements['{challengeDescription}'] = getRandomChallenge();
+    
+    // Replace all placeholders
+    Object.keys(replacements).forEach(key => {
+        fullMessage = fullMessage.replace(new RegExp(key, 'g'), replacements[key]);
+    });
+    
+    prompt.message = fullMessage;
+    
+    // Add to prompt history
+    metrics.promptHistory.push({
+        timestamp: Date.now(),
+        prompt: prompt,
+        phase: metrics.streamPhase,
+        metrics: {
+            viewerCount: metrics.currentViewerCount,
+            messageRate: metrics.messagesPerMinute,
+            sentiment: metrics.rollingSentimentScore,
+            chatScore: metrics.chatScore
+        }
+    });
+    
+    // Keep only last 50 prompts
+    if (metrics.promptHistory.length > 50) {
+        metrics.promptHistory = metrics.promptHistory.slice(-50);
+    }
+    
+    metrics.lastPromptTime = Date.now();
+    
+    return prompt;
+}
+
+// Helper functions for interactive content
+function getRandomPollQuestion() {
+    const questions = [
+        "What's your favorite type of content?",
+        "What should I focus on next?",
+        "What's your favorite game?",
+        "What time do you usually watch streams?",
+        "What's the best part of this stream?"
+    ];
+    return questions[Math.floor(Math.random() * questions.length)];
+}
+
+function getRandomChallenge() {
+    const challenges = [
+        "Type your favorite emoji in the next 10 seconds",
+        "Share something that made you smile today",
+        "Tell me about your favorite hobby",
+        "Share a fun fact about yourself",
+        "What's the best advice you've ever received?"
+    ];
+    return challenges[Math.floor(Math.random() * challenges.length)];
+}
+
 
 // Generate high-priority first viewer prompts
 function generateFirstViewerPrompt(metrics) {
