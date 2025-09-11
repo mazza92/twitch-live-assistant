@@ -5094,13 +5094,23 @@
                     return getFallbackNews();
                 }
 
+                // Determine country and language based on current language setting
+                let country = 'us';
+                if (currentLanguage === 'fr') {
+                    country = 'fr';
+                } else if (currentLanguage === 'es') {
+                    country = 'es';
+                } else if (currentLanguage === 'de') {
+                    country = 'de';
+                }
+
                 // Fetch news from multiple relevant categories for streamers
                 const categories = ['technology', 'entertainment', 'gaming', 'business'];
                 const allNews = [];
                 
                 for (const category of categories) {
                     try {
-                        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
+                        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
                         
                         if (response.ok) {
                             const data = await response.json();
@@ -5220,23 +5230,76 @@
                     return cachedFacts;
                 }
 
-                const response = await fetch(factsApiUrl);
+                let facts = [];
                 
-                if (!response.ok) {
-                    throw new Error('Facts API failed');
+                // Use language-specific fact sources
+                if (currentLanguage === 'fr') {
+                    // Try French facts API first
+                    try {
+                        const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=fr');
+                        if (response.ok) {
+                            const data = await response.json();
+                            facts.push(data.text || data.fact || 'Le saviez-vous ? Le cerveau humain contient environ 86 milliards de neurones !');
+                        }
+                    } catch (error) {
+                        console.log('⚠️ French facts API failed, trying fallback');
+                    }
+                    
+                    // If no French facts, use French fallback
+                    if (facts.length === 0) {
+                        facts = getFallbackFacts('fr');
+                    }
+                } else if (currentLanguage === 'es') {
+                    // Try Spanish facts API
+                    try {
+                        const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=es');
+                        if (response.ok) {
+                            const data = await response.json();
+                            facts.push(data.text || data.fact || '¿Sabías que? ¡El cerebro humano contiene aproximadamente 86 mil millones de neuronas!');
+                        }
+                    } catch (error) {
+                        console.log('⚠️ Spanish facts API failed, trying fallback');
+                    }
+                    
+                    if (facts.length === 0) {
+                        facts = getFallbackFacts('es');
+                    }
+                } else if (currentLanguage === 'de') {
+                    // Try German facts API
+                    try {
+                        const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=de');
+                        if (response.ok) {
+                            const data = await response.json();
+                            facts.push(data.text || data.fact || 'Wusstest du? Das menschliche Gehirn enthält etwa 86 Milliarden Neuronen!');
+                        }
+                    } catch (error) {
+                        console.log('⚠️ German facts API failed, trying fallback');
+                    }
+                    
+                    if (facts.length === 0) {
+                        facts = getFallbackFacts('de');
+                    }
+                } else {
+                    // Default English facts
+                    const response = await fetch(factsApiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error('Facts API failed');
+                    }
+                    
+                    const data = await response.json();
+                    const fact = data.text || data.fact || 'Did you know? The human brain contains approximately 86 billion neurons!';
+                    facts = [fact];
                 }
                 
-                const data = await response.json();
-                const fact = data.text || data.fact || 'Did you know? The human brain contains approximately 86 billion neurons!';
-                
-                cachedFacts = [fact];
+                cachedFacts = facts;
                 lastFactsFetch = currentTime;
                 
-                console.log('🧠 Fact fetched successfully:', fact);
+                console.log('🧠 Fact fetched successfully:', facts[0]);
                 return cachedFacts;
             } catch (error) {
                 console.log('⚠️ Facts API failed, using fallback:', error.message);
-                return getFallbackFacts();
+                return getFallbackFacts(currentLanguage);
             }
         }
 
@@ -5260,19 +5323,59 @@
             ];
         }
 
-        function getFallbackFacts() {
-            return [
-                "Did you know? The human brain contains approximately 86 billion neurons!",
-                "Fun fact: Honey never spoils - archaeologists have found edible honey in ancient Egyptian tombs!",
-                "Amazing: A group of flamingos is called a 'flamboyance'!",
-                "Interesting: The shortest war in history lasted only 38-45 minutes!",
-                "Cool fact: Octopuses have three hearts and blue blood!",
-                "Did you know? Bananas are berries, but strawberries aren't!",
-                "Fun fact: The human body produces 25 million new cells every second!",
-                "Amazing: There are more possible games of chess than atoms in the observable universe!",
-                "Interesting: A jiffy is an actual unit of time - it's 1/100th of a second!",
-                "Cool fact: The human brain uses 20% of the body's total energy!"
-            ];
+        function getFallbackFacts(language = 'en') {
+            const facts = {
+                en: [
+                    "Did you know? The human brain contains approximately 86 billion neurons!",
+                    "Fun fact: Honey never spoils - archaeologists have found edible honey in ancient Egyptian tombs!",
+                    "Amazing: A group of flamingos is called a 'flamboyance'!",
+                    "Interesting: The shortest war in history lasted only 38-45 minutes!",
+                    "Cool fact: Octopuses have three hearts and blue blood!",
+                    "Did you know? Bananas are berries, but strawberries aren't!",
+                    "Fun fact: The human body produces 25 million new cells every second!",
+                    "Amazing: There are more possible games of chess than atoms in the observable universe!",
+                    "Interesting: A jiffy is an actual unit of time - it's 1/100th of a second!",
+                    "Cool fact: The human brain uses 20% of the body's total energy!"
+                ],
+                fr: [
+                    "Le saviez-vous ? Le cerveau humain contient environ 86 milliards de neurones !",
+                    "Fait amusant : Le miel ne se gâte jamais - les archéologues ont trouvé du miel comestible dans les tombes égyptiennes antiques !",
+                    "Incroyable : Un groupe de flamants roses s'appelle une 'flamboyance' !",
+                    "Intéressant : La guerre la plus courte de l'histoire n'a duré que 38-45 minutes !",
+                    "Fait cool : Les pieuvres ont trois cœurs et du sang bleu !",
+                    "Le saviez-vous ? Les bananes sont des baies, mais les fraises ne le sont pas !",
+                    "Fait amusant : Le corps humain produit 25 millions de nouvelles cellules chaque seconde !",
+                    "Incroyable : Il y a plus de parties d'échecs possibles que d'atomes dans l'univers observable !",
+                    "Intéressant : Un jiffy est une vraie unité de temps - c'est 1/100e de seconde !",
+                    "Fait cool : Le cerveau humain utilise 20% de l'énergie totale du corps !"
+                ],
+                es: [
+                    "¿Sabías que? ¡El cerebro humano contiene aproximadamente 86 mil millones de neuronas!",
+                    "Dato curioso: ¡La miel nunca se echa a perder - los arqueólogos han encontrado miel comestible en tumbas egipcias antiguas!",
+                    "Increíble: ¡Un grupo de flamencos se llama 'flamboyance'!",
+                    "Interesante: ¡La guerra más corta de la historia duró solo 38-45 minutos!",
+                    "Dato genial: ¡Los pulpos tienen tres corazones y sangre azul!",
+                    "¿Sabías que? ¡Los plátanos son bayas, pero las fresas no!",
+                    "Dato curioso: ¡El cuerpo humano produce 25 millones de nuevas células cada segundo!",
+                    "Increíble: ¡Hay más juegos de ajedrez posibles que átomos en el universo observable!",
+                    "Interesante: ¡Un jiffy es una unidad real de tiempo - es 1/100 de segundo!",
+                    "Dato genial: ¡El cerebro humano usa el 20% de la energía total del cuerpo!"
+                ],
+                de: [
+                    "Wusstest du? Das menschliche Gehirn enthält etwa 86 Milliarden Neuronen!",
+                    "Fun Fact: Honig verdirbt nie - Archäologen haben essbaren Honig in alten ägyptischen Gräbern gefunden!",
+                    "Erstaunlich: Eine Gruppe von Flamingos wird 'Flamboyance' genannt!",
+                    "Interessant: Der kürzeste Krieg der Geschichte dauerte nur 38-45 Minuten!",
+                    "Cooler Fakt: Tintenfische haben drei Herzen und blaues Blut!",
+                    "Wusstest du? Bananen sind Beeren, aber Erdbeeren nicht!",
+                    "Fun Fact: Der menschliche Körper produziert 25 Millionen neue Zellen jede Sekunde!",
+                    "Erstaunlich: Es gibt mehr mögliche Schachspiele als Atome im beobachtbaren Universum!",
+                    "Interessant: Ein Jiffy ist eine echte Zeiteinheit - es ist 1/100 einer Sekunde!",
+                    "Cooler Fakt: Das menschliche Gehirn verbraucht 20% der gesamten Körperenergie!"
+                ]
+            };
+            
+            return facts[language] || facts.en;
         }
 
         async function generateIntelligentPrompt() {
@@ -6960,6 +7063,40 @@
                 console.log(`🎉 AI prompt updated for ${lang} language`);
             } catch (error) {
                 console.log('❌ Failed to generate language-specific prompt:', error.message);
+            }
+        };
+
+        // Test Language-Specific APIs
+        window.testLanguageApis = async function(lang = 'fr') {
+            console.log(`🔍 Testing APIs for language: ${lang}`);
+            
+            // Test News API
+            console.log('📰 Testing News API...');
+            try {
+                const country = lang === 'fr' ? 'fr' : lang === 'es' ? 'es' : lang === 'de' ? 'de' : 'us';
+                const response = await fetch(`https://newsapi.org/v2/top-headlines?country=${country}&category=technology&pageSize=1&apiKey=${newsApiKey}`);
+                console.log(`📊 News API (${country}):`, response.status, response.statusText);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📰 Sample news title:', data.articles?.[0]?.title || 'No articles');
+                }
+            } catch (error) {
+                console.log('❌ News API failed:', error.message);
+            }
+            
+            // Test Facts API
+            console.log('🧠 Testing Facts API...');
+            try {
+                const response = await fetch(`https://uselessfacts.jsph.pl/random.json?language=${lang}`);
+                console.log(`📊 Facts API (${lang}):`, response.status, response.statusText);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('🧠 Sample fact:', data.text || data.fact || 'No fact');
+                }
+            } catch (error) {
+                console.log('❌ Facts API failed:', error.message);
             }
         };
 
