@@ -67,8 +67,14 @@
 
         /* Chat Score Gauge - Single Instance */
         .chat-score-gauge-enhanced {
-            margin-bottom: 2rem;
+            margin: 2rem auto;
             transition: all var(--transition-duration) ease-in-out;
+            width: 300px;
+            height: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* AI Prompt Area - Single Instance */
@@ -120,6 +126,7 @@
 
         .phase-zero_viewers .chat-score-gauge-enhanced {
             transform: scale(1.5);
+            transform-origin: center center;
             margin-bottom: 3rem;
         }
 
@@ -144,6 +151,7 @@
 
         .phase-first_viewer .chat-score-gauge-enhanced {
             transform: scale(1.2);
+            transform-origin: center center;
             margin-bottom: 2rem;
         }
 
@@ -199,6 +207,7 @@
             
             .phase-zero_viewers .chat-score-gauge-enhanced {
                 transform: scale(1.2);
+                transform-origin: center center;
             }
             
             .key-metrics-row {
@@ -279,18 +288,6 @@
             50% { transform: scale(1.05); }
         }
 
-        /* Enhanced Chat Score Gauge for Zero to One */
-        .chat-score-gauge-enhanced {
-            width: 300px;
-            height: 300px;
-            position: relative;
-            margin: 0 auto;
-            transform: scale(1.2);
-        }
-
-        .phase-zero_viewers .chat-score-gauge-enhanced {
-            transform: scale(1.5);
-        }
 
         /* Enhanced AI Prompt Area */
         .ai-prompt-area-enhanced {
@@ -1317,7 +1314,8 @@
             position: relative;
             width: 250px;
             height: 250px;
-            margin: 0 auto 20px;
+            margin: 0 auto;
+            flex-shrink: 0;
         }
 
         .gauge-circle {
@@ -1392,8 +1390,30 @@
         .gauge-levels {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            padding: 0 20px;
+            margin-top: 15px;
+            padding: 0 10px;
+            width: 100%;
+            max-width: 280px;
+            flex-shrink: 0;
+        }
+
+        .gauge-labels {
+            text-align: center;
+            margin-top: 10px;
+            flex-shrink: 0;
+            width: 100%;
+        }
+
+        .gauge-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .gauge-subtitle {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .gauge-level {
