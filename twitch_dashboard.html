@@ -6379,9 +6379,20 @@
             if (dashboardContainer) {
                 // Set initial phase
                 dashboardContainer.className = 'phase-zero_viewers';
+                currentPhase = 'zero_viewers';
                 
                 // Initialize gauge subtitle
                 updateGaugeSubtitle('zero_viewers');
+                
+                // Force show milestones section for zero_viewers phase
+                const milestonesSection = document.getElementById('milestonesSection');
+                if (milestonesSection) {
+                    milestonesSection.style.display = 'block';
+                    console.log('✅ [PHASE] Milestones section shown for zero_viewers phase');
+                }
+                
+                // Initialize Persistence Engine
+                initializePersistenceEngine();
                 
                 console.log('✅ [PHASE] Phased UI initialized - starting with zero_viewers phase');
             } else {
@@ -6502,6 +6513,42 @@
         window.testApiConfig = function() {
             console.log('⚙️ Testing API Configuration...');
             toggleApiConfig();
+        };
+
+        // Test Gamification Features
+        window.testGamification = function() {
+            console.log('🏆 Testing Gamification Features...');
+            
+            // Force show milestones section
+            const milestonesSection = document.getElementById('milestonesSection');
+            if (milestonesSection) {
+                milestonesSection.style.display = 'block';
+                console.log('✅ Milestones section shown');
+            } else {
+                console.log('❌ Milestones section not found');
+            }
+            
+            // Force initialize milestones
+            initializeMilestones();
+            
+            // Test milestone completion
+            setTimeout(() => {
+                const testMilestone = milestones[0]; // First milestone
+                if (testMilestone) {
+                    completeMilestone(testMilestone);
+                    console.log('✅ Test milestone completed:', testMilestone.name);
+                }
+            }, 1000);
+        };
+
+        // Show Current Phase Status
+        window.showPhaseStatus = function() {
+            console.log('📊 Current Phase Status:');
+            console.log('- Current Phase:', currentPhase);
+            console.log('- Dashboard Container Class:', document.getElementById('dashboard-container')?.className);
+            console.log('- Milestones Section Display:', document.getElementById('milestonesSection')?.style.display);
+            console.log('- Milestones Grid Children:', document.getElementById('milestonesGrid')?.children.length);
+            console.log('- Persistence Engine Initialized:', persistenceEngine ? 'Yes' : 'No');
         };
     </script>
 </body>
