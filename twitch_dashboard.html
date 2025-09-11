@@ -2270,7 +2270,7 @@
                 <div class="ai-prompt-phase" id="aiPromptPhase" data-translate="zeroViewers">Zero Viewers</div>
             </div>
             <div class="ai-prompt-content">
-                <div class="ai-prompt-message" id="aiPromptMessage">🤖 AI is analyzing news and facts to generate your next prompt...</div>
+                <div class="ai-prompt-message" id="aiPromptMessage" data-translate="aiAnalyzing">🤖 AI is analyzing news and facts to generate your next prompt...</div>
                 <div class="ai-prompt-meta">
                 <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
                     <div class="ai-prompt-category" id="aiPromptCategory" style="display: none;"></div>
@@ -2325,12 +2325,12 @@
             
         <!-- Persistence Engine - Milestones Section -->
         <div class="milestones-section" id="milestonesSection" style="display: none;">
-            <div class="milestones-title">🏆 Your Journey Milestones</div>
+            <div class="milestones-title" data-translate="yourJourneyMilestones">🏆 Your Journey Milestones</div>
             <div class="milestones-grid" id="milestonesGrid">
                 <!-- Milestones will be populated by JavaScript -->
             </div>
             <div class="stream-summary" id="streamSummary">
-                <div class="summary-title">📊 Session Summary</div>
+                <div class="summary-title" data-translate="sessionSummary">📊 Session Summary</div>
                 <div class="summary-stats">
                     <div class="summary-stat">
                         <div class="summary-stat-value" id="totalStreamTime">0m</div>
@@ -2346,7 +2346,7 @@
                     </div>
                     <div class="summary-stat">
                         <div class="summary-stat-value" id="milestonesReached">0</div>
-                        <div class="summary-stat-label">Milestones</div>
+                        <div class="summary-stat-label" data-translate="milestones">Milestones</div>
                     </div>
                 </div>
             </div>
@@ -3092,14 +3092,14 @@
 
         // Milestones Configuration
         const milestones = [
-            { id: 'first_30min', name: 'First 30 Minutes', icon: '⏰', threshold: 30, type: 'time', description: 'Stream for 30 minutes straight' },
-            { id: 'first_hour', name: 'First Hour', icon: '🕐', threshold: 60, type: 'time', description: 'Complete your first hour of streaming' },
-            { id: 'first_viewer', name: 'First Viewer', icon: '👤', threshold: 1, type: 'viewers', description: 'Get your first viewer' },
-            { id: 'first_5_viewers', name: 'First 5 Viewers', icon: '👥', threshold: 5, type: 'viewers', description: 'Reach 5 concurrent viewers' },
-            { id: 'first_message', name: 'First Chat Message', icon: '💬', threshold: 1, type: 'messages', description: 'Receive your first chat message' },
-            { id: 'stream_streak_3', name: '3-Day Streak', icon: '🔥', threshold: 3, type: 'streak', description: 'Stream for 3 consecutive days' },
-            { id: 'stream_streak_7', name: '1-Week Streak', icon: '🌟', threshold: 7, type: 'streak', description: 'Stream for 7 consecutive days' },
-            { id: 'first_100_messages', name: '100 Messages', icon: '💯', threshold: 100, type: 'messages', description: 'Send 100 messages total' }
+            { id: 'first_30min', nameKey: 'first30Minutes', icon: '⏰', threshold: 30, type: 'time', descriptionKey: 'streamFor30Minutes' },
+            { id: 'first_hour', nameKey: 'firstHour', icon: '🕐', threshold: 60, type: 'time', descriptionKey: 'completeFirstHour' },
+            { id: 'first_viewer', nameKey: 'firstViewer', icon: '👤', threshold: 1, type: 'viewers', descriptionKey: 'getFirstViewer' },
+            { id: 'first_5_viewers', nameKey: 'first5Viewers', icon: '👥', threshold: 5, type: 'viewers', descriptionKey: 'reach5Viewers' },
+            { id: 'first_message', nameKey: 'firstMessage', icon: '💬', threshold: 1, type: 'messages', descriptionKey: 'receiveFirstMessage' },
+            { id: 'stream_streak_3', nameKey: 'streamStreak3', icon: '🔥', threshold: 3, type: 'streak', descriptionKey: 'stream3ConsecutiveDays' },
+            { id: 'stream_streak_7', nameKey: 'streamStreak7', icon: '🌟', threshold: 7, type: 'streak', descriptionKey: 'stream7ConsecutiveDays' },
+            { id: 'first_100_messages', nameKey: 'first100Messages', icon: '💯', threshold: 100, type: 'messages', descriptionKey: 'send100Messages' }
         ];
 
         // Language translations
@@ -3232,6 +3232,47 @@
                 communityHealth: 'Community Health',
                 streamConsistency: 'Stream Consistency',
                 calculatingRecommendations: 'Calculating recommendations...',
+                
+                // Milestones & Gamification
+                yourJourneyMilestones: 'Your Journey Milestones',
+                sessionSummary: 'Session Summary',
+                milestones: 'Milestones',
+                first30Minutes: 'First 30 Minutes',
+                firstHour: 'First Hour',
+                firstViewer: 'First Viewer',
+                first5Viewers: 'First 5 Viewers',
+                first10Viewers: 'First 10 Viewers',
+                first25Viewers: 'First 25 Viewers',
+                firstMessage: 'First Chat Message',
+                first10Messages: 'First 10 Messages',
+                first50Messages: 'First 50 Messages',
+                first100Messages: 'First 100 Messages',
+                streamStreak3: '3-Day Streak',
+                streamStreak7: '1-Week Streak',
+                streamFor30Minutes: 'Stream for 30 minutes straight',
+                completeFirstHour: 'Complete your first hour of streaming',
+                getFirstViewer: 'Get your first viewer',
+                reach5Viewers: 'Reach 5 concurrent viewers',
+                reach10Viewers: 'Reach 10 concurrent viewers',
+                reach25Viewers: 'Reach 25 concurrent viewers',
+                receiveFirstMessage: 'Receive your first chat message',
+                receive10Messages: 'Receive 10 chat messages',
+                receive50Messages: 'Receive 50 chat messages',
+                send100Messages: 'Send 100 messages total',
+                stream3ConsecutiveDays: 'Stream for 3 consecutive days',
+                stream7ConsecutiveDays: 'Stream for 7 consecutive days',
+                completed: 'COMPLETED',
+                
+                // AI Intelligence
+                aiAnalyzing: 'AI is analyzing news and facts to generate your next prompt...',
+                newsCategory: 'News',
+                factsCategory: 'Facts',
+                fallbackCategory: 'Fallback',
+                apiConfig: 'API Configuration',
+                newsApiKey: 'News API Key',
+                factsApiUrl: 'Facts API URL',
+                saveConfig: 'Save Configuration',
+                toggleConfig: 'Toggle Config',
                 uniqueViewers: 'Unique Viewers',
                 messagesSent: 'Messages Sent',
                 liveViewerCount: 'Live viewer count',
@@ -3385,6 +3426,47 @@
                 communityHealth: 'Santé de la Communauté',
                 streamConsistency: 'Cohérence du Stream',
                 calculatingRecommendations: 'Calcul des recommandations...',
+                
+                // Milestones & Gamification
+                yourJourneyMilestones: 'Vos Jalons de Parcours',
+                sessionSummary: 'Résumé de Session',
+                milestones: 'Jalons',
+                first30Minutes: 'Premières 30 Minutes',
+                firstHour: 'Première Heure',
+                firstViewer: 'Premier Spectateur',
+                first5Viewers: 'Premiers 5 Spectateurs',
+                first10Viewers: 'Premiers 10 Spectateurs',
+                first25Viewers: 'Premiers 25 Spectateurs',
+                firstMessage: 'Premier Message Chat',
+                first10Messages: 'Premiers 10 Messages',
+                first50Messages: 'Premiers 50 Messages',
+                first100Messages: 'Premiers 100 Messages',
+                streamStreak3: 'Série de 3 Jours',
+                streamStreak7: 'Série de 1 Semaine',
+                streamFor30Minutes: 'Streamer pendant 30 minutes d\'affilée',
+                completeFirstHour: 'Terminer votre première heure de streaming',
+                getFirstViewer: 'Obtenir votre premier spectateur',
+                reach5Viewers: 'Atteindre 5 spectateurs simultanés',
+                reach10Viewers: 'Atteindre 10 spectateurs simultanés',
+                reach25Viewers: 'Atteindre 25 spectateurs simultanés',
+                receiveFirstMessage: 'Recevoir votre premier message chat',
+                receive10Messages: 'Recevoir 10 messages chat',
+                receive50Messages: 'Recevoir 50 messages chat',
+                send100Messages: 'Envoyer 100 messages au total',
+                stream3ConsecutiveDays: 'Streamer pendant 3 jours consécutifs',
+                stream7ConsecutiveDays: 'Streamer pendant 7 jours consécutifs',
+                completed: 'TERMINÉ',
+                
+                // AI Intelligence
+                aiAnalyzing: 'L\'IA analyse les actualités et faits pour générer votre prochain prompt...',
+                newsCategory: 'Actualités',
+                factsCategory: 'Faits',
+                fallbackCategory: 'Sauvegarde',
+                apiConfig: 'Configuration API',
+                newsApiKey: 'Clé API Actualités',
+                factsApiUrl: 'URL API Faits',
+                saveConfig: 'Sauvegarder Configuration',
+                toggleConfig: 'Basculer Config',
                 uniqueViewers: 'Spectateurs Uniques',
                 messagesSent: 'Messages Envoyés',
                 liveViewerCount: 'Nombre de spectateurs en direct',
@@ -3538,6 +3620,47 @@
                 communityHealth: 'Salud de la Comunidad',
                 streamConsistency: 'Consistencia del Stream',
                 calculatingRecommendations: 'Calculando recomendaciones...',
+                
+                // Milestones & Gamification
+                yourJourneyMilestones: 'Tus Hitos del Viaje',
+                sessionSummary: 'Resumen de Sesión',
+                milestones: 'Hitos',
+                first30Minutes: 'Primeros 30 Minutos',
+                firstHour: 'Primera Hora',
+                firstViewer: 'Primer Espectador',
+                first5Viewers: 'Primeros 5 Espectadores',
+                first10Viewers: 'Primeros 10 Espectadores',
+                first25Viewers: 'Primeros 25 Espectadores',
+                firstMessage: 'Primer Mensaje de Chat',
+                first10Messages: 'Primeros 10 Mensajes',
+                first50Messages: 'Primeros 50 Mensajes',
+                first100Messages: 'Primeros 100 Mensajes',
+                streamStreak3: 'Racha de 3 Días',
+                streamStreak7: 'Racha de 1 Semana',
+                streamFor30Minutes: 'Transmitir durante 30 minutos seguidos',
+                completeFirstHour: 'Completar tu primera hora de transmisión',
+                getFirstViewer: 'Obtener tu primer espectador',
+                reach5Viewers: 'Alcanzar 5 espectadores simultáneos',
+                reach10Viewers: 'Alcanzar 10 espectadores simultáneos',
+                reach25Viewers: 'Alcanzar 25 espectadores simultáneos',
+                receiveFirstMessage: 'Recibir tu primer mensaje de chat',
+                receive10Messages: 'Recibir 10 mensajes de chat',
+                receive50Messages: 'Recibir 50 mensajes de chat',
+                send100Messages: 'Enviar 100 mensajes en total',
+                stream3ConsecutiveDays: 'Transmitir durante 3 días consecutivos',
+                stream7ConsecutiveDays: 'Transmitir durante 7 días consecutivos',
+                completed: 'COMPLETADO',
+                
+                // AI Intelligence
+                aiAnalyzing: 'La IA está analizando noticias y hechos para generar tu próximo prompt...',
+                newsCategory: 'Noticias',
+                factsCategory: 'Hechos',
+                fallbackCategory: 'Respaldo',
+                apiConfig: 'Configuración API',
+                newsApiKey: 'Clave API Noticias',
+                factsApiUrl: 'URL API Hechos',
+                saveConfig: 'Guardar Configuración',
+                toggleConfig: 'Alternar Config',
                 uniqueViewers: 'Espectadores Únicos',
                 messagesSent: 'Mensajes Enviados',
                 liveViewerCount: 'Número de espectadores en vivo',
@@ -3691,6 +3814,47 @@
                 communityHealth: 'Community-Gesundheit',
                 streamConsistency: 'Stream-Konsistenz',
                 calculatingRecommendations: 'Empfehlungen werden berechnet...',
+                
+                // Milestones & Gamification
+                yourJourneyMilestones: 'Deine Reise-Meilensteine',
+                sessionSummary: 'Session-Zusammenfassung',
+                milestones: 'Meilensteine',
+                first30Minutes: 'Erste 30 Minuten',
+                firstHour: 'Erste Stunde',
+                firstViewer: 'Erster Zuschauer',
+                first5Viewers: 'Erste 5 Zuschauer',
+                first10Viewers: 'Erste 10 Zuschauer',
+                first25Viewers: 'Erste 25 Zuschauer',
+                firstMessage: 'Erste Chat-Nachricht',
+                first10Messages: 'Erste 10 Nachrichten',
+                first50Messages: 'Erste 50 Nachrichten',
+                first100Messages: 'Erste 100 Nachrichten',
+                streamStreak3: '3-Tage-Serie',
+                streamStreak7: '1-Woche-Serie',
+                streamFor30Minutes: '30 Minuten am Stück streamen',
+                completeFirstHour: 'Deine erste Stunde Streaming abschließen',
+                getFirstViewer: 'Deinen ersten Zuschauer bekommen',
+                reach5Viewers: '5 gleichzeitige Zuschauer erreichen',
+                reach10Viewers: '10 gleichzeitige Zuschauer erreichen',
+                reach25Viewers: '25 gleichzeitige Zuschauer erreichen',
+                receiveFirstMessage: 'Deine erste Chat-Nachricht erhalten',
+                receive10Messages: '10 Chat-Nachrichten erhalten',
+                receive50Messages: '50 Chat-Nachrichten erhalten',
+                send100Messages: '100 Nachrichten insgesamt senden',
+                stream3ConsecutiveDays: '3 aufeinanderfolgende Tage streamen',
+                stream7ConsecutiveDays: '7 aufeinanderfolgende Tage streamen',
+                completed: 'ABGESCHLOSSEN',
+                
+                // AI Intelligence
+                aiAnalyzing: 'KI analysiert Nachrichten und Fakten, um deinen nächsten Prompt zu generieren...',
+                newsCategory: 'Nachrichten',
+                factsCategory: 'Fakten',
+                fallbackCategory: 'Fallback',
+                apiConfig: 'API-Konfiguration',
+                newsApiKey: 'Nachrichten-API-Schlüssel',
+                factsApiUrl: 'Fakten-API-URL',
+                saveConfig: 'Konfiguration Speichern',
+                toggleConfig: 'Config Umschalten',
                 uniqueViewers: 'Eindeutige Zuschauer',
                 messagesSent: 'Gesendete Nachrichten',
                 liveViewerCount: 'Live-Zuschauerzahl',
@@ -4456,6 +4620,10 @@
                     // Special handling for elements with dynamic content
                     if (element.id === 'aiPromptPhase') {
                         // Don't translate phase as it's set dynamically
+                        return;
+                    }
+                    if (element.id === 'aiPromptMessage') {
+                        // Don't translate AI prompt message as it's set dynamically
                         return;
                     }
                     if (element.id === 'firstViewerMessage' || element.id === 'firstViewerGreeting') {
@@ -5687,6 +5855,7 @@
             if (!milestonesGrid) return;
             
             milestonesGrid.innerHTML = '';
+            const t = translations[currentLanguage];
             
             milestones.forEach(milestone => {
                 const milestoneCard = document.createElement('div');
@@ -5699,21 +5868,25 @@
                 }
                 
                 const progress = getMilestoneProgress(milestone);
-                const progressPercent = Math.min((progress / milestone.threshold) * 100, 100);
+                const progressPercent = Math.min(Math.round((progress / milestone.threshold) * 100), 100);
+                
+                const milestoneName = t[milestone.nameKey] || milestone.nameKey;
+                const milestoneDescription = t[milestone.descriptionKey] || milestone.descriptionKey;
+                const completedText = t.completed || 'COMPLETED';
                 
                 milestoneCard.innerHTML = `
                     <div class="milestone-header">
                         <span class="milestone-icon">${milestone.icon}</span>
-                        <span class="milestone-name">${milestone.name}</span>
+                        <span class="milestone-name">${milestoneName}</span>
                     </div>
                     <div class="milestone-progress">
                         <div class="milestone-progress-bar">
                             <div class="milestone-progress-fill" style="width: ${progressPercent}%"></div>
                         </div>
-                        <div class="milestone-progress-text">${progress}/${milestone.threshold}</div>
+                        <div class="milestone-progress-text">${progressPercent}%</div>
                     </div>
-                    <div class="milestone-description">${milestone.description}</div>
-                    ${isCompleted ? '<div class="milestone-badge">COMPLETED</div>' : ''}
+                    <div class="milestone-description">${milestoneDescription}</div>
+                    ${isCompleted ? `<div class="milestone-badge">${completedText}</div>` : ''}
                 `;
                 
                 milestonesGrid.appendChild(milestoneCard);
@@ -5723,11 +5896,13 @@
         function getMilestoneProgress(milestone) {
             switch (milestone.type) {
                 case 'time':
-                    return Math.floor(streamTime / 60); // Convert to minutes
+                    const streamDuration = Math.floor((Date.now() - persistenceEngine.sessionData.startTime) / 60000);
+                    return Math.min(streamDuration, milestone.threshold);
                 case 'viewers':
-                    return uniqueViewers.size;
+                    const currentViewers = parseInt(document.getElementById('viewersCount')?.textContent || '0');
+                    return Math.min(currentViewers, milestone.threshold);
                 case 'messages':
-                    return messagesSent;
+                    return Math.min(messagesSent, milestone.threshold);
                 case 'streak':
                     return getStreamingStreak();
                 default:
@@ -5828,25 +6003,32 @@
         }
         
         function updateMilestoneCards() {
+            const t = translations[currentLanguage];
+            
             milestones.forEach(milestone => {
                 const milestoneCard = document.getElementById(`milestone-${milestone.id}`);
                 if (milestoneCard) {
                     const isCompleted = getMilestoneStatus(milestone);
                     const progress = getMilestoneProgress(milestone);
+                    const progressPercent = Math.min(Math.round((progress / milestone.threshold) * 100), 100);
+                    
+                    const milestoneName = t[milestone.nameKey] || milestone.nameKey;
+                    const milestoneDescription = t[milestone.descriptionKey] || milestone.descriptionKey;
+                    const completedText = t.completed || 'COMPLETED';
                     
                     milestoneCard.innerHTML = `
                         <div class="milestone-icon">${milestone.icon}</div>
                         <div class="milestone-content">
-                            <div class="milestone-name">${milestone.name}</div>
-                            <div class="milestone-description">${milestone.description}</div>
+                            <div class="milestone-name">${milestoneName}</div>
+                            <div class="milestone-description">${milestoneDescription}</div>
                             <div class="milestone-progress">
                                 <div class="progress-bar">
-                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
                                 </div>
-                                <span class="progress-text">${progress}%</span>
+                                <span class="progress-text">${progressPercent}%</span>
                             </div>
                         </div>
-                        ${isCompleted ? '<div class="milestone-badge">COMPLETED</div>' : ''}
+                        ${isCompleted ? `<div class="milestone-badge">${completedText}</div>` : ''}
                     `;
                 }
             });
@@ -5863,16 +6045,6 @@
             return false;
         }
         
-        function getMilestoneProgress(milestone) {
-            if (milestone.type === 'time') {
-                const streamDuration = Math.floor((Date.now() - persistenceEngine.sessionData.startTime) / 60000);
-                return Math.min(100, (streamDuration / milestone.threshold) * 100);
-            } else if (milestone.type === 'viewers') {
-                const currentViewers = parseInt(document.getElementById('viewersCount')?.textContent || '0');
-                return Math.min(100, (currentViewers / milestone.threshold) * 100);
-            }
-            return 0;
-        }
 
         // Stream time tracking
         function startStreamTimeTracking() {
