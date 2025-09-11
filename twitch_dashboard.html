@@ -1836,6 +1836,165 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+        /* Modern Gauge Design */
+        .modern-gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            margin: 0 auto;
+            max-width: 400px;
+        }
+
+        .gauge-outer-ring {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(0, 212, 255, 0.2));
+            padding: 8px;
+            position: relative;
+            box-shadow: 
+                0 0 30px rgba(145, 70, 255, 0.3),
+                inset 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .gauge-inner-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(15, 15, 25, 0.95), rgba(25, 25, 35, 0.95));
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .gauge-progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from -90deg,
+                #ff4757 0deg,
+                #ff6b35 20deg,
+                #feca57 40deg,
+                #48dbfb 60deg,
+                #0abde3 80deg,
+                #3742fa 100deg,
+                transparent 100deg,
+                transparent 360deg
+            );
+            mask: radial-gradient(circle at center, transparent 60%, black 60%);
+            -webkit-mask: radial-gradient(circle at center, transparent 60%, black 60%);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gauge-progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from -90deg,
+                #ff4757 0deg,
+                #ff6b35 20deg,
+                #feca57 40deg,
+                #48dbfb 60deg,
+                #0abde3 80deg,
+                #3742fa 100deg,
+                transparent 100deg,
+                transparent 360deg
+            );
+            mask: radial-gradient(circle at center, transparent 60%, black 60%);
+            -webkit-mask: radial-gradient(circle at center, transparent 60%, black 60%);
+            transform: rotate(0deg);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gauge-center-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+
+        .gauge-score-large {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .gauge-status {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gauge-levels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 0.5rem;
+        }
+
+        .gauge-level-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.8rem 0.5rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 60px;
+        }
+
+        .gauge-level-item:hover {
+            background: rgba(145, 70, 255, 0.1);
+            border-color: rgba(145, 70, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .gauge-level-item.active {
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(0, 212, 255, 0.2));
+            border-color: rgba(145, 70, 255, 0.5);
+            box-shadow: 0 4px 15px rgba(145, 70, 255, 0.3);
+        }
+
+        .level-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .level-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.2rem;
+        }
+
+        .level-range {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+        }
+
         /* Chat Score Animation */
         .gauge-score.updated {
             animation: scorePulse 0.6s ease;
@@ -2011,70 +2170,46 @@
                 <p class="gauge-subtitle" id="gaugeSubtitle">Keep the conversation flowing!</p>
                 </div>
                 
-            <!-- Circular Gauge -->
-            <div class="circular-gauge-container">
-                <svg class="gauge-svg" viewBox="0 0 300 300">
-                    <!-- Background circle -->
-                    <circle
-                        cx="150"
-                        cy="150"
-                        r="130"
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.1)"
-                        stroke-width="6"
-                    />
-                    <!-- Progress arc -->
-                    <circle
-                        id="gaugeProgressArc"
-                        cx="150"
-                        cy="150"
-                        r="130"
-                        fill="none"
-                        stroke="url(#gaugeGradient)"
-                        stroke-width="6"
-                        stroke-linecap="round"
-                        stroke-dasharray="817"
-                        stroke-dashoffset="817"
-                        transform="rotate(-90 150 150)"
-                    />
-                    <!-- Level indicators -->
-                    <g id="gaugeLevels">
-                        <!-- Level 0 (0%) -->
-                        <circle cx="150" cy="20" r="4" fill="rgba(255, 255, 255, 0.3)" />
-                        <text x="150" y="15" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">0</text>
-                        
-                        <!-- Level 1 (25%) -->
-                        <circle cx="220" cy="50" r="4" fill="rgba(255, 255, 255, 0.3)" />
-                        <text x="220" y="45" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">25</text>
-                        
-                        <!-- Level 2 (50%) -->
-                        <circle cx="250" cy="150" r="4" fill="rgba(255, 255, 255, 0.3)" />
-                        <text x="250" y="145" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">50</text>
-                        
-                        <!-- Level 3 (75%) -->
-                        <circle cx="220" cy="250" r="4" fill="rgba(255, 255, 255, 0.3)" />
-                        <text x="220" y="245" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">75</text>
-                        
-                        <!-- Level 4 (100%) -->
-                        <circle cx="150" cy="280" r="4" fill="rgba(255, 255, 255, 0.3)" />
-                        <text x="150" y="275" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">100</text>
-                    </g>
-                    <!-- Gradient definition -->
-                    <defs>
-                        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#ff4757;stop-opacity:1" />
-                            <stop offset="25%" style="stop-color:#ff6b35;stop-opacity:1" />
-                            <stop offset="50%" style="stop-color:#feca57;stop-opacity:1" />
-                            <stop offset="75%" style="stop-color:#48dbfb;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#3742fa;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <div class="gauge-center">
-                    <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
-                    <div class="gauge-label">Score</div>
+            <!-- Modern Gauge Design -->
+            <div class="modern-gauge-container">
+                <div class="gauge-outer-ring">
+                    <div class="gauge-inner-ring">
+                        <div class="gauge-progress-ring" id="gaugeProgressRing">
+                            <div class="gauge-progress-fill" id="gaugeProgressFill"></div>
+                        </div>
+                        <div class="gauge-center-content">
+                            <div class="gauge-score-large" id="gaugeScoreEnhanced">0</div>
+                            <div class="gauge-status" id="gaugeStatus">Starting</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
+                <div class="gauge-levels">
+                    <div class="gauge-level-item" data-level="0">
+                        <div class="level-icon">😴</div>
+                        <div class="level-name">Quiet</div>
+                        <div class="level-range">0-20</div>
+                    </div>
+                    <div class="gauge-level-item" data-level="1">
+                        <div class="level-icon">📊</div>
+                        <div class="level-name">Low</div>
+                        <div class="level-range">20-40</div>
+                    </div>
+                    <div class="gauge-level-item" data-level="2">
+                        <div class="level-icon">📈</div>
+                        <div class="level-name">Moderate</div>
+                        <div class="level-range">40-60</div>
+                    </div>
+                    <div class="gauge-level-item" data-level="3">
+                        <div class="level-icon">🔥</div>
+                        <div class="level-name">High</div>
+                        <div class="level-range">60-80</div>
+                    </div>
+                    <div class="gauge-level-item" data-level="4">
+                        <div class="level-icon">🚀</div>
+                        <div class="level-name">Fire</div>
+                        <div class="level-range">80-100</div>
+                    </div>
+                </div>
             </div>
             
             </div>
@@ -2083,11 +2218,11 @@
         <div class="first-viewer-alert" id="firstViewerAlert">
             <div class="first-viewer-content">
                 <div class="first-viewer-title">🎉 FIRST VIEWER!</div>
-                <div class="first-viewer-message">Someone just joined your stream!</div>
+                <div class="first-viewer-message" id="firstViewerMessage">Someone just joined your stream!</div>
                 <div class="first-viewer-greeting" id="firstViewerGreeting">Welcome to the stream!</div>
                 <div class="first-viewer-actions">
-                    <button class="first-viewer-btn" onclick="copyGreeting()">📋 Copy Greeting</button>
-                    <button class="first-viewer-btn" onclick="hideFirstViewerAlert()">Continue</button>
+                    <button class="first-viewer-btn" id="copyGreetingBtn">📋 Copy Greeting</button>
+                    <button class="first-viewer-btn" id="continueBtn">Continue</button>
                 </div>
             </div>
             <!-- Confetti -->
@@ -3733,46 +3868,43 @@
             
             // Update single gauge instance
             const scoreElement = document.getElementById('gaugeScoreEnhanced');
-            const needleElement = document.getElementById('gaugeNeedleEnhanced');
-            const progressElement = document.getElementById('gaugeProgress');
+            const statusElement = document.getElementById('gaugeStatus');
+            const progressFill = document.getElementById('gaugeProgressFill');
             
             // Update score with animation
             if (score !== lastChatScore) {
                 if (scoreElement) {
                     // Add smooth number transition
                     scoreElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                    scoreElement.textContent = score;
-                    scoreElement.classList.add('updated');
+                scoreElement.textContent = score;
+                scoreElement.classList.add('updated');
                     
                     // Remove animation class after completion
-                    setTimeout(() => {
-                        scoreElement.classList.remove('updated');
-                    }, 600);
+                setTimeout(() => {
+                    scoreElement.classList.remove('updated');
+                }, 600);
                 }
                 
                 lastChatScore = score;
             }
             
-            // Update SVG progress arc (0-100 maps to 0-817 dash offset)
-            const progressArc = document.getElementById('gaugeProgressArc');
-            if (progressArc) {
-                const circumference = 2 * Math.PI * 130; // radius = 130
-                const progress = (score / 100) * circumference;
-                const offset = circumference - progress;
-                progressArc.style.strokeDashoffset = offset;
-                progressArc.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+            // Update progress fill rotation (0-100 maps to 0-360 degrees)
+            if (progressFill) {
+                const rotation = (score / 100) * 360;
+                progressFill.style.transform = `rotate(${rotation}deg)`;
+                progressFill.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
             }
             
-            // Calculate needle rotation (-90deg to 90deg for half circle)
-            const rotation = (score / 100) * 180 - 90;
-            
-            // Update gauge needle with smooth animation
-            if (needleElement) {
-                needleElement.style.transition = 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-                needleElement.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
-                console.log('✅ Modern needle rotated to:', rotation + 'deg');
-            } else {
-                console.error('❌ Modern needle element not found!');
+            // Update status text based on score
+            if (statusElement) {
+                let status = 'Starting';
+                if (score >= 80) status = 'Fire! 🔥';
+                else if (score >= 60) status = 'High Energy';
+                else if (score >= 40) status = 'Moderate';
+                else if (score >= 20) status = 'Low Activity';
+                else status = 'Quiet';
+                
+                statusElement.textContent = status;
             }
             
             // Update gauge levels with modern styling
@@ -3873,7 +4005,7 @@
         
         // Update gauge levels with modern styling
         function updateGaugeLevels(score) {
-            const levels = document.querySelectorAll('.gauge-level');
+            const levels = document.querySelectorAll('.gauge-level-item');
             const levelThresholds = [0, 20, 40, 60, 80, 100];
             
             levels.forEach((level, index) => {
@@ -3969,20 +4101,28 @@
         function showFirstViewerAlert(viewerName = 'New Viewer') {
             console.log('🎉 First viewer detected:', viewerName);
             const alert = document.getElementById('firstViewerAlert');
+            const message = document.getElementById('firstViewerMessage');
             const greeting = document.getElementById('firstViewerGreeting');
             
-            if (alert && greeting) {
-                // Generate personalized greeting
-                const greetings = [
-                    `Welcome ${viewerName}! Thanks for joining!`,
-                    `Hey ${viewerName}! You're my first viewer today!`,
-                    `Welcome to the stream, ${viewerName}! Glad you're here!`,
-                    `${viewerName}, you just made my day! Welcome!`,
-                    `First viewer alert! Welcome ${viewerName}!`
-                ];
+            if (alert) {
+                // Update message with actual username
+                if (message) {
+                    message.textContent = `${viewerName} just joined your stream!`;
+                }
                 
-                const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-                greeting.textContent = randomGreeting;
+                // Generate personalized greeting
+                if (greeting) {
+                    const greetings = [
+                        `Welcome ${viewerName}! Thanks for joining!`,
+                        `Hey ${viewerName}! You're my first viewer today!`,
+                        `Welcome to the stream, ${viewerName}! Glad you're here!`,
+                        `${viewerName}, you just made my day! Welcome!`,
+                        `First viewer alert! Welcome ${viewerName}!`
+                    ];
+                    
+                    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+                    greeting.textContent = randomGreeting;
+                }
                 
                 alert.classList.add('show');
                 
@@ -4002,12 +4142,43 @@
 
         function copyGreeting() {
             const greeting = document.getElementById('firstViewerGreeting');
-            if (greeting) {
+            const btn = document.getElementById('copyGreetingBtn');
+            
+            if (greeting && btn) {
                 navigator.clipboard.writeText(greeting.textContent).then(() => {
                     console.log('📋 Greeting copied to clipboard');
+                    // Show feedback
+                    const originalText = btn.textContent;
+                    btn.textContent = '✅ Copied!';
+                    btn.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                    
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy greeting:', err);
+                    btn.textContent = '❌ Failed';
+                    setTimeout(() => {
+                        btn.textContent = '📋 Copy Greeting';
+                    }, 2000);
                 });
             }
         }
+
+        // Add event listeners for buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyBtn = document.getElementById('copyGreetingBtn');
+            const continueBtn = document.getElementById('continueBtn');
+            
+            if (copyBtn) {
+                copyBtn.addEventListener('click', copyGreeting);
+            }
+            
+            if (continueBtn) {
+                continueBtn.addEventListener('click', hideFirstViewerAlert);
+            }
+        });
 
         // Persistence Engine Functions
         function initializeMilestones() {
