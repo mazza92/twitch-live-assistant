@@ -52,11 +52,13 @@
             transition: all var(--transition-duration) ease-in-out;
             width: 300px;
             position: relative;
-            display: flex;
+            display: flex !important;
             flex-direction: column;
             align-items: center;
             gap: 15px;
             order: 2;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         /* AI Prompt Area - Single Instance */
@@ -1078,6 +1080,9 @@
             height: 250px;
             flex-shrink: 0;
             order: 1;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .gauge-circle {
@@ -1095,10 +1100,12 @@
                 #ff4444 360deg
             );
             position: relative;
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 20px rgba(145, 70, 255, 0.3);
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .gauge-inner {
@@ -3037,6 +3044,31 @@
         // Quick test function for immediate gauge testing
         function testGaugeNow(score = 85) {
             console.log('🧪 Testing gauge immediately with score:', score);
+            
+            // Debug gauge visibility
+            const gaugeContainer = document.querySelector('.gauge-container');
+            const gaugeCircle = document.querySelector('.gauge-circle');
+            const gaugeInner = document.querySelector('.gauge-inner');
+            const gaugeScore = document.getElementById('gaugeScoreEnhanced');
+            
+            console.log('🔍 Gauge Debug Info:');
+            console.log('- Gauge Container:', gaugeContainer);
+            console.log('- Gauge Circle:', gaugeCircle);
+            console.log('- Gauge Inner:', gaugeInner);
+            console.log('- Gauge Score:', gaugeScore);
+            
+            if (gaugeContainer) {
+                console.log('- Container computed style:', window.getComputedStyle(gaugeContainer));
+                console.log('- Container display:', window.getComputedStyle(gaugeContainer).display);
+                console.log('- Container visibility:', window.getComputedStyle(gaugeContainer).visibility);
+            }
+            
+            if (gaugeCircle) {
+                console.log('- Circle computed style:', window.getComputedStyle(gaugeCircle));
+                console.log('- Circle display:', window.getComputedStyle(gaugeCircle).display);
+                console.log('- Circle visibility:', window.getComputedStyle(gaugeCircle).visibility);
+            }
+            
             updateChatScoreGauge(score);
         }
 
