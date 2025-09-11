@@ -1098,6 +1098,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 0 20px rgba(145, 70, 255, 0.3);
         }
 
         .gauge-inner {
@@ -1380,8 +1381,10 @@
         <div class="chat-score-gauge-enhanced" id="chatScoreGaugeEnhanced">
             <div class="gauge-container">
                 <div class="gauge-circle">
+                    <div class="gauge-inner">
+                        <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
+                    </div>
                     <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
-                    <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
                 </div>
             </div>
             <div class="gauge-labels">
@@ -3030,6 +3033,16 @@
             setTimeout(() => updateChatScoreGauge(65), 4000); // Should be level 4
             setTimeout(() => updateChatScoreGauge(85), 6000); // Should be level 5
         }
+
+        // Quick test function for immediate gauge testing
+        function testGaugeNow(score = 85) {
+            console.log('🧪 Testing gauge immediately with score:', score);
+            updateChatScoreGauge(score);
+        }
+
+        // Make test functions globally available
+        window.testGauge = testGauge;
+        window.testGaugeNow = testGaugeNow;
 
         // Channel connection functionality
         let isConnecting = false;
