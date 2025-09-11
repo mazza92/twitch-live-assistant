@@ -34,21 +34,156 @@
             padding-top: 100px; /* Space for fixed urgent action bar */
         }
 
-        /* Zero to One Phase System */
-        .phase-container {
+        /* Zero to One Phase System - Main Container */
+        #dashboard-container {
             transition: all var(--transition-duration) ease-in-out;
+            min-height: calc(100vh - 100px);
         }
 
-        .phase-zero_viewers {
-            /* Minimalist view - only chat score and prompts */
+        /* Phase Sections - Only one visible at a time */
+        .phase-section {
+            display: none;
+            width: 100%;
+            min-height: calc(100vh - 100px);
         }
 
-        .phase-first_viewer {
-            /* Celebratory view with first viewer alert */
+        .phase-section.active {
+            display: block;
         }
 
-        .phase-building_audience {
-            /* Full dashboard view */
+        /* ZERO VIEWERS PHASE - Minimalist Screen */
+        .zero-viewers-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 100px);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .zero-viewers-gauge {
+            margin-bottom: 3rem;
+        }
+
+        .zero-viewers-gauge .chat-score-gauge-enhanced {
+            transform: scale(1.5);
+            margin-bottom: 2rem;
+        }
+
+        .zero-viewers-prompt {
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .zero-viewers-encouragement {
+            max-width: 500px;
+            opacity: 0.8;
+        }
+
+        .zero-viewers-encouragement h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--phase-zero);
+        }
+
+        .zero-viewers-encouragement p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* FIRST VIEWER PHASE - Celebration Screen */
+        .first-viewer-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 100px);
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--phase-first) 0%, #2c3e50 100%);
+        }
+
+        .first-viewer-gauge {
+            margin-bottom: 2rem;
+        }
+
+        .first-viewer-gauge .chat-score-gauge-enhanced {
+            transform: scale(1.2);
+        }
+
+        .first-viewer-prompt {
+            max-width: 600px;
+        }
+
+        .first-viewer-prompt .ai-prompt-area-enhanced {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: urgentPulse 2s infinite;
+        }
+
+        /* BUILDING AUDIENCE PHASE - Full Dashboard */
+        .building-audience-layout {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .building-top-row {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .building-gauge {
+            flex: 0 0 300px;
+        }
+
+        .building-key-metrics {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .building-prompt {
+            margin-bottom: 2rem;
+        }
+
+        .building-analytics {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .building-analytics .community-column,
+        .building-analytics .metrics-column,
+        .building-analytics .revenue-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .building-analytics {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .building-top-row {
+                flex-direction: column;
+            }
+            
+            .building-analytics {
+                grid-template-columns: 1fr;
+            }
+            
+            .zero-viewers-gauge .chat-score-gauge-enhanced {
+                transform: scale(1.2);
+            }
         }
 
         /* First Viewer Alert - Full Screen Celebration */
@@ -1460,126 +1595,269 @@
         <button class="language-btn" onclick="setLanguage('de')">🇩🇪 Deutsch</button>
     </div>
 
-    <!-- Tier 2: Current State Panel -->
-    <div class="current-state-panel phase-container" id="phaseContainer">
-        <div class="current-state-grid">
-            <!-- Left Column: Community -->
-            <div class="community-column">
-                <!-- Top Engaged Users -->
-                <div class="top-users">
-                    <div class="metric-title">🏆 Top Engaged Users</div>
-                    <div class="user-list" id="topUsers">
-                        <div class="user-item">
-                            <div class="user-name">Loading...</div>
-                            <div class="user-stats">
-                                <span>Messages: 0</span>
-                                <span>Bits: 0</span>
-                                <span>Subs: 0</span>
+    <!-- Main Dashboard Container - Phased UI -->
+    <div id="dashboard-container" class="phase-zero_viewers">
+        
+        <!-- ZERO VIEWERS PHASE - Minimalist Screen -->
+        <div class="phase-section phase-zero_viewers">
+            <div class="zero-viewers-layout">
+                <!-- Central Chat Score Gauge - Most Prominent -->
+                <div class="zero-viewers-gauge">
+                    <div class="chat-score-gauge-enhanced" id="chatScoreGaugeEnhanced">
+                        <div class="gauge-container">
+                            <div class="gauge-circle">
+                                <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
+                                <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
+                            </div>
+                            <div class="gauge-labels">
+                                <div class="gauge-label">Chat Score</div>
+                                <div class="gauge-subtitle">Keep Talking!</div>
+                            </div>
+                        </div>
+                        <div class="gauge-levels">
+                            <div class="level level-1" data-level="1">Low</div>
+                            <div class="level level-2" data-level="2">Med</div>
+                            <div class="level level-3" data-level="3">Good</div>
+                            <div class="level level-4" data-level="4">High</div>
+                            <div class="level level-5" data-level="5">Max</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Prompt Area - Active Co-Pilot -->
+                <div class="zero-viewers-prompt">
+                    <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaEnhanced">
+                        <div class="ai-prompt-header">
+                            <div class="ai-prompt-title">🤖 Your AI Co-Pilot</div>
+                            <div class="ai-prompt-phase" id="aiPromptPhase">Zero Viewers</div>
+                        </div>
+                        <div class="ai-prompt-content">
+                            <div class="ai-prompt-message" id="aiPromptMessage">Keep talking! Your audience will find you.</div>
+                            <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Encouragement Message -->
+                <div class="zero-viewers-encouragement">
+                    <h2>🎯 Zero to One Journey</h2>
+                    <p>Every great streamer started with zero viewers. Keep talking, stay consistent, and your community will find you!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FIRST VIEWER PHASE - Celebration Screen -->
+        <div class="phase-section phase-first_viewer">
+            <div class="first-viewer-layout">
+                <!-- Still show the chat gauge but smaller -->
+                <div class="first-viewer-gauge">
+                    <div class="chat-score-gauge-enhanced" id="chatScoreGaugeFirst">
+                        <div class="gauge-container">
+                            <div class="gauge-circle">
+                                <div class="gauge-needle" id="gaugeNeedleFirst"></div>
+                                <div class="gauge-score" id="gaugeScoreFirst">0</div>
+                            </div>
+                            <div class="gauge-labels">
+                                <div class="gauge-label">Chat Score</div>
+                                <div class="gauge-subtitle">First Viewer!</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Chat Activity -->
-                <div class="chat-activity">
-                    <div class="metric-title">💬 Recent Chat Activity</div>
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="chat-message">
-                            <span class="chat-username">System:</span>
-                            <span class="chat-text">Waiting for chat messages...</span>
-                            <span class="chat-timestamp">--:--</span>
+                <!-- AI Prompt for First Viewer -->
+                <div class="first-viewer-prompt">
+                    <div class="ai-prompt-area-enhanced ai-prompt-card urgent">
+                        <div class="ai-prompt-header">
+                            <div class="ai-prompt-title">🎉 First Viewer Alert!</div>
+                            <div class="ai-prompt-phase">First Viewer</div>
+                        </div>
+                        <div class="ai-prompt-content">
+                            <div class="ai-prompt-message" id="firstViewerPrompt">Welcome your first viewer! Make them feel special!</div>
+                            <div class="ai-prompt-priority">High Priority</div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Right Column: Alerts & Actions -->
-            <div class="alerts-column">
-                <!-- Stream Status -->
-                <div class="metric-card">
-                    <div class="metric-title">📺 Stream Status</div>
-                    <div class="metric-value" id="streamStatus">Offline</div>
-                    <div class="metric-subtitle">Current stream status</div>
-                    <div class="metric-trend">
-                        <span class="status-indicator status-offline"></span>
-                        <span id="streamStatusText">Not streaming</span>
+        <!-- BUILDING AUDIENCE PHASE - Full Dashboard -->
+        <div class="phase-section phase-building_audience">
+            <div class="building-audience-layout">
+                <!-- Top Row: Chat Score + Key Metrics -->
+                <div class="building-top-row">
+                    <div class="building-gauge">
+                        <div class="chat-score-gauge-enhanced" id="chatScoreGaugeBuilding">
+                            <div class="gauge-container">
+                                <div class="gauge-circle">
+                                    <div class="gauge-needle" id="gaugeNeedleBuilding"></div>
+                                    <div class="gauge-score" id="gaugeScoreBuilding">0</div>
+                                </div>
+                                <div class="gauge-labels">
+                                    <div class="gauge-label">Chat Score</div>
+                                    <div class="gauge-subtitle">Building Audience</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="building-key-metrics">
+                        <div class="metric-card">
+                            <div class="metric-title">👥 Current Viewers</div>
+                            <div class="metric-value" id="currentViewers">0</div>
+                            <div class="metric-subtitle">Live viewer count</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">📈 Peak Viewers</div>
+                            <div class="metric-value" id="peakViewers">0</div>
+                            <div class="metric-subtitle">Highest viewer count</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">💬 Messages/Min</div>
+                            <div class="metric-value" id="messagesPerMinute">0</div>
+                            <div class="metric-subtitle">Chat activity rate</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Peak Viewers -->
-                <div class="metric-card">
-                    <div class="metric-title">📈 Peak Viewers</div>
-                    <div class="metric-value" id="peakViewers">0</div>
-                    <div class="metric-subtitle">Highest viewer count</div>
-                    <div class="metric-trend">
-                        <span class="trend-up">↗</span>
-                        <span id="peakViewerTime">Today</span>
+                <!-- AI Prompt Area -->
+                <div class="building-prompt">
+                    <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaBuilding">
+                        <div class="ai-prompt-header">
+                            <div class="ai-prompt-title">🤖 AI Co-Pilot</div>
+                            <div class="ai-prompt-phase" id="aiPromptPhaseBuilding">Building Audience</div>
+                        </div>
+                        <div class="ai-prompt-content">
+                            <div class="ai-prompt-message" id="aiPromptMessageBuilding">Keep engaging with your growing community!</div>
+                            <div class="ai-prompt-priority" id="aiPromptPriorityBuilding">Normal</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Total Subs -->
-                <div class="metric-card">
-                    <div class="metric-title">🎉 Total Subs</div>
-                    <div class="metric-value" id="totalSubsMain">0</div>
-                    <div class="metric-subtitle">Total subscriptions</div>
-                    <div class="metric-trend">
-                        <span class="trend-indicator" id="subsTrend">+0 this session</span>
-                    </div>
-                </div>
+                <!-- Full Analytics Grid -->
+                <div class="building-analytics">
+                    <!-- Community Column -->
+                    <div class="community-column">
+                        <div class="top-users">
+                            <div class="metric-title">🏆 Top Engaged Users</div>
+                            <div class="user-list" id="topUsers">
+                                <div class="user-item">
+                                    <div class="user-name">Loading...</div>
+                                    <div class="user-stats">
+                                        <span>Messages: 0</span>
+                                        <span>Bits: 0</span>
+                                        <span>Subs: 0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Total Followers -->
-                <div class="metric-card">
-                    <div class="metric-title">👥 Total Followers</div>
-                    <div class="metric-value" id="totalFollowers">0</div>
-                    <div class="metric-subtitle">Channel total followers</div>
-                    <div class="metric-trend">
-                        <span class="trend-indicator" id="followersTrend">+0 this session</span>
+                        <!-- Chat Activity -->
+                        <div class="chat-activity">
+                            <div class="metric-title">💬 Recent Chat Activity</div>
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="chat-message">
+                                    <span class="chat-username">System:</span>
+                                    <span class="chat-text">Waiting for chat messages...</span>
+                                    <span class="chat-timestamp">--:--</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Stream Total Revenue -->
-                <div class="metric-card">
-                    <div class="metric-title">💰 Stream Revenue</div>
-                    <div class="metric-value" id="streamTotalRevenue">$0.00</div>
-                    <div class="metric-subtitle">Total earned</div>
-                    <div class="metric-trend">
-                        <span id="revenueTrend" class="trend-stable">→</span>
-                        <span id="revenueTrendText">$0.00 this session</span>
-                    </div>
-                </div>
+                    <!-- Metrics Column -->
+                    <div class="metrics-column">
+                        <div class="metric-card">
+                            <div class="metric-title">📺 Stream Status</div>
+                            <div class="metric-value" id="streamStatus">Offline</div>
+                            <div class="metric-subtitle">Current stream status</div>
+                            <div class="metric-trend">
+                                <span class="status-indicator status-offline"></span>
+                                <span id="streamStatusText">Not streaming</span>
+                            </div>
+                        </div>
 
-                <!-- Twitch Specific Metrics -->
-                <div class="twitch-metrics">
-                    <div class="twitch-metric">
-                        <div class="twitch-metric-icon">👥</div>
-                        <div class="twitch-metric-value" id="newFollowers">0</div>
-                        <div class="twitch-metric-label">New Followers</div>
-                    </div>
-                    <div class="twitch-metric">
-                        <div class="twitch-metric-icon">🎉</div>
-                        <div class="twitch-metric-value" id="newSubs">0</div>
-                        <div class="twitch-metric-label">New Subs</div>
-                    </div>
-                    <div class="twitch-metric">
-                        <div class="twitch-metric-icon">💰</div>
-                        <div class="twitch-metric-value" id="bitsEarned">0</div>
-                        <div class="twitch-metric-label">Bits Earned</div>
-                    </div>
-                    <div class="twitch-metric">
-                        <div class="twitch-metric-icon">⚔️</div>
-                        <div class="twitch-metric-value" id="raidsReceived">0</div>
-                        <div class="twitch-metric-label">Raids Received</div>
-                    </div>
-                </div>
+                        <div class="metric-card">
+                            <div class="metric-title">🎉 Total Subs</div>
+                            <div class="metric-value" id="totalSubsMain">0</div>
+                            <div class="metric-subtitle">Total subscriptions</div>
+                            <div class="metric-trend">
+                                <span class="trend-indicator" id="subsTrend">+0 this session</span>
+                            </div>
+                        </div>
 
-                <!-- Sentiment Analysis -->
-                <div class="metric-card">
-                    <div class="metric-title">😊 Chat Sentiment</div>
-                    <div class="metric-value" id="sentimentScore">0.0</div>
-                    <div class="metric-subtitle">Overall chat mood</div>
-                    <div class="metric-trend">
-                        <span id="sentimentEmoji">😐</span>
-                        <span id="sentimentText">Neutral</span>
+                        <div class="metric-card">
+                            <div class="metric-title">👥 Total Followers</div>
+                            <div class="metric-value" id="totalFollowers">0</div>
+                            <div class="metric-subtitle">Channel total followers</div>
+                            <div class="metric-trend">
+                                <span class="trend-indicator" id="followersTrend">+0 this session</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-title">💰 Stream Revenue</div>
+                            <div class="metric-value" id="streamTotalRevenue">$0.00</div>
+                            <div class="metric-subtitle">Total earned</div>
+                            <div class="metric-trend">
+                                <span id="revenueTrend" class="trend-stable">→</span>
+                                <span id="revenueTrendText">$0.00 this session</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-title">😊 Chat Sentiment</div>
+                            <div class="metric-value" id="sentimentScore">0.0</div>
+                            <div class="metric-subtitle">Overall chat mood</div>
+                            <div class="metric-trend">
+                                <span id="sentimentEmoji">😐</span>
+                                <span id="sentimentText">Neutral</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Column -->
+                    <div class="revenue-column">
+                        <div class="revenue-metrics">
+                            <div class="metric-title">💰 Revenue Metrics</div>
+                            <div class="revenue-grid">
+                                <div class="metric-card">
+                                    <div class="metric-title">💎 Bits Earned</div>
+                                    <div class="metric-value" id="totalBits">0</div>
+                                    <div class="metric-subtitle">Total bits this session</div>
+                                    <div class="metric-trend">
+                                        <span class="trend-indicator">+<span id="sessionBits">0</span> this session</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-title">🎉 Subscriptions</div>
+                                    <div class="metric-value" id="totalSubs">0</div>
+                                    <div class="metric-subtitle">Total subs this session</div>
+                                    <div class="metric-trend">
+                                        <span class="trend-indicator">+<span id="sessionSubs">0</span> this session</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-title">⚔️ Raids Received</div>
+                                    <div class="metric-value" id="totalRaids">0</div>
+                                    <div class="metric-subtitle">Total raids this session</div>
+                                    <div class="metric-trend">
+                                        <span class="trend-indicator">+<span id="sessionRaids">0</span> this session</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="metric-title">📈 Revenue Rate</div>
+                                    <div class="metric-value" id="revenueRate">$0.00/hr</div>
+                                    <div class="metric-subtitle">Estimated hourly rate</div>
+                                    <div class="metric-trend">
+                                        <span class="trend-indicator"><span id="bitsPerMinute">0</span> bits/min</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2096,6 +2374,7 @@
         let currentPhase = 'zero_viewers';
         let phaseTransitionTime = null;
         let firstViewerAlertShown = false;
+        let dashboardContainer = null;
 
         // Language translations
         const translations = {
@@ -2227,10 +2506,26 @@
             currentPhase = phase;
             phaseTransitionTime = Date.now();
             
-            // Update phase container class
-            const phaseContainer = document.getElementById('phaseContainer');
-            if (phaseContainer) {
-                phaseContainer.className = `current-state-panel phase-container phase-${phase}`;
+            // Get dashboard container
+            if (!dashboardContainer) {
+                dashboardContainer = document.getElementById('dashboard-container');
+            }
+            
+            if (dashboardContainer) {
+                // Update main container class
+                dashboardContainer.className = `phase-${phase}`;
+                
+                // Hide all phase sections
+                const phaseSections = dashboardContainer.querySelectorAll('.phase-section');
+                phaseSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show current phase section
+                const currentPhaseSection = dashboardContainer.querySelector(`.phase-${phase}`);
+                if (currentPhaseSection) {
+                    currentPhaseSection.classList.add('active');
+                }
             }
             
             // Handle phase-specific transitions
@@ -2693,7 +2988,7 @@
             if (data.promptHistory && data.promptHistory.length > 0) {
                 updateAIPrompts(data.promptHistory);
             }
-            
+
             // Update enhanced AI prompt area with latest prompt
             updateEnhancedAIPrompt(data);
 
@@ -2980,35 +3275,28 @@
 
         // Update chat score gauge
         function updateChatScoreGauge(score) {
-            // Update main dashboard gauge
-            const scoreElement = document.getElementById('chatScore');
-            const needleElement = document.getElementById('gaugeNeedle');
-            
-            // Update strategic view gauge
-            const scoreElementStrategic = document.getElementById('chatScoreStrategic');
-            const needleElementStrategic = document.getElementById('gaugeNeedleStrategic');
-            
             console.log('🎯 Updating chat score gauge with score:', score);
+            
+            // Update all gauge instances across different phases
+            const gaugeIds = [
+                'gaugeScoreEnhanced', 'gaugeScoreFirst', 'gaugeScoreBuilding'
+            ];
+            const needleIds = [
+                'gaugeNeedleEnhanced', 'gaugeNeedleFirst', 'gaugeNeedleBuilding'
+            ];
             
             // Update score with animation
             if (score !== lastChatScore) {
-                // Update main gauge
-                if (scoreElement) {
-                    scoreElement.textContent = score;
-                    scoreElement.classList.add('updated');
-                    setTimeout(() => {
-                        scoreElement.classList.remove('updated');
-                    }, 600);
-                }
-                
-                // Update strategic gauge
-                if (scoreElementStrategic) {
-                    scoreElementStrategic.textContent = score;
-                    scoreElementStrategic.classList.add('updated');
-                    setTimeout(() => {
-                        scoreElementStrategic.classList.remove('updated');
-                    }, 600);
-                }
+                gaugeIds.forEach((gaugeId) => {
+                    const scoreElement = document.getElementById(gaugeId);
+                    if (scoreElement) {
+                scoreElement.textContent = score;
+                scoreElement.classList.add('updated');
+                setTimeout(() => {
+                    scoreElement.classList.remove('updated');
+                }, 600);
+                    }
+                });
                 
                 lastChatScore = score;
             }
@@ -3016,12 +3304,40 @@
             // Calculate needle rotation (-90deg to 90deg for half circle)
             const rotation = (score / 100) * 180 - 90;
             
-            // Update main gauge needle
+            // Update all gauge needles
+            needleIds.forEach((needleId) => {
+                const needleElement = document.getElementById(needleId);
+                if (needleElement) {
+            needleElement.style.transform = `rotate(${rotation}deg)`;
+                }
+            });
+            
+            // Update legacy gauges (if they exist)
+            const scoreElement = document.getElementById('chatScore');
+            const needleElement = document.getElementById('gaugeNeedle');
+            const scoreElementStrategic = document.getElementById('chatScoreStrategic');
+            const needleElementStrategic = document.getElementById('gaugeNeedleStrategic');
+            
+            if (scoreElement) {
+                scoreElement.textContent = score;
+                scoreElement.classList.add('updated');
+                setTimeout(() => {
+                    scoreElement.classList.remove('updated');
+                }, 600);
+            }
+            
             if (needleElement) {
                 needleElement.style.transform = `rotate(${rotation}deg)`;
             }
             
-            // Update strategic gauge needle
+            if (scoreElementStrategic) {
+                scoreElementStrategic.textContent = score;
+                scoreElementStrategic.classList.add('updated');
+                setTimeout(() => {
+                    scoreElementStrategic.classList.remove('updated');
+                }, 600);
+            }
+            
             if (needleElementStrategic) {
                 needleElementStrategic.style.transform = `rotate(${rotation}deg)`;
             }
@@ -3187,9 +3503,35 @@
             }
         }
 
+        // Initialize phased UI system
+        function initializePhasedUI() {
+            console.log('🎯 [PHASE] Initializing phased UI system...');
+            
+            // Get dashboard container
+            dashboardContainer = document.getElementById('dashboard-container');
+            
+            if (dashboardContainer) {
+                // Set initial phase
+                dashboardContainer.className = 'phase-zero_viewers';
+                
+                // Show zero viewers phase by default
+                const zeroViewersSection = dashboardContainer.querySelector('.phase-zero_viewers');
+                if (zeroViewersSection) {
+                    zeroViewersSection.classList.add('active');
+                }
+                
+                console.log('✅ [PHASE] Phased UI initialized - starting with zero_viewers phase');
+            } else {
+                console.error('❌ [PHASE] Dashboard container not found!');
+            }
+        }
+
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Twitch Dashboard initialized');
+            
+            // Initialize phased UI system
+            initializePhasedUI();
             
             // Set default values
             document.getElementById('sessionId').textContent = 'Not Started';
