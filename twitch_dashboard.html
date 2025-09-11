@@ -1438,7 +1438,7 @@
         .channel-input-container {
             display: flex;
             gap: 15px;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -1465,6 +1465,8 @@
             font-size: 1rem;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            height: 48px;
+            box-sizing: border-box;
         }
 
         .channel-input:focus {
@@ -1490,6 +1492,10 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(145, 70, 255, 0.3);
             min-width: 120px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .connect-btn:hover {
