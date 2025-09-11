@@ -1573,6 +1573,45 @@
             opacity: 1 !important;
         }
 
+        /* Desktop-specific gauge styling */
+        @media (min-width: 769px) {
+            .circular-gauge-container {
+                width: 250px;
+                height: 250px;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            .gauge-ring {
+                width: 250px;
+                height: 250px;
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            .gauge-center {
+                width: 180px;
+                height: 180px;
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            .gauge-score {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            
+            .gauge-needle {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+        }
+
         .gauge-ring {
             width: 250px;
             height: 250px;
@@ -1602,6 +1641,10 @@
             animation: gaugeGlow 3s ease-in-out infinite alternate;
             margin: 0 auto;
             border: 3px solid rgba(145, 70, 255, 0.5);
+            min-width: 250px;
+            min-height: 250px;
+            max-width: 250px;
+            max-height: 250px;
         }
 
         @keyframes gaugeGlow {
@@ -4035,10 +4078,59 @@
             updateChatScoreGauge(score);
         }
 
+        // Force gauge to show on desktop
+        function forceGaugeDisplay() {
+            console.log('🔧 Forcing gauge display...');
+            const container = document.querySelector('.circular-gauge-container');
+            const ring = document.querySelector('.gauge-ring');
+            const center = document.querySelector('.gauge-center');
+            const score = document.getElementById('gaugeScoreEnhanced');
+            const needle = document.getElementById('gaugeNeedleEnhanced');
+            
+            if (container) {
+                container.style.display = 'block';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+                container.style.width = '250px';
+                container.style.height = '250px';
+            }
+            
+            if (ring) {
+                ring.style.display = 'flex';
+                ring.style.visibility = 'visible';
+                ring.style.opacity = '1';
+                ring.style.width = '250px';
+                ring.style.height = '250px';
+                ring.style.borderRadius = '50%';
+                ring.style.background = 'conic-gradient(from -90deg, #ff4444 0deg, #ff8800 30deg, #ffdd00 60deg, #88ff88 90deg, #00ddff 120deg, #8844ff 150deg, #ff44ff 180deg, #ff4444 270deg, #ff4444 360deg)';
+            }
+            
+            if (center) {
+                center.style.display = 'flex';
+                center.style.visibility = 'visible';
+                center.style.opacity = '1';
+            }
+            
+            if (score) {
+                score.style.display = 'block';
+                score.style.visibility = 'visible';
+                score.style.opacity = '1';
+            }
+            
+            if (needle) {
+                needle.style.display = 'block';
+                needle.style.visibility = 'visible';
+                needle.style.opacity = '1';
+            }
+            
+            console.log('✅ Gauge display forced');
+        }
+
         // Make test functions globally available
         window.testGauge = testGauge;
         window.testGaugeNow = testGaugeNow;
         window.testGaugeVisibility = testGaugeVisibility;
+        window.forceGaugeDisplay = forceGaugeDisplay;
         
         // Test gauge visibility function
         function testGaugeVisibility() {
@@ -4222,6 +4314,11 @@
             // Initialize Zero to One features
             initializeMilestones();
             startStreamTimeTracking();
+            
+            // Force gauge display on desktop
+            setTimeout(() => {
+                forceGaugeDisplay();
+            }, 1000);
             
             // Set default values
             document.getElementById('sessionId').textContent = 'Not Started';
