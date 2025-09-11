@@ -396,7 +396,7 @@
         }
 
 
-        /* Enhanced AI Prompt Area */
+        /* Enhanced AI Prompt Area with ABT Coach */
         .ai-prompt-area-enhanced {
             background: linear-gradient(135deg, rgba(145, 70, 255, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
             border: 2px solid var(--twitch-purple);
@@ -405,6 +405,383 @@
             margin: 20px 0;
             position: relative;
             overflow: hidden;
+        }
+
+        /* ABT Coach Timer */
+        .abt-timer-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(145, 70, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(145, 70, 255, 0.2);
+        }
+
+        .abt-timer-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff4444 0deg,
+                #ff8800 90deg,
+                #88ff88 180deg,
+                #00ddff 270deg,
+                #ff4444 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+
+        .abt-timer-inner {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(10, 10, 20, 0.95), rgba(20, 20, 30, 0.95));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(145, 70, 255, 0.8);
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .abt-timer-text {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .abt-mute-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .abt-mute-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .abt-mute-toggle.muted {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: rgba(255, 68, 68, 0.4);
+            color: #ff6b6b;
+        }
+
+        /* First Viewer Catcher */
+        .first-viewer-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.95), rgba(145, 70, 255, 0.95));
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: firstViewerCelebration 3s ease-in-out;
+        }
+
+        .first-viewer-alert.show {
+            display: flex;
+        }
+
+        @keyframes firstViewerCelebration {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.8);
+            }
+            20% { 
+                opacity: 1; 
+                transform: scale(1.1);
+            }
+            80% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(1);
+            }
+        }
+
+        .first-viewer-content {
+            text-align: center;
+            color: white;
+            z-index: 10001;
+        }
+
+        .first-viewer-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            animation: titleBounce 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleBounce {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        .first-viewer-message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .first-viewer-greeting {
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .first-viewer-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .first-viewer-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .first-viewer-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: confettiFall 3s linear infinite;
+        }
+
+        .confetti:nth-child(odd) {
+            background: #4ecdc4;
+            animation-delay: -0.5s;
+        }
+
+        .confetti:nth-child(even) {
+            background: #45b7d1;
+            animation-delay: -1s;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Persistence Engine - Milestones */
+        .milestones-section {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(30, 30, 45, 0.95));
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(145, 70, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .milestones-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(145, 70, 255, 0.5);
+        }
+
+        .milestones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .milestone-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .milestone-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(145, 70, 255, 0.2);
+        }
+
+        .milestone-card.completed {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(145, 70, 255, 0.2));
+            border-color: rgba(78, 205, 196, 0.4);
+        }
+
+        .milestone-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .milestone-icon {
+            font-size: 1.5rem;
+        }
+
+        .milestone-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .milestone-progress {
+            margin-bottom: 1rem;
+        }
+
+        .milestone-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .milestone-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .milestone-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShimmer 2s infinite;
+        }
+
+        @keyframes progressShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .milestone-progress-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .milestone-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.4;
+        }
+
+        .milestone-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Stream Summary */
+        .stream-summary {
+            background: linear-gradient(135deg, rgba(145, 70, 255, 0.1), rgba(78, 205, 196, 0.1));
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(145, 70, 255, 0.2);
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .summary-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .summary-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4ecdc4;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .ai-prompt-area-enhanced::before {
@@ -1496,8 +1873,17 @@
     <!-- Main Dashboard Container - Single Layout with Phase Control -->
     <div id="dashboard-container" class="phase-zero_viewers">
         
-        <!-- AI Prompt Area - Single Instance (Above Gauge) -->
+        <!-- AI Prompt Area with ABT Coach - Single Instance (Above Gauge) -->
         <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaEnhanced">
+            <!-- ABT Coach Timer -->
+            <div class="abt-timer-container" id="abtTimerContainer" style="display: none;">
+                <div class="abt-timer-circle">
+                    <div class="abt-timer-inner" id="abtTimerDisplay">30</div>
+                </div>
+                <div class="abt-timer-text">Next prompt in</div>
+                <button class="abt-mute-toggle" id="abtMuteToggle">🔊 Mute</button>
+            </div>
+            
             <div class="ai-prompt-header">
                 <div class="ai-prompt-title">🤖 Your AI Co-Pilot</div>
                 <div class="ai-prompt-phase" id="aiPromptPhase">Zero Viewers</div>
@@ -1548,6 +1934,57 @@
                 <div class="gauge-level" data-level="5">
                     <span class="level-dot"></span>
                     <span class="level-text">Max</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- First Viewer Catcher Alert -->
+        <div class="first-viewer-alert" id="firstViewerAlert">
+            <div class="first-viewer-content">
+                <div class="first-viewer-title">🎉 FIRST VIEWER!</div>
+                <div class="first-viewer-message">Someone just joined your stream!</div>
+                <div class="first-viewer-greeting" id="firstViewerGreeting">Welcome to the stream!</div>
+                <div class="first-viewer-actions">
+                    <button class="first-viewer-btn" onclick="copyGreeting()">📋 Copy Greeting</button>
+                    <button class="first-viewer-btn" onclick="hideFirstViewerAlert()">Continue</button>
+                </div>
+            </div>
+            <!-- Confetti -->
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+        </div>
+
+        <!-- Persistence Engine - Milestones Section -->
+        <div class="milestones-section" id="milestonesSection" style="display: none;">
+            <div class="milestones-title">🏆 Your Journey Milestones</div>
+            <div class="milestones-grid" id="milestonesGrid">
+                <!-- Milestones will be populated by JavaScript -->
+            </div>
+            <div class="stream-summary" id="streamSummary">
+                <div class="summary-title">📊 Session Summary</div>
+                <div class="summary-stats">
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="totalStreamTime">0m</div>
+                        <div class="summary-stat-label">Stream Time</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="uniqueViewers">0</div>
+                        <div class="summary-stat-label">Unique Viewers</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="messagesSent">0</div>
+                        <div class="summary-stat-label">Messages Sent</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="milestonesReached">0</div>
+                        <div class="summary-stat-label">Milestones</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2213,6 +2650,47 @@
         let firstViewerAlertShown = false;
         let dashboardContainer = null;
 
+        // Zero to One Features - Global Variables
+        let abtTimer = null;
+        let abtInterval = null;
+        let abtMuted = false;
+        let uniqueViewers = new Set();
+        let streamTime = 0;
+        let messagesSent = 0;
+        let milestonesReached = 0;
+        let lastMessageTime = 0;
+
+        // ABT Coach - Prompt Templates
+        const abtPrompts = [
+            "Share a story about your first time playing this game!",
+            "What's your favorite part about streaming so far?",
+            "Tell us about your setup - what gear are you using?",
+            "What's the funniest thing that happened to you today?",
+            "Describe your dream gaming setup!",
+            "What's your go-to snack while streaming?",
+            "Share a tip for new streamers!",
+            "What's the most challenging game you've ever played?",
+            "Tell us about your favorite streamer and why you like them!",
+            "What's your biggest gaming achievement?",
+            "Describe your ideal viewer community!",
+            "What's the weirdest comment you've ever gotten?",
+            "Share your streaming goals for this month!",
+            "What's your favorite type of content to watch?",
+            "Tell us about your worst gaming fail!"
+        ];
+
+        // Milestones Configuration
+        const milestones = [
+            { id: 'first_30min', name: 'First 30 Minutes', icon: '⏰', threshold: 30, type: 'time', description: 'Stream for 30 minutes straight' },
+            { id: 'first_hour', name: 'First Hour', icon: '🕐', threshold: 60, type: 'time', description: 'Complete your first hour of streaming' },
+            { id: 'first_viewer', name: 'First Viewer', icon: '👤', threshold: 1, type: 'viewers', description: 'Get your first viewer' },
+            { id: 'first_5_viewers', name: 'First 5 Viewers', icon: '👥', threshold: 5, type: 'viewers', description: 'Reach 5 concurrent viewers' },
+            { id: 'first_message', name: 'First Chat Message', icon: '💬', threshold: 1, type: 'messages', description: 'Receive your first chat message' },
+            { id: 'stream_streak_3', name: '3-Day Streak', icon: '🔥', threshold: 3, type: 'streak', description: 'Stream for 3 consecutive days' },
+            { id: 'stream_streak_7', name: '1-Week Streak', icon: '🌟', threshold: 7, type: 'streak', description: 'Stream for 7 consecutive days' },
+            { id: 'first_100_messages', name: '100 Messages', icon: '💯', threshold: 100, type: 'messages', description: 'Send 100 messages total' }
+        ];
+
         // Language translations
         const translations = {
             en: {
@@ -2353,11 +2831,25 @@
                 dashboardContainer.className = `phase-${phase}`;
             }
             
-            // Handle phase-specific transitions
-            if (phase === 'first_viewer' && !firstViewerAlertShown) {
-                showFirstViewerAlert();
-            } else if (phase === 'building_audience') {
-                hideFirstViewerAlert();
+            // Zero to One Features Integration
+            switch (phase) {
+                case 'zero_viewers':
+                    startABTCoach();
+                    document.getElementById('milestonesSection').style.display = 'block';
+                    break;
+                case 'first_viewer':
+                    stopABTCoach();
+                    if (!firstViewerAlertShown) {
+                        showFirstViewerAlert();
+                    }
+                    break;
+                case 'building_audience':
+                    stopABTCoach();
+                    hideFirstViewerAlert();
+                    document.getElementById('milestonesSection').style.display = 'block';
+                    break;
+                default:
+                    stopABTCoach();
             }
             
             // Update AI prompt area and gauge subtitle
@@ -2463,6 +2955,16 @@
         
         function updatePhaseFromData(data) {
             console.log('🔄 [PHASE] Checking phase update - Current:', currentPhase, 'Data:', data.streamPhase);
+            
+            // Check for first viewer detection
+            if (data.currentViewerCount > lastViewerCount && data.currentViewerCount >= 1 && data.currentViewerCount <= 5) {
+                const viewerName = data.newViewerName || 'New Viewer';
+                uniqueViewers.add(viewerName);
+                showFirstViewerAlert(viewerName);
+            }
+            
+            // Update last viewer count
+            lastViewerCount = data.currentViewerCount || 0;
             
             // If no streamPhase in data, determine it from viewer count
             let phaseToUse = data.streamPhase;
@@ -3214,6 +3716,265 @@
             });
         }
 
+        // ===== ZERO TO ONE FEATURES =====
+
+        // ABT Coach Functions
+        function startABTCoach() {
+            console.log('🎯 Starting ABT Coach for zero viewers');
+            const timerContainer = document.getElementById('abtTimerContainer');
+            const timerDisplay = document.getElementById('abtTimerDisplay');
+            const muteToggle = document.getElementById('abtMuteToggle');
+            
+            if (timerContainer) {
+                timerContainer.style.display = 'flex';
+            }
+            
+            if (muteToggle) {
+                muteToggle.addEventListener('click', toggleABTMute);
+            }
+            
+            // Start 30-second timer
+            abtTimer = 30;
+            if (timerDisplay) {
+                timerDisplay.textContent = abtTimer;
+            }
+            
+            abtInterval = setInterval(() => {
+                abtTimer--;
+                if (timerDisplay) {
+                    timerDisplay.textContent = abtTimer;
+                }
+                
+                if (abtTimer <= 0) {
+                    triggerABTPrompt();
+                    abtTimer = 30; // Reset timer
+                }
+            }, 1000);
+        }
+
+        function stopABTCoach() {
+            console.log('🛑 Stopping ABT Coach');
+            const timerContainer = document.getElementById('abtTimerContainer');
+            
+            if (abtInterval) {
+                clearInterval(abtInterval);
+                abtInterval = null;
+            }
+            
+            if (timerContainer) {
+                timerContainer.style.display = 'none';
+            }
+        }
+
+        function toggleABTMute() {
+            abtMuted = !abtMuted;
+            const muteToggle = document.getElementById('abtMuteToggle');
+            
+            if (muteToggle) {
+                if (abtMuted) {
+                    muteToggle.textContent = '🔇 Muted';
+                    muteToggle.classList.add('muted');
+                } else {
+                    muteToggle.textContent = '🔊 Mute';
+                    muteToggle.classList.remove('muted');
+                }
+            }
+        }
+
+        function triggerABTPrompt() {
+            if (abtMuted) return;
+            
+            const randomPrompt = abtPrompts[Math.floor(Math.random() * abtPrompts.length)];
+            console.log('💬 ABT Prompt triggered:', randomPrompt);
+            
+            updateAIPromptArea('zero_viewers', {
+                message: randomPrompt,
+                priority: 'high'
+            });
+        }
+
+        // First Viewer Catcher Functions
+        function showFirstViewerAlert(viewerName = 'New Viewer') {
+            console.log('🎉 First viewer detected:', viewerName);
+            const alert = document.getElementById('firstViewerAlert');
+            const greeting = document.getElementById('firstViewerGreeting');
+            
+            if (alert && greeting) {
+                // Generate personalized greeting
+                const greetings = [
+                    `Welcome ${viewerName}! Thanks for joining!`,
+                    `Hey ${viewerName}! You're my first viewer today!`,
+                    `Welcome to the stream, ${viewerName}! Glad you're here!`,
+                    `${viewerName}, you just made my day! Welcome!`,
+                    `First viewer alert! Welcome ${viewerName}!`
+                ];
+                
+                const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+                greeting.textContent = randomGreeting;
+                
+                alert.classList.add('show');
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    hideFirstViewerAlert();
+                }, 5000);
+            }
+        }
+
+        function hideFirstViewerAlert() {
+            const alert = document.getElementById('firstViewerAlert');
+            if (alert) {
+                alert.classList.remove('show');
+            }
+        }
+
+        function copyGreeting() {
+            const greeting = document.getElementById('firstViewerGreeting');
+            if (greeting) {
+                navigator.clipboard.writeText(greeting.textContent).then(() => {
+                    console.log('📋 Greeting copied to clipboard');
+                });
+            }
+        }
+
+        // Persistence Engine Functions
+        function initializeMilestones() {
+            const milestonesGrid = document.getElementById('milestonesGrid');
+            if (!milestonesGrid) return;
+            
+            milestonesGrid.innerHTML = '';
+            
+            milestones.forEach(milestone => {
+                const milestoneCard = document.createElement('div');
+                milestoneCard.className = 'milestone-card';
+                milestoneCard.id = `milestone-${milestone.id}`;
+                
+                const isCompleted = localStorage.getItem(`milestone_${milestone.id}`) === 'true';
+                if (isCompleted) {
+                    milestoneCard.classList.add('completed');
+                }
+                
+                const progress = getMilestoneProgress(milestone);
+                const progressPercent = Math.min((progress / milestone.threshold) * 100, 100);
+                
+                milestoneCard.innerHTML = `
+                    <div class="milestone-header">
+                        <span class="milestone-icon">${milestone.icon}</span>
+                        <span class="milestone-name">${milestone.name}</span>
+                    </div>
+                    <div class="milestone-progress">
+                        <div class="milestone-progress-bar">
+                            <div class="milestone-progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="milestone-progress-text">${progress}/${milestone.threshold}</div>
+                    </div>
+                    <div class="milestone-description">${milestone.description}</div>
+                    ${isCompleted ? '<div class="milestone-badge">COMPLETED</div>' : ''}
+                `;
+                
+                milestonesGrid.appendChild(milestoneCard);
+            });
+        }
+
+        function getMilestoneProgress(milestone) {
+            switch (milestone.type) {
+                case 'time':
+                    return Math.floor(streamTime / 60); // Convert to minutes
+                case 'viewers':
+                    return uniqueViewers.size;
+                case 'messages':
+                    return messagesSent;
+                case 'streak':
+                    return getStreamingStreak();
+                default:
+                    return 0;
+            }
+        }
+
+        function getStreamingStreak() {
+            // This would typically be stored in localStorage or backend
+            return parseInt(localStorage.getItem('streaming_streak') || '0');
+        }
+
+        function checkMilestones() {
+            milestones.forEach(milestone => {
+                const isCompleted = localStorage.getItem(`milestone_${milestone.id}`) === 'true';
+                if (!isCompleted) {
+                    const progress = getMilestoneProgress(milestone);
+                    if (progress >= milestone.threshold) {
+                        completeMilestone(milestone);
+                    }
+                }
+            });
+        }
+
+        function completeMilestone(milestone) {
+            console.log('🏆 Milestone completed:', milestone.name);
+            localStorage.setItem(`milestone_${milestone.id}`, 'true');
+            milestonesReached++;
+            
+            // Update UI
+            const milestoneCard = document.getElementById(`milestone-${milestone.id}`);
+            if (milestoneCard) {
+                milestoneCard.classList.add('completed');
+                milestoneCard.innerHTML += '<div class="milestone-badge">COMPLETED</div>';
+            }
+            
+            // Show celebration
+            showMilestoneCelebration(milestone);
+            
+            // Update summary
+            updateStreamSummary();
+        }
+
+        function showMilestoneCelebration(milestone) {
+            // Create temporary celebration element
+            const celebration = document.createElement('div');
+            celebration.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #4ecdc4, #9146ff);
+                color: white;
+                padding: 2rem;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 10000;
+                font-size: 1.2rem;
+                font-weight: 700;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            `;
+            celebration.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 1rem;">${milestone.icon}</div>
+                <div>Milestone Unlocked!</div>
+                <div style="font-size: 1.5rem; margin-top: 0.5rem;">${milestone.name}</div>
+            `;
+            
+            document.body.appendChild(celebration);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                document.body.removeChild(celebration);
+            }, 3000);
+        }
+
+        function updateStreamSummary() {
+            document.getElementById('totalStreamTime').textContent = Math.floor(streamTime / 60) + 'm';
+            document.getElementById('uniqueViewers').textContent = uniqueViewers.size;
+            document.getElementById('messagesSent').textContent = messagesSent;
+            document.getElementById('milestonesReached').textContent = milestonesReached;
+        }
+
+        // Stream time tracking
+        function startStreamTimeTracking() {
+            setInterval(() => {
+                streamTime++;
+                checkMilestones();
+                updateStreamSummary();
+            }, 1000);
+        }
+
         // Quick test function for immediate gauge testing
         function testGaugeNow(score = 85) {
             console.log('🧪 Testing BULLETPROOF gauge immediately with score:', score);
@@ -3396,6 +4157,10 @@
             
             // Initialize phased UI system
             initializePhasedUI();
+            
+            // Initialize Zero to One features
+            initializeMilestones();
+            startStreamTimeTracking();
             
             // Set default values
             document.getElementById('sessionId').textContent = 'Not Started';
