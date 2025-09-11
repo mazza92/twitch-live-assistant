@@ -2077,19 +2077,6 @@
     </style>
 </head>
 <body>
-    <!-- First Viewer Alert - Full Screen Celebration -->
-    <div class="first-viewer-alert" id="firstViewerAlert">
-        <div class="first-viewer-content">
-            <div class="first-viewer-title">🎉 FIRST VIEWER! 🎉</div>
-            <div class="first-viewer-message" id="firstViewerMessage">
-                Someone just joined your stream!<br>
-                This is the beginning of your community!
-            </div>
-            <button class="first-viewer-close" onclick="closeFirstViewerAlert()">
-                Continue Streaming
-            </button>
-        </div>
-    </div>
 
 
     <div class="header">
@@ -2195,13 +2182,13 @@
         <!-- FLAGSHIP FEATURE: First Viewer Catcher Alert -->
         <div class="first-viewer-alert" id="firstViewerAlert">
             <div class="first-viewer-content">
-                <div class="first-viewer-title" data-translate="firstViewerTitle">🎉 FIRST VIEWER!</div>
+                <div class="first-viewer-title" data-translate="firstViewerTitle">🎉 VIEWER ALERT! 🎉</div>
                 <div class="first-viewer-subtitle">FLAGSHIP FEATURE - CONVERT ZERO TO ONE!</div>
                 <div class="first-viewer-message" id="firstViewerMessage" data-translate="firstViewerMessage">Someone just joined your stream!</div>
                 <div class="first-viewer-greeting" id="firstViewerGreeting" data-translate="welcomeToStream">Welcome to the stream!</div>
                 <div class="first-viewer-actions">
                     <button class="first-viewer-btn" id="closeAlertBtn" data-translate="close">✕ Close</button>
-                    <div class="auto-hide-countdown" id="autoHideCountdown" style="display: none;" data-translate="autoClosingIn">Auto-closing in <span id="countdownNumber">8</span>s</div>
+                    <div class="auto-hide-countdown" id="autoHideCountdown" style="display: none;" data-translate="autoClosingIn">Auto-closing in <span id="countdownNumber">5</span>s</div>
                 </div>
             </div>
             <!-- Enhanced Confetti -->
@@ -4953,46 +4940,46 @@
             if (totalViewers === 1) {
                 return [
                     {
-                        message: t.firstViewerDetected || "🎉 FIRST VIEWER DETECTED! Welcome them warmly and make them feel special. This is the start of your community!",
-                        greeting: "Say: 'Welcome to the stream! What brought you here today?'"
+                        message: "🎯 ACTION REQUIRED: Your first viewer just joined! This is your moment to shine!",
+                        greeting: "💬 SAY: 'Welcome to the stream! What brought you here today?'"
                     },
                     {
-                        message: "Your first viewer has arrived! Be ready to give them a personal greeting!",
-                        greeting: "Try: 'Hey there! Thanks for being my first viewer today!'"
+                        message: "🚀 CRITICAL MOMENT: First viewer detected! Make them feel special and valued!",
+                        greeting: "💬 SAY: 'Hey there! Thanks for being my first viewer today! What's your name?'"
                     },
                     {
-                        message: "This is it! Your first viewer is here - make them feel special!",
-                        greeting: "Say: 'Welcome! I'm so glad you're here. What's your name?'"
+                        message: "⚡ ZERO TO ONE: Your first viewer is here! Engage them immediately!",
+                        greeting: "💬 ASK: 'Welcome! I'm so glad you're here. What games do you like to watch?'"
                     },
                     {
-                        message: "Moment of truth! Your first viewer just joined - engage them now!",
-                        greeting: "Ask: 'What games do you like to watch? I'd love to know!'"
+                        message: "🎉 BREAKTHROUGH: First viewer joined! This is the start of your community!",
+                        greeting: "💬 SAY: 'Welcome! You're my first viewer today - let's make this awesome!'"
                     }
                 ];
             } else if (totalViewers <= 3) {
                 return [
                     {
-                        message: `Great! You now have ${totalViewers} viewers. Keep the momentum going!`,
-                        greeting: "Say: 'Welcome everyone! Thanks for joining the stream!'"
+                        message: `🔥 MOMENTUM: You now have ${totalViewers} viewers! Keep the energy flowing!`,
+                        greeting: "💬 SAY: 'Welcome everyone! Thanks for joining the stream! How's everyone doing?'"
                     },
                     {
-                        message: `Awesome! ${newViewers} more viewer(s) just joined. Build that community!`,
-                        greeting: "Try: 'Hey new people! What brought you here today?'"
+                        message: `⚡ GROWTH: ${newViewers} more viewer(s) just joined! Build that community!`,
+                        greeting: "💬 ASK: 'Hey new people! What brought you here today? Let's chat!'"
                     },
                     {
-                        message: `Community growing! You have ${totalViewers} viewers now. Keep engaging!`,
-                        greeting: "Ask: 'How's everyone doing? What should we play next?'"
+                        message: `🎯 ENGAGEMENT: ${totalViewers} viewers watching! Keep them engaged!`,
+                        greeting: "💬 ASK: 'What should we play next? I want to hear your suggestions!'"
                     }
                 ];
             } else {
                 return [
                     {
-                        message: `Fantastic! Your community is growing - ${totalViewers} viewers now!`,
-                        greeting: "Say: 'Welcome to all the new people! Great to have you here!'"
+                        message: `🚀 SUCCESS: Your community is growing - ${totalViewers} viewers now!`,
+                        greeting: "💬 SAY: 'Welcome to all the new people! Great to have you here!'"
                     },
                     {
-                        message: `Amazing growth! ${newViewers} more viewer(s) joined. Keep the energy up!`,
-                        greeting: "Try: 'Thanks for the support everyone! What do you want to see?'"
+                        message: `⚡ MOMENTUM: ${newViewers} more viewer(s) joined! Keep the energy up!`,
+                        greeting: "💬 SAY: 'Thanks for the support everyone! What do you want to see next?'"
                     }
                 ];
             }
@@ -5036,6 +5023,12 @@
                 // Trigger confetti effect
                 triggerConfettiEffect();
                 
+                // Auto-hide after 5 seconds
+                overlayAutoHideTimeout = setTimeout(() => {
+                    console.log('⏰ Auto-hiding enhanced overlay after 5 seconds');
+                    hideFirstViewerAlert();
+                }, 5000);
+                
                 console.log('✅ Enhanced first viewer alert shown - FLAGSHIP FEATURE');
             } else {
                 console.log('❌ First viewer alert elements not found');
@@ -5049,11 +5042,12 @@
             if (countdownElement && countdownNumber) {
                 countdownElement.style.display = 'block';
                 countdownElement.style.background = 'rgba(255, 107, 107, 0.2)';
+                countdownNumber.textContent = '5';
                 countdownElement.style.border = '1px solid #ff6b6b';
                 countdownElement.style.borderRadius = '10px';
                 countdownElement.style.padding = '8px 12px';
                 
-                let countdown = 8;
+                let countdown = 5;
                 countdownNumber.textContent = countdown;
                 countdownNumber.style.color = '#ff6b6b';
                 countdownNumber.style.fontWeight = 'bold';
