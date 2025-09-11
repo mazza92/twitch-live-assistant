@@ -2321,10 +2321,38 @@
         }
         
         function updatePhaseFromData(data) {
-            if (data.streamPhase && data.streamPhase !== currentPhase) {
-                updatePhase(data.streamPhase);
+            console.log('🔄 [PHASE] Checking phase update - Current:', currentPhase, 'Data:', data.streamPhase);
+            
+            // If no streamPhase in data, determine it from viewer count
+            let phaseToUse = data.streamPhase;
+            if (!phaseToUse) {
+                const viewerCount = data.currentViewerCount || 0;
+                if (viewerCount === 0) {
+                    phaseToUse = 'zero_viewers';
+                } else if (viewerCount === 1) {
+                    phaseToUse = 'first_viewer';
+                } else {
+                    phaseToUse = 'building_audience';
+                }
+                console.log('🔄 [PHASE] No streamPhase in data, determined from viewer count:', phaseToUse);
+            }
+            
+            if (phaseToUse && phaseToUse !== currentPhase) {
+                console.log('🔄 [PHASE] Phase change detected, updating...');
+                updatePhase(phaseToUse);
+            } else {
+                console.log('🔄 [PHASE] No phase change needed');
             }
         }
+        
+        // Test function to manually trigger phase changes (for debugging)
+        function testPhaseChange(phase) {
+            console.log('🧪 [TEST] Manually triggering phase change to:', phase);
+            updatePhase(phase);
+        }
+        
+        // Make test function available globally for debugging
+        window.testPhaseChange = testPhaseChange;
         
         function updateEnhancedAIPrompt(data) {
             const messageElement = document.getElementById('aiPromptMessage');
@@ -2501,6 +2529,7 @@
         // Update dashboard with new data
         function updateDashboard(data) {
             console.log('🔄 [DASHBOARD] Updating dashboard with data:', data);
+            console.log('🔄 [DASHBOARD] Stream Phase:', data.streamPhase, 'Chat Score:', data.chatScore);
             
             // Update phase system first
             updatePhaseFromData(data);

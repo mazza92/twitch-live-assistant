@@ -1538,8 +1538,13 @@ function broadcastToSession(session) {
         channelName: session.channel,
         sessionId: session.metrics.streamStartTime || Date.now(),
         timestamp: Date.now(),
-        revenue: revenueData
+        revenue: revenueData,
+        // Ensure streamPhase is explicitly included
+        streamPhase: session.metrics.streamPhase,
+        chatScore: session.metrics.chatScore
     };
+    
+    console.log(`📊 [BROADCAST] Stream Phase: ${session.metrics.streamPhase}, Chat Score: ${session.metrics.chatScore}`);
     
     const message = JSON.stringify(metricsData);
     console.log(`📊 [BROADCAST] Sending data to ${session.wsClients.size} clients`);
