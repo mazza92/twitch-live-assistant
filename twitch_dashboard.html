@@ -838,6 +838,37 @@
             display: flex !important;
             visibility: visible !important;
             opacity: 1 !important;
+            z-index: 10 !important;
+        }
+
+        .modern-gauge-container {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .gauge-outer-ring {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .gauge-inner-ring {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .gauge-progress-ring {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .gauge-progress-fill {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .phase-first_viewer .first-viewer-alert {
@@ -4093,6 +4124,9 @@
         }
 
         // First Viewer Catcher Functions
+        // Global variable to track auto-hide timeout
+        let overlayAutoHideTimeout = null;
+
         function showFirstViewerAlert(viewerName = 'New Viewer') {
             console.log('🎉 First viewer detected:', viewerName);
             const alert = document.getElementById('firstViewerAlert');
@@ -4100,6 +4134,12 @@
             const greeting = document.getElementById('firstViewerGreeting');
             
             if (alert) {
+                // Clear any existing timeout
+                if (overlayAutoHideTimeout) {
+                    clearTimeout(overlayAutoHideTimeout);
+                    overlayAutoHideTimeout = null;
+                }
+                
                 // Update message with actual username
                 if (message) {
                     message.textContent = `${viewerName} just joined your stream!`;
@@ -4121,8 +4161,12 @@
                 
                 alert.classList.add('show');
                 
+                // Setup button handlers
+                setupOverlayButtons();
+                
                 // Auto-hide after 5 seconds
-                setTimeout(() => {
+                overlayAutoHideTimeout = setTimeout(() => {
+                    console.log('⏰ Auto-hiding overlay after 5 seconds');
                     hideFirstViewerAlert();
                 }, 5000);
             }
@@ -4132,6 +4176,14 @@
             const alert = document.getElementById('firstViewerAlert');
             if (alert) {
                 alert.classList.remove('show');
+                console.log('✅ First viewer alert hidden');
+                
+                // Clear auto-hide timeout
+                if (overlayAutoHideTimeout) {
+                    clearTimeout(overlayAutoHideTimeout);
+                    overlayAutoHideTimeout = null;
+                    console.log('⏰ Auto-hide timeout cleared');
+                }
             }
         }
 
@@ -4168,12 +4220,38 @@
             
             if (copyBtn) {
                 copyBtn.addEventListener('click', copyGreeting);
+                console.log('✅ Copy button event listener attached');
+            } else {
+                console.log('❌ Copy button not found');
             }
             
             if (continueBtn) {
-                continueBtn.addEventListener('click', hideFirstViewerAlert);
+                continueBtn.addEventListener('click', function() {
+                    console.log('🔄 Continue button clicked');
+                    hideFirstViewerAlert();
+                });
+                console.log('✅ Continue button event listener attached');
+            } else {
+                console.log('❌ Continue button not found');
             }
         });
+
+        // Also add direct onclick handlers as backup
+        function setupOverlayButtons() {
+            const copyBtn = document.getElementById('copyGreetingBtn');
+            const continueBtn = document.getElementById('continueBtn');
+            
+            if (copyBtn) {
+                copyBtn.onclick = copyGreeting;
+            }
+            
+            if (continueBtn) {
+                continueBtn.onclick = function() {
+                    console.log('🔄 Continue button clicked (onclick)');
+                    hideFirstViewerAlert();
+                };
+            }
+        }
 
         // Persistence Engine Functions
         function initializeMilestones() {
@@ -4423,10 +4501,79 @@
             }
         }
 
+        // Force gauge visibility function
+        function forceGaugeVisibility() {
+            console.log('🔧 Forcing gauge visibility...');
+            const gauge = document.getElementById('chatScoreGaugeEnhanced');
+            const container = document.querySelector('.modern-gauge-container');
+            const outerRing = document.querySelector('.gauge-outer-ring');
+            const innerRing = document.querySelector('.gauge-inner-ring');
+            const progressRing = document.querySelector('.gauge-progress-ring');
+            const progressFill = document.querySelector('.gauge-progress-fill');
+            const score = document.getElementById('gaugeScoreEnhanced');
+            const status = document.getElementById('gaugeStatus');
+
+            // Force visibility with inline styles
+            if (gauge) {
+                gauge.style.display = 'flex';
+                gauge.style.visibility = 'visible';
+                gauge.style.opacity = '1';
+                gauge.style.zIndex = '10';
+            }
+
+            if (container) {
+                container.style.display = 'flex';
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
+            }
+
+            if (outerRing) {
+                outerRing.style.display = 'block';
+                outerRing.style.visibility = 'visible';
+                outerRing.style.opacity = '1';
+            }
+
+            if (innerRing) {
+                innerRing.style.display = 'flex';
+                innerRing.style.visibility = 'visible';
+                innerRing.style.opacity = '1';
+            }
+
+            if (progressRing) {
+                progressRing.style.display = 'block';
+                progressRing.style.visibility = 'visible';
+                progressRing.style.opacity = '1';
+            }
+
+            if (progressFill) {
+                progressFill.style.display = 'block';
+                progressFill.style.visibility = 'visible';
+                progressFill.style.opacity = '1';
+            }
+
+            if (score) {
+                score.style.display = 'block';
+                score.style.visibility = 'visible';
+                score.style.opacity = '1';
+            }
+
+            if (status) {
+                status.style.display = 'block';
+                status.style.visibility = 'visible';
+                status.style.opacity = '1';
+            }
+
+            console.log('✅ Gauge visibility forced');
+            
+            // Test with a score
+            updateChatScoreGauge(50);
+        }
+
         window.testGaugeVisibility = testGaugeVisibility;
         window.forceGaugeDisplay = forceGaugeDisplay;
         window.testSVGGauge = testSVGGauge;
         window.testModernGauge = testModernGauge;
+        window.forceGaugeVisibility = forceGaugeVisibility;
         
         // Test gauge visibility function
         function testGaugeVisibility() {
