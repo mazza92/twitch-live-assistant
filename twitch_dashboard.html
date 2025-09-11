@@ -4711,6 +4711,13 @@
         function setLanguage(lang) {
             currentLanguage = lang;
             
+            // Clear API caches to get fresh content in new language
+            cachedNews = [];
+            cachedFacts = [];
+            lastNewsFetch = 0;
+            lastFactsFetch = 0;
+            console.log('🔄 Cleared API caches for language switch to:', lang);
+            
             // Update active button
             document.querySelectorAll('.language-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -5125,9 +5132,30 @@
                                 allNews.push(...processedArticles);
                             }
                         } else if (response.status === 426) {
-                            console.warn(`🚨 NewsAPI returned 426 (Upgrade Required) for category ${category}. This usually means the API key is invalid or the account needs to be upgraded.`);
-                            // Don't try other categories if we get 426 - the API key is likely invalid
-                            break;
+                            console.warn(`🚨 NewsAPI returned 426 (Upgrade Required) for category ${category} (${country}). Trying US fallback...`);
+                            // Try US news as fallback for international content
+                            try {
+                                const usResponse = await fetch(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&pageSize=3&apiKey=${newsApiKey}`);
+                                if (usResponse.ok) {
+                                    const usData = await usResponse.json();
+                                    if (usData.articles && usData.articles.length > 0) {
+                                        const processedArticles = usData.articles.map(article => ({
+                                            ...article,
+                                            category: category,
+                                            streamerRelevance: analyzeNewsForStreamers(article),
+                                            engagementPotential: calculateEngagementPotential(article),
+                                            isFallback: true // Mark as fallback content
+                                        }));
+                                        allNews.push(...processedArticles);
+                                        console.log(`✅ US fallback news fetched for ${category}: ${usData.articles.length} articles`);
+                                    }
+                                } else {
+                                    console.warn(`⚠️ US fallback also failed for ${category}: ${usResponse.status}`);
+                                }
+                            } catch (fallbackError) {
+                                console.warn(`⚠️ US fallback error for ${category}:`, fallbackError.message);
+                            }
+                            // Continue with other categories instead of breaking
                         } else if (response.status === 401) {
                             console.warn(`🚨 NewsAPI returned 401 (Unauthorized) for category ${category}. The API key is invalid.`);
                             break;
@@ -5237,46 +5265,67 @@
                     // Try French facts API first
                     try {
                         const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=fr');
+                        console.log('🧠 French facts API response:', response.status, response.statusText);
+                        
                         if (response.ok) {
                             const data = await response.json();
-                            facts.push(data.text || data.fact || 'Le saviez-vous ? Le cerveau humain contient environ 86 milliards de neurones !');
+                            const fact = data.text || data.fact || 'Le saviez-vous ? Le cerveau humain contient environ 86 milliards de neurones !';
+                            facts.push(fact);
+                            console.log('✅ French fact fetched:', fact);
+                        } else {
+                            console.warn('⚠️ French facts API failed:', response.status, response.statusText);
                         }
                     } catch (error) {
-                        console.log('⚠️ French facts API failed, trying fallback');
+                        console.log('⚠️ French facts API error:', error.message);
                     }
                     
                     // If no French facts, use French fallback
                     if (facts.length === 0) {
+                        console.log('🔄 Using French fallback facts');
                         facts = getFallbackFacts('fr');
                     }
                 } else if (currentLanguage === 'es') {
                     // Try Spanish facts API
                     try {
                         const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=es');
+                        console.log('🧠 Spanish facts API response:', response.status, response.statusText);
+                        
                         if (response.ok) {
                             const data = await response.json();
-                            facts.push(data.text || data.fact || '¿Sabías que? ¡El cerebro humano contiene aproximadamente 86 mil millones de neuronas!');
+                            const fact = data.text || data.fact || '¿Sabías que? ¡El cerebro humano contiene aproximadamente 86 mil millones de neuronas!';
+                            facts.push(fact);
+                            console.log('✅ Spanish fact fetched:', fact);
+                        } else {
+                            console.warn('⚠️ Spanish facts API failed:', response.status, response.statusText);
                         }
                     } catch (error) {
-                        console.log('⚠️ Spanish facts API failed, trying fallback');
+                        console.log('⚠️ Spanish facts API error:', error.message);
                     }
                     
                     if (facts.length === 0) {
+                        console.log('🔄 Using Spanish fallback facts');
                         facts = getFallbackFacts('es');
                     }
                 } else if (currentLanguage === 'de') {
                     // Try German facts API
                     try {
                         const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=de');
+                        console.log('🧠 German facts API response:', response.status, response.statusText);
+                        
                         if (response.ok) {
                             const data = await response.json();
-                            facts.push(data.text || data.fact || 'Wusstest du? Das menschliche Gehirn enthält etwa 86 Milliarden Neuronen!');
+                            const fact = data.text || data.fact || 'Wusstest du? Das menschliche Gehirn enthält etwa 86 Milliarden Neuronen!';
+                            facts.push(fact);
+                            console.log('✅ German fact fetched:', fact);
+                        } else {
+                            console.warn('⚠️ German facts API failed:', response.status, response.statusText);
                         }
                     } catch (error) {
-                        console.log('⚠️ German facts API failed, trying fallback');
+                        console.log('⚠️ German facts API error:', error.message);
                     }
                     
                     if (facts.length === 0) {
+                        console.log('🔄 Using German fallback facts');
                         facts = getFallbackFacts('de');
                     }
                 } else {
