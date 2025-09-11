@@ -60,6 +60,7 @@
             order: 2;
             visibility: visible !important;
             opacity: 1 !important;
+            z-index: 10;
             background: linear-gradient(135deg, rgba(15, 15, 25, 0.95), rgba(25, 25, 35, 0.95));
             backdrop-filter: blur(20px);
             border-radius: 24px;
@@ -817,11 +818,18 @@
         }
 
         /* Phase-specific visibility */
-        .phase-zero_viewers .metric-card:not(.chat-score-card):not(.ai-prompt-card),
+        .phase-zero_viewers .metric-card:not(.chat-score-card):not(.ai-prompt-card):not(.chat-score-gauge-enhanced),
         .phase-zero_viewers .revenue-metrics,
         .phase-zero_viewers .top-users,
         .phase-zero_viewers .chat-activity-log {
             display: none !important;
+        }
+
+        /* Ensure gauge is always visible */
+        .chat-score-gauge-enhanced {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .phase-first_viewer .first-viewer-alert {
@@ -1560,6 +1568,9 @@
             width: 250px;
             height: 250px;
             margin: 0 auto;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         .gauge-ring {
@@ -1579,9 +1590,11 @@
                 #ff4444 360deg
             );
             position: relative;
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
+            visibility: visible !important;
+            opacity: 1 !important;
             box-shadow: 
                 0 0 25px rgba(145, 70, 255, 0.4),
                 inset 0 0 15px rgba(0, 0, 0, 0.3);
@@ -1616,10 +1629,12 @@
             height: 180px;
             border-radius: 50%;
             background: linear-gradient(135deg, rgba(10, 10, 20, 0.95), rgba(20, 20, 30, 0.95));
-            display: flex;
+            display: flex !important;
             align-items: center;
             justify-content: center;
             z-index: 2;
+            visibility: visible !important;
+            opacity: 1 !important;
             border: 3px solid rgba(145, 70, 255, 0.3);
             box-shadow: 
                 inset 0 0 20px rgba(0, 0, 0, 0.6),
@@ -1635,6 +1650,9 @@
                 0 0 40px rgba(145, 70, 255, 0.4);
             position: relative;
             z-index: 4;
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
             transition: all 0.3s ease;
         }
 
@@ -1657,6 +1675,9 @@
             transform-origin: bottom center;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 3;
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
             box-shadow: 
                 0 0 10px rgba(255, 255, 255, 0.6),
                 0 0 20px rgba(145, 70, 255, 0.4);
@@ -4012,6 +4033,41 @@
         // Make test functions globally available
         window.testGauge = testGauge;
         window.testGaugeNow = testGaugeNow;
+        window.testGaugeVisibility = testGaugeVisibility;
+        
+        // Test gauge visibility function
+        function testGaugeVisibility() {
+            console.log('🔍 Testing gauge visibility...');
+            const gauge = document.getElementById('chatScoreGaugeEnhanced');
+            const container = document.querySelector('.circular-gauge-container');
+            const ring = document.querySelector('.gauge-ring');
+            const center = document.querySelector('.gauge-center');
+            const score = document.getElementById('gaugeScoreEnhanced');
+            const needle = document.getElementById('gaugeNeedleEnhanced');
+            
+            console.log('Gauge elements found:');
+            console.log('- Main gauge:', gauge);
+            console.log('- Container:', container);
+            console.log('- Ring:', ring);
+            console.log('- Center:', center);
+            console.log('- Score:', score);
+            console.log('- Needle:', needle);
+            
+            if (gauge) {
+                const styles = window.getComputedStyle(gauge);
+                console.log('Gauge computed styles:');
+                console.log('- Display:', styles.display);
+                console.log('- Visibility:', styles.visibility);
+                console.log('- Opacity:', styles.opacity);
+                console.log('- Z-index:', styles.zIndex);
+            }
+            
+            // Test with a score update
+            if (score) {
+                updateChatScoreGauge(75);
+                console.log('✅ Gauge test completed - score updated to 75');
+            }
+        }
 
         // Channel connection functionality
         let isConnecting = false;
