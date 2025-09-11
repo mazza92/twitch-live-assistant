@@ -48,23 +48,23 @@
 
         /* Modern Circular Chat Score Gauge */
         .chat-score-gauge-enhanced {
-            margin: 3rem auto 2rem;
+            margin: 2rem auto 1.5rem;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             position: relative;
             display: flex !important;
             flex-direction: column;
             align-items: center;
-            gap: 2.5rem;
+            gap: 1.5rem;
             order: 2;
             visibility: visible !important;
             opacity: 1 !important;
             z-index: 10;
             background: linear-gradient(135deg, rgba(12, 12, 22, 0.98), rgba(22, 22, 32, 0.98));
             backdrop-filter: blur(25px);
-            border-radius: 28px;
-            padding: 3rem 2.5rem;
+            border-radius: 24px;
+            padding: 2rem 1.5rem;
             border: 2px solid rgba(145, 70, 255, 0.4);
             box-shadow: 
                 0 16px 50px rgba(0, 0, 0, 0.4),
@@ -1581,8 +1581,8 @@
         /* Circular Gauge Container */
         .circular-gauge-container {
             position: relative;
-            width: 280px;
-            height: 280px;
+            width: 300px;
+            height: 300px;
             margin: 0 auto;
             display: block !important;
             visibility: visible !important;
@@ -1629,8 +1629,8 @@
         }
 
         .gauge-svg {
-            width: 280px;
-            height: 280px;
+            width: 300px;
+            height: 300px;
             position: absolute;
             top: 0;
             left: 0;
@@ -1687,17 +1687,18 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             background: linear-gradient(135deg, rgba(8, 8, 18, 0.98), rgba(18, 18, 28, 0.98));
             display: flex !important;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 2;
             visibility: visible !important;
             opacity: 1 !important;
-            border: 4px solid rgba(145, 70, 255, 0.4);
+            border: 3px solid rgba(145, 70, 255, 0.4);
             box-shadow: 
                 inset 0 0 30px rgba(0, 0, 0, 0.7),
                 0 0 25px rgba(145, 70, 255, 0.3),
@@ -1705,14 +1706,23 @@
             transform: translate(-50%, -50%);
         }
 
+        .gauge-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         .gauge-score {
-            font-size: 3.2rem;
+            font-size: 2.8rem;
             font-weight: 900;
             color: #ffffff;
             text-shadow: 
-                0 0 30px rgba(255, 255, 255, 0.9),
-                0 0 60px rgba(145, 70, 255, 0.6),
-                0 4px 8px rgba(0, 0, 0, 0.5);
+                0 0 20px rgba(255, 255, 255, 0.8),
+                0 0 40px rgba(145, 70, 255, 0.5),
+                0 2px 4px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 4;
             visibility: visible !important;
@@ -1724,6 +1734,8 @@
             background-clip: text;
             letter-spacing: 1px;
             transition: all 0.3s ease;
+            margin: 0;
+            line-height: 1;
         }
 
         .gauge-score.updated {
@@ -1738,10 +1750,10 @@
 
         .gauge-needle {
             position: absolute;
-            width: 6px;
-            height: 100px;
+            width: 4px;
+            height: 80px;
             background: linear-gradient(to top, #ffffff, #ff6b6b, #9146ff, #00d4ff);
-            border-radius: 3px;
+            border-radius: 2px;
             transform-origin: bottom center;
             transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 3;
@@ -1749,9 +1761,9 @@
             opacity: 1 !important;
             display: block !important;
             box-shadow: 
-                0 0 15px rgba(255, 255, 255, 0.8),
-                0 0 30px rgba(145, 70, 255, 0.6),
-                0 0 45px rgba(0, 212, 255, 0.4);
+                0 0 10px rgba(255, 255, 255, 0.8),
+                0 0 20px rgba(145, 70, 255, 0.6),
+                0 0 30px rgba(0, 212, 255, 0.4);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-90deg);
@@ -2001,71 +2013,70 @@
                 
             <!-- Circular Gauge -->
             <div class="circular-gauge-container">
-                <svg class="gauge-svg" viewBox="0 0 280 280">
+                <svg class="gauge-svg" viewBox="0 0 300 300">
                     <!-- Background circle -->
                     <circle
-                        cx="140"
-                        cy="140"
-                        r="120"
+                        cx="150"
+                        cy="150"
+                        r="130"
                         fill="none"
                         stroke="rgba(255, 255, 255, 0.1)"
-                        stroke-width="8"
+                        stroke-width="6"
                     />
                     <!-- Progress arc -->
                     <circle
                         id="gaugeProgressArc"
-                        cx="140"
-                        cy="140"
-                        r="120"
+                        cx="150"
+                        cy="150"
+                        r="130"
                         fill="none"
                         stroke="url(#gaugeGradient)"
-                        stroke-width="8"
+                        stroke-width="6"
                         stroke-linecap="round"
-                        stroke-dasharray="754"
-                        stroke-dashoffset="754"
-                        transform="rotate(-90 140 140)"
+                        stroke-dasharray="817"
+                        stroke-dashoffset="817"
+                        transform="rotate(-90 150 150)"
                     />
+                    <!-- Level indicators -->
+                    <g id="gaugeLevels">
+                        <!-- Level 0 (0%) -->
+                        <circle cx="150" cy="20" r="4" fill="rgba(255, 255, 255, 0.3)" />
+                        <text x="150" y="15" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">0</text>
+                        
+                        <!-- Level 1 (25%) -->
+                        <circle cx="220" cy="50" r="4" fill="rgba(255, 255, 255, 0.3)" />
+                        <text x="220" y="45" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">25</text>
+                        
+                        <!-- Level 2 (50%) -->
+                        <circle cx="250" cy="150" r="4" fill="rgba(255, 255, 255, 0.3)" />
+                        <text x="250" y="145" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">50</text>
+                        
+                        <!-- Level 3 (75%) -->
+                        <circle cx="220" cy="250" r="4" fill="rgba(255, 255, 255, 0.3)" />
+                        <text x="220" y="245" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">75</text>
+                        
+                        <!-- Level 4 (100%) -->
+                        <circle cx="150" cy="280" r="4" fill="rgba(255, 255, 255, 0.3)" />
+                        <text x="150" y="275" text-anchor="middle" fill="rgba(255, 255, 255, 0.6)" font-size="12" font-weight="600">100</text>
+                    </g>
                     <!-- Gradient definition -->
                     <defs>
                         <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" style="stop-color:#ff4757;stop-opacity:1" />
-                            <stop offset="20%" style="stop-color:#ff6b35;stop-opacity:1" />
-                            <stop offset="40%" style="stop-color:#feca57;stop-opacity:1" />
-                            <stop offset="60%" style="stop-color:#48dbfb;stop-opacity:1" />
-                            <stop offset="80%" style="stop-color:#0abde3;stop-opacity:1" />
+                            <stop offset="25%" style="stop-color:#ff6b35;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#feca57;stop-opacity:1" />
+                            <stop offset="75%" style="stop-color:#48dbfb;stop-opacity:1" />
                             <stop offset="100%" style="stop-color:#3742fa;stop-opacity:1" />
                         </linearGradient>
                     </defs>
                 </svg>
                 <div class="gauge-center">
                     <div class="gauge-score" id="gaugeScoreEnhanced">0</div>
+                    <div class="gauge-label">Score</div>
                 </div>
                 <div class="gauge-needle" id="gaugeNeedleEnhanced"></div>
             </div>
             
-            <!-- Gauge Levels -->
-            <div class="gauge-levels-container">
-                <div class="gauge-level" data-level="1">
-                    <span class="level-dot"></span>
-                    <span class="level-text">Low</span>
-                </div>
-                <div class="gauge-level" data-level="2">
-                    <span class="level-dot"></span>
-                    <span class="level-text">Med</span>
-                </div>
-                <div class="gauge-level" data-level="3">
-                    <span class="level-dot"></span>
-                    <span class="level-text">Good</span>
-                </div>
-                <div class="gauge-level" data-level="4">
-                    <span class="level-dot"></span>
-                    <span class="level-text">High</span>
-                </div>
-                <div class="gauge-level" data-level="5">
-                    <span class="level-dot"></span>
-                    <span class="level-text">Max</span>
-                </div>
-            </div>
             </div>
             
         <!-- First Viewer Catcher Alert -->
@@ -3742,10 +3753,10 @@
                 lastChatScore = score;
             }
             
-            // Update SVG progress arc (0-100 maps to 0-754 dash offset)
+            // Update SVG progress arc (0-100 maps to 0-817 dash offset)
             const progressArc = document.getElementById('gaugeProgressArc');
             if (progressArc) {
-                const circumference = 2 * Math.PI * 120; // radius = 120
+                const circumference = 2 * Math.PI * 130; // radius = 130
                 const progress = (score / 100) * circumference;
                 const offset = circumference - progress;
                 progressArc.style.strokeDashoffset = offset;
