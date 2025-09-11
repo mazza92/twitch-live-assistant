@@ -57,6 +57,7 @@
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            order: 2;
         }
 
         /* AI Prompt Area - Single Instance */
@@ -65,12 +66,14 @@
             max-width: 600px;
             width: 100%;
             transition: all var(--transition-duration) ease-in-out;
+            order: 1;
         }
 
         /* Main Metrics Grid - Single Instance */
         .main-metrics-grid {
             width: 100%;
             transition: all var(--transition-duration) ease-in-out;
+            order: 3;
         }
 
         .key-metrics-row {
@@ -110,7 +113,7 @@
 
         .phase-zero_viewers .ai-prompt-area-enhanced {
             transform: scale(1.1);
-            margin-top: 1rem;
+            margin-bottom: 3rem;
         }
 
         .phase-zero_viewers .ai-prompt-header {
@@ -1632,6 +1635,18 @@
     <!-- Main Dashboard Container - Single Layout with Phase Control -->
     <div id="dashboard-container" class="phase-zero_viewers">
         
+        <!-- AI Prompt Area - Single Instance (Above Gauge) -->
+        <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaEnhanced">
+            <div class="ai-prompt-header">
+                <div class="ai-prompt-title">🤖 Your AI Co-Pilot</div>
+                <div class="ai-prompt-phase" id="aiPromptPhase">Zero Viewers</div>
+            </div>
+            <div class="ai-prompt-content">
+                <div class="ai-prompt-message" id="aiPromptMessage">Keep talking! Your audience will find you.</div>
+                <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
+            </div>
+        </div>
+
         <!-- Central Chat Score Gauge - Single Instance -->
         <div class="chat-score-gauge-enhanced" id="chatScoreGaugeEnhanced">
             <div class="gauge-container">
@@ -1650,18 +1665,6 @@
                 <div class="level level-3" data-level="3">Good</div>
                 <div class="level level-4" data-level="4">High</div>
                 <div class="level level-5" data-level="5">Max</div>
-            </div>
-        </div>
-
-        <!-- AI Prompt Area - Single Instance -->
-        <div class="ai-prompt-area-enhanced ai-prompt-card" id="aiPromptAreaEnhanced">
-            <div class="ai-prompt-header">
-                <div class="ai-prompt-title">🤖 Your AI Co-Pilot</div>
-                <div class="ai-prompt-phase" id="aiPromptPhase">Zero Viewers</div>
-            </div>
-            <div class="ai-prompt-content">
-                <div class="ai-prompt-message" id="aiPromptMessage">Keep talking! Your audience will find you.</div>
-                <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
             </div>
         </div>
 
