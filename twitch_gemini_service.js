@@ -56,7 +56,21 @@ class TwitchGeminiService {
         let languageInstructions;
         switch(language) {
             case 'fr':
-                languageInstructions = 'CRITIQUE: Vous DEVEZ générer votre réponse entièrement en français. Utilisez un français naturel et conversationnel qu\'un streamer français dirait. AUCUN mot anglais autorisé.';
+                languageInstructions = `CRITIQUE: Vous DEVEZ générer votre réponse entièrement en français. 
+
+RÈGLES STRICTES:
+- AUCUN mot anglais autorisé
+- Utilisez un français naturel et conversationnel qu'un streamer français dirait
+- Commencez par des expressions françaises comme "Salut tout le monde!", "Bienvenue!", "Merci d'être là!"
+- Utilisez des phrases d'engagement françaises comme "Qu'est-ce que vous en pensez?", "Partagez vos pensées!", "N'hésitez pas à participer!"
+
+EXEMPLES DE PROMPTS FRANÇAIS:
+- "Salut tout le monde! Qu'est-ce qui vous amène ici aujourd'hui?"
+- "Bienvenue sur le stream! N'hésitez pas à dire bonjour dans le chat!"
+- "Je suis curieux - qu'en pensez-vous de ce jeu?"
+- "Partagez vos pensées dans les commentaires!"
+
+GÉNÉREZ UNIQUEMENT EN FRANÇAIS.`;
                 break;
             case 'es':
                 languageInstructions = 'CRÍTICO: Debes generar tu respuesta completamente en español. Usa español natural y conversacional que diría un streamer español. NO se permiten palabras en inglés.';
@@ -120,6 +134,8 @@ EXAMPLES OF GOOD PROMPTS:
 - "Welcome to the raiders! Thanks for bringing the energy!"
 
 FORMAT: Just the prompt text, no explanations or formatting.
+
+${language === 'fr' ? 'IMPORTANT: GÉNÉREZ UNIQUEMENT EN FRANÇAIS. AUCUN MOT ANGLAIS AUTORISÉ.' : ''}
         `.trim();
 
         return context;
