@@ -2290,7 +2290,7 @@
             <div class="ai-prompt-content">
                 <div class="ai-prompt-message" id="aiPromptMessage" data-translate="aiAnalyzing">🤖 AI is analyzing news and facts to generate your next prompt...</div>
                 <div class="ai-prompt-meta">
-                <div class="ai-prompt-priority" id="aiPromptPriority">Normal</div>
+                <div class="ai-prompt-priority" id="aiPromptPriority" data-translate="normal">Normal</div>
                     <div class="ai-prompt-category" id="aiPromptCategory" style="display: none;"></div>
                     <div class="ai-analysis-indicator" id="aiAnalysisIndicator" style="display: none;">
                         🤖 AI Analyzed
@@ -2305,7 +2305,7 @@
             <div class="gauge-container">
                 <div class="gauge-circle">
                     <div class="gauge-score" id="gaugeScore">0</div>
-                    <div class="gauge-status" id="gaugeStatus">Starting</div>
+                    <div class="gauge-status" id="gaugeStatus" data-translate="starting">Starting</div>
                 </div>
             </div>
             <div class="gauge-levels">
@@ -2413,8 +2413,8 @@
                         <div class="metric-title">💬 Recent Chat Activity</div>
                         <div class="chat-messages" id="chatMessages">
                             <div class="chat-message">
-                                <span class="chat-username">System:</span>
-                                <span class="chat-text">Waiting for chat messages...</span>
+                                <span class="chat-username" data-translate="system">System:</span>
+                                <span class="chat-text" data-translate="waitingForChatMessages">Waiting for chat messages...</span>
                                 <span class="chat-timestamp">--:--</span>
                             </div>
                         </div>
@@ -2636,8 +2636,8 @@
             <div class="metric-title">💬 Recent Chat Activity</div>
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-message">
-                    <span class="chat-username">System:</span>
-                    <span class="chat-text">Waiting for chat messages...</span>
+                    <span class="chat-username" data-translate="system">System:</span>
+                    <span class="chat-text" data-translate="waitingForChatMessages">Waiting for chat messages...</span>
                     <span class="chat-timestamp">--:--</span>
                 </div>
             </div>
@@ -2732,8 +2732,8 @@
             <div class="metric-title">🤖 AI-Generated Prompts</div>
             <div id="aiPrompts">
                 <div class="prompt-item">
-                    <div class="prompt-type">System</div>
-                    <div class="prompt-message">Waiting for AI prompts...</div>
+                    <div class="prompt-type" data-translate="system">System</div>
+                    <div class="prompt-message" data-translate="waitingForAiPrompts">Waiting for AI prompts...</div>
                     <div class="prompt-timestamp">--:--</div>
                 </div>
             </div>
@@ -2916,8 +2916,8 @@
             <div class="metric-title">🤖 AI Prompts History</div>
             <div id="aiPromptsHistory">
                 <div class="prompt-item">
-                    <div class="prompt-type">System</div>
-                    <div class="prompt-message">Waiting for AI prompts...</div>
+                    <div class="prompt-type" data-translate="system">System</div>
+                    <div class="prompt-message" data-translate="waitingForAiPrompts">Waiting for AI prompts...</div>
                     <div class="prompt-timestamp">--:--</div>
                 </div>
             </div>
@@ -3158,6 +3158,14 @@
                 autoClosingIn: 'Auto-closing in',
                 
                 // AI Prompt Messages
+                aiAnalyzing: '🤖 AI is analyzing news and facts to generate your next prompt...',
+                aiAssistant: 'AI Assistant',
+                noMessage: 'No message',
+                waitingForAiPrompts: 'Waiting for AI prompts...',
+                waitingForChatMessages: 'Waiting for chat messages...',
+                system: 'System',
+                normal: 'Normal',
+                starting: 'Starting',
                 keepTalking: 'Keep talking! Your audience will find you.',
                 firstViewerDetected: '🎉 FIRST VIEWER DETECTED! Welcome them warmly and make them feel special. This is the start of your community!',
                 greatViewers: 'Great! You have viewers. Keep the energy up with engaging content, ask questions, and build your community!',
@@ -3416,6 +3424,14 @@
                 autoClosingIn: 'Fermeture automatique dans',
                 
                 // AI Prompt Messages
+                aiAnalyzing: '🤖 L\'IA analyse les actualités et les faits pour générer votre prochaine suggestion...',
+                aiAssistant: 'Assistant IA',
+                noMessage: 'Aucun message',
+                waitingForAiPrompts: 'En attente des suggestions IA...',
+                waitingForChatMessages: 'En attente des messages du chat...',
+                system: 'Système',
+                normal: 'Normal',
+                starting: 'Démarrage',
                 keepTalking: 'Continuez à parler! Votre audience vous trouvera.',
                 firstViewerDetected: '🎉 PREMIER SPECTATEUR DÉTECTÉ! Accueillez-les chaleureusement et faites-leur sentir qu\'ils sont spéciaux. C\'est le début de votre communauté!',
                 greatViewers: 'Parfait! Vous avez des spectateurs. Gardez l\'énergie avec du contenu engageant, posez des questions et construisez votre communauté!',
@@ -3674,6 +3690,14 @@
                 autoClosingIn: 'Cierre automático en',
                 
                 // AI Prompt Messages
+                aiAnalyzing: '🤖 La IA está analizando noticias y hechos para generar tu próxima sugerencia...',
+                aiAssistant: 'Asistente IA',
+                noMessage: 'Sin mensaje',
+                waitingForAiPrompts: 'Esperando sugerencias de IA...',
+                waitingForChatMessages: 'Esperando mensajes del chat...',
+                system: 'Sistema',
+                normal: 'Normal',
+                starting: 'Iniciando',
                 keepTalking: '¡Sigue hablando! Tu audiencia te encontrará.',
                 firstViewerDetected: '🎉 ¡PRIMER ESPECTADOR DETECTADO! Dales la bienvenida cálidamente y hazlos sentir especiales. ¡Este es el comienzo de tu comunidad!',
                 greatViewers: '¡Genial! Tienes espectadores. Mantén la energía con contenido atractivo, haz preguntas y construye tu comunidad!',
@@ -3932,6 +3956,14 @@
                 autoClosingIn: 'Automatisches Schließen in',
                 
                 // AI Prompt Messages
+                aiAnalyzing: '🤖 Die KI analysiert Nachrichten und Fakten, um Ihre nächste Eingabeaufforderung zu generieren...',
+                aiAssistant: 'KI-Assistent',
+                noMessage: 'Keine Nachricht',
+                waitingForAiPrompts: 'Warten auf KI-Eingabeaufforderungen...',
+                waitingForChatMessages: 'Warten auf Chat-Nachrichten...',
+                system: 'System',
+                normal: 'Normal',
+                starting: 'Startet',
                 keepTalking: 'Sprich weiter! Dein Publikum wird dich finden.',
                 firstViewerDetected: '🎉 ERSTER ZUSCHAUER ERKANNT! Begrüße sie herzlich und lass sie sich besonders fühlen. Das ist der Anfang deiner Community!',
                 greatViewers: 'Großartig! Du hast Zuschauer. Behalte die Energie mit fesselndem Inhalt, stelle Fragen und baue deine Community auf!',
@@ -4829,10 +4861,10 @@
                 promptDiv.className = 'prompt-item';
                 
                 const timestamp = new Date(prompt.timestamp || Date.now());
-                    const message = prompt.prompt?.message || 'No message';
+                    const message = prompt.prompt?.message || translations[currentLanguage].noMessage;
                     
                 promptDiv.innerHTML = `
-                        <div class="prompt-type">${prompt.prompt?.type || 'AI Assistant'}</div>
+                        <div class="prompt-type">${prompt.prompt?.type || translations[currentLanguage].aiAssistant}</div>
                         <div class="prompt-message">${message}</div>
                     <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
                 `;
@@ -4848,10 +4880,10 @@
                     promptDiv.className = 'prompt-item';
                     
                     const timestamp = new Date(prompt.timestamp || Date.now());
-                    const message = prompt.prompt?.message || 'No message';
+                    const message = prompt.prompt?.message || translations[currentLanguage].noMessage;
                     
                     promptDiv.innerHTML = `
-                        <div class="prompt-type">${prompt.prompt?.type || 'AI Assistant'}</div>
+                        <div class="prompt-type">${prompt.prompt?.type || translations[currentLanguage].aiAssistant}</div>
                         <div class="prompt-message">${message}</div>
                         <div class="prompt-timestamp">${timestamp.toLocaleTimeString()}</div>
                     `;
@@ -4924,7 +4956,7 @@
             }, 600);
         }
 
-        // Update language
+        // Update language function
         function updateLanguage() {
             const t = translations[currentLanguage];
             
@@ -4942,8 +4974,11 @@
                         return;
                     }
                     if (element.id === 'firstViewerMessage' || element.id === 'firstViewerGreeting') {
-                        // Don't translate these as they're set dynamically with viewer names
-                        return;
+                        // Only skip translation if they contain dynamic content (viewer names)
+                        // Allow translation for default/fallback text
+                        if (element.textContent.includes('{{') || element.textContent.includes('New Viewer') || element.textContent.includes('Viewer')) {
+                            return;
+                        }
                     }
                     if (element.id === 'autoHideCountdown') {
                         // Handle countdown text specially
@@ -7416,6 +7451,12 @@
             console.log('- Milestones Grid Children:', document.getElementById('milestonesGrid')?.children.length);
             console.log('- Persistence Engine Initialized:', persistenceEngine ? 'Yes' : 'No');
         };
+
+        // Initialize translations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguage();
+            console.log('🌐 Initial translations applied');
+        });
     </script>
 </body>
 </html>
