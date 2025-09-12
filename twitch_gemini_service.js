@@ -53,9 +53,20 @@ class TwitchGeminiService {
         const contentSuggestions = this.getContentSuggestions(metrics);
         
         // Language-specific instructions
-        const languageInstructions = language === 'fr' ? 
-            'IMPORTANT: Generate your response in French. Use natural, conversational French that a French streamer would say.' :
-            'IMPORTANT: Generate your response in English. Use natural, conversational English that an English streamer would say.';
+        let languageInstructions;
+        switch(language) {
+            case 'fr':
+                languageInstructions = 'CRITIQUE: Vous DEVEZ générer votre réponse entièrement en français. Utilisez un français naturel et conversationnel qu\'un streamer français dirait. AUCUN mot anglais autorisé.';
+                break;
+            case 'es':
+                languageInstructions = 'CRÍTICO: Debes generar tu respuesta completamente en español. Usa español natural y conversacional que diría un streamer español. NO se permiten palabras en inglés.';
+                break;
+            case 'de':
+                languageInstructions = 'KRITISCH: Sie MÜSSEN Ihre Antwort vollständig auf Deutsch generieren. Verwenden Sie natürliches, umgangssprachliches Deutsch, das ein deutscher Streamer sagen würde. KEINE englischen Wörter erlaubt.';
+                break;
+            default:
+                languageInstructions = 'IMPORTANT: Generate your response in English. Use natural, conversational English that an English streamer would say.';
+        }
         
         // Build the enhanced context string
         const context = `
