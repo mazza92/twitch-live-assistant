@@ -2229,8 +2229,8 @@
 
     <!-- Language Switcher -->
     <div class="language-switcher">
-        <button class="language-btn active" onclick="setLanguage('en')">🇺🇸 English</button>
-        <button class="language-btn" onclick="setLanguage('fr')">🇫🇷 Français</button>
+        <button class="language-btn" onclick="setLanguage('en')">🇺🇸 English</button>
+        <button class="language-btn active" onclick="setLanguage('fr')">🇫🇷 Français</button>
         <button class="language-btn" onclick="setLanguage('es')">🇪🇸 Español</button>
         <button class="language-btn" onclick="setLanguage('de')">🇩🇪 Deutsch</button>
     </div>
@@ -7790,6 +7790,169 @@
             console.log('- Milestones Grid Children:', document.getElementById('milestonesGrid')?.children.length);
             console.log('- Persistence Engine Initialized:', persistenceEngine ? 'Yes' : 'No');
         };
+
+        // Global variables
+        let currentLanguage = 'fr'; // Set French as default
+
+        // Language switching function
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            updateLanguage();
+            
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Clear caches to force refresh
+            if (window.cachedNews) window.cachedNews = [];
+            if (window.cachedFacts) window.cachedFacts = [];
+            
+            console.log(`🌐 Language switched to: ${lang}`);
+        }
+
+        // Update language function
+        function updateLanguage() {
+            // This function would update all UI elements based on currentLanguage
+            // For now, we'll just log it
+            console.log(`🌐 Current language: ${currentLanguage}`);
+        }
+
+        // Translations object for multi-language support
+        const translations = {
+            en: {
+                // Fallback AI Prompts
+                fallback_engagement_question: "❓ **Ask Questions**: Even if no one answers, ask questions! Say: \"I'm curious - what do you think about this? Even if you don't type, I'd love to hear your thoughts!\"",
+                fallback_engagement_poll: "📊 **Start a Poll**: Create engagement with a quick poll! Say: \"Quick poll - what's your favorite game genre? Type 1 for FPS, 2 for RPG, 3 for Strategy!\"",
+                fallback_engagement_challenge: "🎯 **Challenge Viewers**: Give them something to do! Say: \"I challenge you to guess my next move in this game! First correct guess gets a shoutout!\"",
+                fallback_growth_welcome: "👋 **Welcome New Viewers**: Make them feel special! Say: \"Welcome to the stream! Thanks for joining us today - what brought you here?\"",
+                fallback_growth_community: "🤝 **Build Community**: Connect your viewers! Say: \"I love how this community comes together! Share something interesting about yourself in chat!\"",
+                fallback_growth_raiders: "🎉 **Welcome Raiders**: Make raiders feel appreciated! Say: \"Welcome raiders! Thanks for bringing the energy - let's have some fun together!\"",
+                fallback_retention_tease: "🔮 **Tease Next Content**: Keep them coming back! Say: \"I'm planning something special for tomorrow's stream - you won't want to miss it!\"",
+                fallback_retention_milestone: "🏆 **Celebrate Milestones**: Acknowledge progress! Say: \"We're getting close to a new follower milestone! Let's celebrate together!\"",
+                fallback_retention_interaction: "💬 **Encourage Interaction**: Keep the chat active! Say: \"I love reading your messages! Keep them coming - I read every single one!\"",
+                fallback_energy_boost: "⚡ **Energy Boost**: Pump up the energy! Say: \"Let's turn up the energy! What's your favorite hype song? Drop it in chat!\"",
+                fallback_energy_fun: "🎮 **Add Fun Elements**: Make it entertaining! Say: \"Time for some viewer games! Who wants to play a quick round of 'Would You Rather'?\"",
+                fallback_energy_positive: "😊 **Stay Positive**: Keep the mood upbeat! Say: \"I'm having such a great time with you all! Your energy is amazing!\"",
+                fallback_urgent_engagement: "🚨 **URGENT**: Chat is quiet! Say: \"I need your help! What should I do next? Your input matters!\"",
+                fallback_urgent_energy: "⚡ **URGENT**: Energy is dropping! Say: \"Let's bring back the energy! What's your favorite game moment? Share it!\"",
+                fallback_urgent_retention: "🔴 **URGENT**: Viewers leaving! Say: \"Don't go yet! I have something special planned - stick around for the surprise!\"",
+                fallback_urgent_growth: "📈 **URGENT**: Growth stalled! Say: \"Help me grow! If you're enjoying this, please follow and share with friends!\"",
+                fallback_urgent_community: "🤝 **URGENT**: Community needs connection! Say: \"Let's connect! Share your favorite stream memory in chat!\"",
+                fallback_urgent_content: "🎯 **URGENT**: Content needs focus! Say: \"What content do you want to see? Your feedback shapes this stream!\"",
+                noMessage: "No message available",
+                aiAssistant: "AI Assistant"
+            },
+            fr: {
+                // Fallback AI Prompts
+                fallback_engagement_question: "❓ **Posez des Questions** : Même si personne ne répond, posez des questions ! Dites : \"Je suis curieux - qu'en pensez-vous ? Même si vous ne tapez pas, j'aimerais entendre vos pensées !\"",
+                fallback_engagement_poll: "📊 **Lancez un Sondage** : Créez de l'engagement avec un sondage rapide ! Dites : \"Sondage rapide - quel est votre genre de jeu préféré ? Tapez 1 pour FPS, 2 pour RPG, 3 pour Stratégie !\"",
+                fallback_engagement_challenge: "🎯 **Défiez les Spectateurs** : Donnez-leur quelque chose à faire ! Dites : \"Je vous défie de deviner mon prochain mouvement dans ce jeu ! La première bonne réponse aura un shoutout !\"",
+                fallback_growth_welcome: "👋 **Accueillez les Nouveaux Spectateurs** : Rendez-les spéciaux ! Dites : \"Bienvenue sur le stream ! Merci de nous rejoindre aujourd'hui - qu'est-ce qui vous a amené ici ?\"",
+                fallback_growth_community: "🤝 **Construisez la Communauté** : Connectez vos spectateurs ! Dites : \"J'adore comment cette communauté se rassemble ! Partagez quelque chose d'intéressant sur vous dans le chat !\"",
+                fallback_growth_raiders: "🎉 **Accueillez les Raiders** : Rendez les raiders appréciés ! Dites : \"Bienvenue les raiders ! Merci d'apporter l'énergie - amusons-nous ensemble !\"",
+                fallback_retention_tease: "🔮 **Tentez le Prochain Contenu** : Faites-les revenir ! Dites : \"Je planifie quelque chose de spécial pour le stream de demain - vous ne voudrez pas le rater !\"",
+                fallback_retention_milestone: "🏆 **Célébrez les Jalons** : Reconnaissez les progrès ! Dites : \"Nous approchons d'un nouveau jalon d'abonnés ! Célébrons ensemble !\"",
+                fallback_retention_interaction: "💬 **Encouragez l'Interaction** : Gardez le chat actif ! Dites : \"J'adore lire vos messages ! Continuez - je lis chacun d'entre eux !\"",
+                fallback_energy_boost: "⚡ **Boost d'Énergie** : Augmentez l'énergie ! Dites : \"Augmentons l'énergie ! Quelle est votre chanson préférée ? Partagez-la dans le chat !\"",
+                fallback_energy_fun: "🎮 **Ajoutez des Éléments Amusants** : Rendez-le divertissant ! Dites : \"Il est temps pour des jeux de spectateurs ! Qui veut jouer un rapide tour de 'Préférez-vous' ?\"",
+                fallback_energy_positive: "😊 **Restez Positif** : Gardez l'ambiance optimiste ! Dites : \"Je passe un si bon moment avec vous tous ! Votre énergie est incroyable !\"",
+                fallback_urgent_engagement: "🚨 **URGENT** : Le chat est silencieux ! Dites : \"J'ai besoin de votre aide ! Que devrais-je faire ensuite ? Votre avis compte !\"",
+                fallback_urgent_energy: "⚡ **URGENT** : L'énergie baisse ! Dites : \"Ramenons l'énergie ! Quel est votre moment de jeu préféré ? Partagez-le !\"",
+                fallback_urgent_retention: "🔴 **URGENT** : Les spectateurs partent ! Dites : \"Ne partez pas encore ! J'ai quelque chose de spécial prévu - restez pour la surprise !\"",
+                fallback_urgent_growth: "📈 **URGENT** : La croissance est bloquée ! Dites : \"Aidez-moi à grandir ! Si vous appréciez ceci, suivez et partagez avec vos amis !\"",
+                fallback_urgent_community: "🤝 **URGENT** : La communauté a besoin de connexion ! Dites : \"Connectons-nous ! Partagez votre souvenir de stream préféré dans le chat !\"",
+                fallback_urgent_content: "🎯 **URGENT** : Le contenu a besoin de focus ! Dites : \"Quel contenu voulez-vous voir ? Vos commentaires façonnent ce stream !\"",
+                noMessage: "Aucun message disponible",
+                aiAssistant: "Assistant IA"
+            },
+            es: {
+                // Fallback AI Prompts
+                fallback_engagement_question: "❓ **Haz Preguntas**: ¡Incluso si nadie responde, haz preguntas! Di: \"¡Tengo curiosidad - ¿qué piensas sobre esto? ¡Incluso si no escribes, me encantaría escuchar tus pensamientos!\"",
+                fallback_engagement_poll: "📊 **Inicia una Encuesta**: ¡Crea engagement con una encuesta rápida! Di: \"Encuesta rápida - ¿cuál es tu género de juego favorito? ¡Escribe 1 para FPS, 2 para RPG, 3 para Estrategia!\"",
+                fallback_engagement_challenge: "🎯 **Desafía a los Espectadores**: ¡Dales algo que hacer! Di: \"¡Te desafío a adivinar mi próximo movimiento en este juego! ¡La primera respuesta correcta obtiene un shoutout!\"",
+                fallback_growth_welcome: "👋 **Da la Bienvenida a Nuevos Espectadores**: ¡Hazlos sentir especiales! Di: \"¡Bienvenidos al stream! Gracias por unirse hoy - ¿qué los trajo aquí?\"",
+                fallback_growth_community: "🤝 **Construye Comunidad**: ¡Conecta a tus espectadores! Di: \"¡Me encanta cómo esta comunidad se une! ¡Comparte algo interesante sobre ti en el chat!\"",
+                fallback_growth_raiders: "🎉 **Da la Bienvenida a Raiders**: ¡Haz que los raiders se sientan apreciados! Di: \"¡Bienvenidos raiders! Gracias por traer la energía - ¡divirtámonos juntos!\"",
+                fallback_retention_tease: "🔮 **Tienta el Próximo Contenido**: ¡Haz que regresen! Di: \"Estoy planeando algo especial para el stream de mañana - ¡no te lo querrás perder!\"",
+                fallback_retention_milestone: "🏆 **Celebra Hitos**: ¡Reconoce el progreso! Di: \"¡Estamos cerca de un nuevo hito de seguidores! ¡Celebremos juntos!\"",
+                fallback_retention_interaction: "💬 **Fomenta la Interacción**: ¡Mantén el chat activo! Di: \"¡Me encanta leer tus mensajes! ¡Sigue enviándolos - leo cada uno!\"",
+                fallback_energy_boost: "⚡ **Aumenta la Energía**: ¡Sube la energía! Di: \"¡Aumentemos la energía! ¿Cuál es tu canción favorita? ¡Compártela en el chat!\"",
+                fallback_energy_fun: "🎮 **Añade Elementos Divertidos**: ¡Hazlo entretenido! Di: \"¡Hora de juegos de espectadores! ¿Quién quiere jugar una ronda rápida de '¿Prefieres'?\"",
+                fallback_energy_positive: "😊 **Mantén la Positividad**: ¡Mantén el ánimo optimista! Di: \"¡Me lo estoy pasando genial con todos ustedes! ¡Su energía es increíble!\"",
+                fallback_urgent_engagement: "🚨 **URGENTE**: ¡El chat está silencioso! Di: \"¡Necesito su ayuda! ¿Qué debería hacer después? ¡Su opinión importa!\"",
+                fallback_urgent_energy: "⚡ **URGENTE**: ¡La energía está bajando! Di: \"¡Traigamos de vuelta la energía! ¿Cuál es tu momento de juego favorito? ¡Compártelo!\"",
+                fallback_urgent_retention: "🔴 **URGENTE**: ¡Los espectadores se van! Di: \"¡No se vayan aún! Tengo algo especial planeado - ¡quédense para la sorpresa!\"",
+                fallback_urgent_growth: "📈 **URGENTE**: ¡El crecimiento se estancó! Di: \"¡Ayúdame a crecer! Si estás disfrutando esto, ¡por favor sigue y comparte con amigos!\"",
+                fallback_urgent_community: "🤝 **URGENTE**: ¡La comunidad necesita conexión! Di: \"¡Conectémonos! ¡Comparte tu memoria de stream favorita en el chat!\"",
+                fallback_urgent_content: "🎯 **URGENTE**: ¡El contenido necesita enfoque! Di: \"¿Qué contenido quieres ver? ¡Tus comentarios dan forma a este stream!\"",
+                noMessage: "No hay mensaje disponible",
+                aiAssistant: "Asistente IA"
+            },
+            de: {
+                // Fallback AI Prompts
+                fallback_engagement_question: "❓ **Stelle Fragen**: Auch wenn niemand antwortet, stelle Fragen! Sage: \"Ich bin neugierig - was denkst du darüber? Auch wenn du nicht tippst, würde ich gerne deine Gedanken hören!\"",
+                fallback_engagement_poll: "📊 **Starte eine Umfrage**: Erstelle Engagement mit einer schnellen Umfrage! Sage: \"Schnelle Umfrage - was ist dein Lieblingsspielgenre? Tippe 1 für FPS, 2 für RPG, 3 für Strategie!\"",
+                fallback_engagement_challenge: "🎯 **Fordere Zuschauer heraus**: Gib ihnen etwas zu tun! Sage: \"Ich fordere dich heraus, meinen nächsten Zug in diesem Spiel zu erraten! Die erste richtige Antwort bekommt einen Shoutout!\"",
+                fallback_growth_welcome: "👋 **Begrüße neue Zuschauer**: Lass sie sich besonders fühlen! Sage: \"Willkommen im Stream! Danke, dass ihr heute dabei seid - was hat euch hierher gebracht?\"",
+                fallback_growth_community: "🤝 **Baue Community auf**: Verbinde deine Zuschauer! Sage: \"Ich liebe es, wie sich diese Community zusammenfindet! Teilt etwas Interessantes über euch im Chat!\"",
+                fallback_growth_raiders: "🎉 **Begrüße Raider**: Lass Raider sich geschätzt fühlen! Sage: \"Willkommen Raider! Danke, dass ihr die Energie mitbringt - lasst uns zusammen Spaß haben!\"",
+                fallback_retention_tease: "🔮 **Verlocke mit nächstem Content**: Lass sie wiederkommen! Sage: \"Ich plane etwas Besonderes für den morgigen Stream - das wollt ihr nicht verpassen!\"",
+                fallback_retention_milestone: "🏆 **Feiere Meilensteine**: Erkenne Fortschritte an! Sage: \"Wir sind nah an einem neuen Follower-Meilenstein! Lasst uns zusammen feiern!\"",
+                fallback_retention_interaction: "💬 **Ermutige Interaktion**: Halte den Chat aktiv! Sage: \"Ich liebe es, eure Nachrichten zu lesen! Sendet weiter - ich lese jede einzelne!\"",
+                fallback_energy_boost: "⚡ **Energie-Boost**: Steigere die Energie! Sage: \"Lasst uns die Energie steigern! Was ist euer Lieblingshype-Song? Teilt ihn im Chat!\"",
+                fallback_energy_fun: "🎮 **Füge spaßige Elemente hinzu**: Mach es unterhaltsam! Sage: \"Zeit für Zuschauerspiele! Wer möchte eine schnelle Runde 'Würdest du lieber' spielen?\"",
+                fallback_energy_positive: "😊 **Bleib positiv**: Halte die Stimmung optimistisch! Sage: \"Ich habe so eine tolle Zeit mit euch allen! Eure Energie ist fantastisch!\"",
+                fallback_urgent_engagement: "🚨 **DRINGEND**: Chat ist ruhig! Sage: \"Ich brauche eure Hilfe! Was soll ich als nächstes tun? Eure Meinung zählt!\"",
+                fallback_urgent_energy: "⚡ **DRINGEND**: Energie sinkt! Sage: \"Lasst uns die Energie zurückbringen! Was ist euer Lieblingsspielmoment? Teilt ihn!\"",
+                fallback_urgent_retention: "🔴 **DRINGEND**: Zuschauer gehen! Sage: \"Geht noch nicht! Ich habe etwas Besonderes geplant - bleibt für die Überraschung!\"",
+                fallback_urgent_growth: "📈 **DRINGEND**: Wachstum stockt! Sage: \"Helft mir zu wachsen! Wenn euch das gefällt, folgt und teilt mit Freunden!\"",
+                fallback_urgent_community: "🤝 **DRINGEND**: Community braucht Verbindung! Sage: \"Lasst uns verbinden! Teilt eure Lieblings-Stream-Erinnerung im Chat!\"",
+                fallback_urgent_content: "🎯 **DRINGEND**: Content braucht Fokus! Sage: \"Welchen Content wollt ihr sehen? Euer Feedback formt diesen Stream!\"",
+                noMessage: "Keine Nachricht verfügbar",
+                aiAssistant: "KI-Assistent"
+            }
+        };
+
+        // AI Prompt Translation System - Translates English AI prompts to French
+        const aiPromptTranslations = {
+            // Common AI-generated prompts and their French translations
+            "FIRST VIEWER ALERT": "ALERTE PREMIER SPECTATEUR",
+            "Ask Questions": "Posez des Questions",
+            "Even if no one answers, ask questions!": "Même si personne ne répond, posez des questions !",
+            "I'm curious - what do you think about this?": "Je suis curieux - qu'en pensez-vous ?",
+            "Even if you don't type, I'd love to hear your thoughts!": "Même si vous ne tapez pas, j'aimerais entendre vos pensées !",
+            "Keep the Energy Up": "Gardez l'Énergie",
+            "Even with no visible chat, keep the conversation flowing!": "Même sans chat visible, continuez la conversation !",
+            "I'm going to keep talking because I love what I do!": "Je vais continuer à parler parce que j'adore ce que je fais !",
+            "Feel free to jump in anytime!": "N'hésitez pas à participer à tout moment !",
+            "Welcome to the stream!": "Bienvenue sur le stream !",
+            "Hey there!": "Salut !",
+            "Thanks for being my first viewer today!": "Merci d'être mon premier spectateur aujourd'hui !",
+            "I really appreciate you stopping by!": "J'apprécie vraiment que vous soyez passé !",
+            "What brought you here?": "Qu'est-ce qui vous a amené ici ?",
+            "You're the first person to join me today - that makes you special!": "Vous êtes la première personne à me rejoindre aujourd'hui - cela vous rend spécial !",
+            "First Connection": "Première Connexion",
+            "Make them feel special!": "Rendez-les spéciaux !",
+            "Say:": "Dites :",
+            "You're the first person to join me today - that makes you special! What brought you here?": "Vous êtes la première personne à me rejoindre aujourd'hui - cela vous rend spécial ! Qu'est-ce qui vous a amené ici ?"
+        };
+
+        function translateAIPrompt(prompt, targetLanguage = 'fr') {
+            if (!prompt || typeof prompt !== 'string') return prompt;
+            if (targetLanguage === 'en') return prompt;
+            
+            let translatedPrompt = prompt;
+            
+            // Translate common English phrases to French
+            for (const [english, french] of Object.entries(aiPromptTranslations)) {
+                const regex = new RegExp(english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                translatedPrompt = translatedPrompt.replace(regex, french);
+            }
+            
+            return translatedPrompt;
+        }
 
         // Initialize translations when page loads
         document.addEventListener('DOMContentLoaded', function() {
