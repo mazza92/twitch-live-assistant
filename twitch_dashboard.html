@@ -4275,6 +4275,219 @@
             }
         };
 
+        // AI Prompt Translation System - Translates English AI prompts to French
+        const aiPromptTranslations = {
+            // Common AI-generated prompts and their French translations
+            "FIRST VIEWER ALERT": "ALERTE PREMIER SPECTATEUR",
+            "Ask Questions": "Posez des Questions",
+            "Even if no one answers, ask questions!": "Même si personne ne répond, posez des questions !",
+            "I'm curious - what do you think about this?": "Je suis curieux - qu'en pensez-vous ?",
+            "Even if you don't type, I'd love to hear your thoughts!": "Même si vous ne tapez pas, j'aimerais entendre vos pensées !",
+            "Keep the Energy Up": "Gardez l'Énergie",
+            "Even with no visible chat, keep the conversation flowing!": "Même sans chat visible, gardez la conversation fluide !",
+            "I'm going to keep talking because I love what I do!": "Je vais continuer à parler parce que j'adore ce que je fais !",
+            "Feel free to jump in anytime!": "N'hésitez pas à participer à tout moment !",
+            "Welcome to the stream!": "Bienvenue sur le stream !",
+            "Thanks for being my first viewer today!": "Merci d'être mon premier spectateur aujourd'hui !",
+            "What brought you here today?": "Qu'est-ce qui vous a amené ici aujourd'hui ?",
+            "What's your name?": "Comment vous appelez-vous ?",
+            "What games do you like to watch?": "Quels jeux aimez-vous regarder ?",
+            "Let's make this awesome!": "Rendons cela génial !",
+            "Thanks for joining the stream!": "Merci d'avoir rejoint le stream !",
+            "How's everyone doing?": "Comment allez-vous tous ?",
+            "What brought you here today?": "Qu'est-ce qui vous a amené ici aujourd'hui ?",
+            "Let's chat!": "Discutons !",
+            "What should we play next?": "À quoi devrions-nous jouer ensuite ?",
+            "I want to hear your suggestions!": "Je veux entendre vos suggestions !",
+            "Welcome to all the new people!": "Bienvenue à tous les nouveaux !",
+            "Great to have you here!": "C'est génial de vous avoir ici !",
+            "Thanks for the support everyone!": "Merci pour le soutien tout le monde !",
+            "What do you want to see next?": "Que voulez-vous voir ensuite ?",
+            "Drop a comment and tell me": "Laissez un commentaire et dites-moi",
+            "The chat is buzzing!": "Le chat bourdonne !",
+            "Let's do a quick poll": "Faisons un sondage rapide",
+            "What's your favorite part of this stream so far?": "Quelle est votre partie préférée de ce stream jusqu'à présent ?",
+            "I love the energy right now!": "J'adore l'énergie en ce moment !",
+            "Who wants to share their biggest win this week?": "Qui veut partager sa plus grande victoire cette semaine ?",
+            "Hit that follow button": "Appuyez sur ce bouton de suivi",
+            "Subscribe to the channel": "Abonnez-vous à la chaîne",
+            "Turn on notifications": "Activez les notifications",
+            "Share this stream": "Partagez ce stream",
+            "Tell your friends about this": "Parlez-en à vos amis",
+            "Join our community": "Rejoignez notre communauté",
+            "Follow me on social media": "Suivez-moi sur les réseaux sociaux",
+            "Check out my other content": "Découvrez mon autre contenu",
+            "Don't forget to like": "N'oubliez pas d'aimer",
+            "Leave a comment below": "Laissez un commentaire ci-dessous",
+            "Let me know what you think": "Dites-moi ce que vous en pensez",
+            "What do you think about this?": "Qu'en pensez-vous ?",
+            "I'd love to hear your thoughts": "J'aimerais entendre vos pensées",
+            "What's your opinion?": "Quelle est votre opinion ?",
+            "Tell me in the comments": "Dites-moi dans les commentaires",
+            "Share your experience": "Partagez votre expérience",
+            "What would you do?": "Que feriez-vous ?",
+            "How would you handle this?": "Comment géreriez-vous cela ?",
+            "What's your strategy?": "Quelle est votre stratégie ?",
+            "Any tips or tricks?": "Des conseils ou astuces ?",
+            "What's your favorite?": "Quel est votre préféré ?",
+            "Which one do you prefer?": "Lequel préférez-vous ?",
+            "What's your take on this?": "Quel est votre avis là-dessus ?",
+            "I'm curious about your thoughts": "Je suis curieux de vos pensées",
+            "What's on your mind?": "À quoi pensez-vous ?",
+            "Let's discuss this": "Discutons-en",
+            "I want to know your opinion": "Je veux connaître votre opinion",
+            "Share your thoughts": "Partagez vos pensées",
+            "What's your experience with this?": "Quelle est votre expérience avec cela ?",
+            "Have you tried this before?": "Avez-vous déjà essayé cela ?",
+            "What do you think will happen?": "Que pensez-vous qu'il va se passer ?",
+            "Any predictions?": "Des prédictions ?",
+            "What's your guess?": "Quelle est votre supposition ?",
+            "I wonder what you think": "Je me demande ce que vous pensez",
+            "Your input would be valuable": "Votre contribution serait précieuse",
+            "I value your opinion": "Je valorise votre opinion",
+            "What's your perspective?": "Quelle est votre perspective ?",
+            "How do you see this?": "Comment voyez-vous cela ?",
+            "What's your view?": "Quel est votre point de vue ?",
+            "I'd appreciate your thoughts": "J'apprécierais vos pensées",
+            "Your thoughts matter": "Vos pensées comptent",
+            "I want to hear from you": "Je veux vous entendre",
+            "Don't be shy": "Ne soyez pas timide",
+            "Jump in anytime": "Participez à tout moment",
+            "Feel free to participate": "N'hésitez pas à participer",
+            "Your voice matters": "Votre voix compte",
+            "I'm listening": "J'écoute",
+            "Tell me more": "Dites-moi en plus",
+            "That's interesting": "C'est intéressant",
+            "Great point": "Excellente remarque",
+            "I agree": "Je suis d'accord",
+            "That makes sense": "Cela a du sens",
+            "Good question": "Bonne question",
+            "That's a great idea": "C'est une excellente idée",
+            "I love that": "J'adore ça",
+            "That's awesome": "C'est génial",
+            "Amazing": "Incroyable",
+            "Fantastic": "Fantastique",
+            "Brilliant": "Brillant",
+            "Perfect": "Parfait",
+            "Excellent": "Excellent",
+            "Wonderful": "Merveilleux",
+            "Outstanding": "Exceptionnel",
+            "Incredible": "Incroyable",
+            "Unbelievable": "Incroyable",
+            "Mind-blowing": "Époustouflant",
+            "Spectacular": "Spectaculaire",
+            "Magnificent": "Magnifique",
+            "Superb": "Superbe",
+            "Terrific": "Formidable",
+            "Fabulous": "Fabuleux",
+            "Marvelous": "Merveilleux",
+            "Splendid": "Splendide",
+            "Gorgeous": "Magnifique",
+            "Beautiful": "Beau",
+            "Lovely": "Adorable",
+            "Charming": "Charmant",
+            "Delightful": "Délicieux",
+            "Pleasant": "Agréable",
+            "Nice": "Sympa",
+            "Cool": "Cool",
+            "Sweet": "Mignon",
+            "Awesome": "Génial",
+            "Great": "Super",
+            "Good": "Bien",
+            "Nice work": "Bon travail",
+            "Well done": "Bien joué",
+            "Good job": "Bon travail",
+            "Keep it up": "Continuez",
+            "You're doing great": "Vous vous débrouillez bien",
+            "That's the way": "C'est comme ça",
+            "Exactly": "Exactement",
+            "Precisely": "Précisément",
+            "Absolutely": "Absolument",
+            "Definitely": "Définitivement",
+            "Certainly": "Certainement",
+            "Of course": "Bien sûr",
+            "Sure": "Bien sûr",
+            "Why not": "Pourquoi pas",
+            "Absolutely right": "Absolument juste",
+            "You're right": "Vous avez raison",
+            "That's right": "C'est juste",
+            "Correct": "Correct",
+            "True": "Vrai",
+            "Indeed": "En effet",
+            "For sure": "À coup sûr",
+            "No doubt": "Sans doute",
+            "Without a doubt": "Sans aucun doute",
+            "Undoubtedly": "Sans aucun doute",
+            "Clearly": "Clairement",
+            "Obviously": "Évidemment",
+            "Naturally": "Naturellement",
+            "Of course": "Bien sûr",
+            "Sure thing": "Bien sûr",
+            "You bet": "Bien sûr",
+            "Count on it": "Comptez dessus",
+            "Absolutely": "Absolument",
+            "Definitely": "Définitivement",
+            "Certainly": "Certainement",
+            "Without question": "Sans question",
+            "No question about it": "Aucune question à ce sujet",
+            "It's a given": "C'est acquis",
+            "It's obvious": "C'est évident",
+            "It's clear": "C'est clair",
+            "It's certain": "C'est certain",
+            "It's definite": "C'est définitif",
+            "It's sure": "C'est sûr",
+            "It's guaranteed": "C'est garanti",
+            "It's a fact": "C'est un fait",
+            "It's the truth": "C'est la vérité",
+            "It's reality": "C'est la réalité",
+            "It's the way it is": "C'est comme ça",
+            "It's how it works": "C'est comme ça que ça marche",
+            "It's the nature of things": "C'est la nature des choses",
+            "It's the way of the world": "C'est la façon du monde",
+            "It's life": "C'est la vie",
+            "That's life": "C'est la vie",
+            "Such is life": "Telle est la vie",
+            "C'est la vie": "C'est la vie",
+            "That's how it goes": "C'est comme ça que ça se passe",
+            "That's the way it goes": "C'est comme ça que ça se passe",
+            "That's how things work": "C'est comme ça que les choses fonctionnent",
+            "That's the way things work": "C'est comme ça que les choses fonctionnent",
+            "That's how it is": "C'est comme ça",
+            "That's the way it is": "C'est comme ça",
+            "That's how things are": "C'est comme ça que les choses sont",
+            "That's the way things are": "C'est comme ça que les choses sont",
+            "That's reality": "C'est la réalité",
+            "That's the reality": "C'est la réalité",
+            "That's the truth": "C'est la vérité",
+            "That's the fact": "C'est le fait",
+            "That's a fact": "C'est un fait",
+            "That's the way of the world": "C'est la façon du monde",
+            "That's how the world works": "C'est comme ça que le monde fonctionne",
+            "That's the nature of things": "C'est la nature des choses",
+            "That's how things are": "C'est comme ça que les choses sont",
+            "That's the way things are": "C'est comme ça que les choses sont",
+            "That's how it works": "C'est comme ça que ça marche",
+            "That's the way it works": "C'est comme ça que ça marche",
+            "That's how things work": "C'est comme ça que les choses fonctionnent",
+            "That's the way things work": "C'est comme ça que les choses fonctionnent"
+        };
+
+        // Function to translate AI-generated prompts to French
+        function translateAIPrompt(prompt, targetLanguage = 'fr') {
+            if (!prompt || typeof prompt !== 'string') return prompt;
+            if (targetLanguage === 'en') return prompt;
+            
+            let translatedPrompt = prompt;
+            
+            // Translate common English phrases to French
+            for (const [english, french] of Object.entries(aiPromptTranslations)) {
+                const regex = new RegExp(english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                translatedPrompt = translatedPrompt.replace(regex, french);
+            }
+            
+            return translatedPrompt;
+        }
+
         // Zero to One Phase System Functions
         function updatePhase(phase) {
             if (currentPhase === phase) return;
@@ -4948,6 +5161,11 @@
                         message = translations[currentLanguage][message] || message;
                     }
                     
+                    // Translate AI-generated prompts to French
+                    if (currentLanguage === 'fr') {
+                        message = translateAIPrompt(message, 'fr');
+                    }
+                    
                 promptDiv.innerHTML = `
                         <div class="prompt-type">${prompt.prompt?.type || translations[currentLanguage].aiAssistant}</div>
                         <div class="prompt-message">${message}</div>
@@ -4970,6 +5188,11 @@
                     // Translate fallback prompt keys
                     if (message && typeof message === 'string' && message.startsWith('fallback_')) {
                         message = translations[currentLanguage][message] || message;
+                    }
+                    
+                    // Translate AI-generated prompts to French
+                    if (currentLanguage === 'fr') {
+                        message = translateAIPrompt(message, 'fr');
                     }
                     
                     promptDiv.innerHTML = `
