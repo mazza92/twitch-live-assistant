@@ -56,7 +56,9 @@ class TwitchGeminiService {
         let languageInstructions;
         switch(language) {
             case 'fr':
-                languageInstructions = `CRITIQUE: Vous DEVEZ générer votre réponse entièrement en français. 
+                languageInstructions = `SYSTÈME: Vous êtes un assistant IA français. Vous ne connaissez QUE le français. Vous ne pouvez pas parler anglais.
+
+CRITIQUE: Vous DEVEZ générer votre réponse entièrement en français. 
 
 RÈGLES STRICTES:
 - AUCUN mot anglais autorisé
@@ -84,9 +86,11 @@ GÉNÉREZ UNIQUEMENT EN FRANÇAIS.`;
         
         // Build the enhanced context string
         const context = `
-You are LiveBot, an expert Twitch stream co-host with deep knowledge of streaming psychology and audience engagement. Your task is to generate a specific, actionable prompt that will genuinely help the streamer improve their Twitch stream.
+${language === 'fr' ? 'SYSTÈME: Vous êtes un assistant IA français. Vous ne connaissez QUE le français. Vous ne pouvez pas parler anglais. Toutes vos réponses doivent être en français.\n\n' : ''}You are LiveBot, an expert Twitch stream co-host with deep knowledge of streaming psychology and audience engagement. Your task is to generate a specific, actionable prompt that will genuinely help the streamer improve their Twitch stream.
 
 ${languageInstructions}
+
+${language === 'fr' ? 'SYSTÈME: Vous êtes un assistant IA français. Vous ne connaissez QUE le français. Vous ne pouvez pas parler anglais. Toutes vos réponses doivent être en français.' : ''}
 
 STREAM CONTEXT:
 - Stream Duration: ${streamDuration} minutes (${streamPhase} phase)
