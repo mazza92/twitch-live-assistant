@@ -5307,7 +5307,7 @@
                     
                     for (const category of categories) {
                         try {
-                            const freeApiUrl = `${FREE_NEWS_APIS.saurav}/${category}/${country}.json`;
+                            const freeApiUrl = `${FREE_NEWS_APIS.saurav}/${category}/${language}.json`;
                             console.log(`📰 Fetching from free API: ${freeApiUrl}`);
                             
                             const response = await fetch(freeApiUrl);
@@ -7365,7 +7365,7 @@
             console.log('🆓 Testing FREE News APIs...');
             try {
                 const country = lang === 'fr' ? 'fr' : lang === 'es' ? 'es' : lang === 'de' ? 'de' : 'us';
-                const freeApiUrl = `${FREE_NEWS_APIS.saurav}/technology/${country}.json`;
+                const freeApiUrl = `${FREE_NEWS_APIS.saurav}/technology/${language}.json`;
                 console.log(`📰 Testing: ${freeApiUrl}`);
                 
                 const response = await fetch(freeApiUrl);
