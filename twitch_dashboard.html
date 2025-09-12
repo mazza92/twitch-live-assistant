@@ -2229,10 +2229,10 @@
 
     <!-- Language Switcher -->
     <div class="language-switcher">
-        <button class="language-btn" onclick="window.setLanguage('en')">🇺🇸 English</button>
-        <button class="language-btn active" onclick="window.setLanguage('fr')">🇫🇷 Français</button>
-        <button class="language-btn" onclick="window.setLanguage('es')">🇪🇸 Español</button>
-        <button class="language-btn" onclick="window.setLanguage('de')">🇩🇪 Deutsch</button>
+        <button class="language-btn" onclick="window.setLanguage('en', this)">🇺🇸 English</button>
+        <button class="language-btn active" onclick="window.setLanguage('fr', this)">🇫🇷 Français</button>
+        <button class="language-btn" onclick="window.setLanguage('es', this)">🇪🇸 Español</button>
+        <button class="language-btn" onclick="window.setLanguage('de', this)">🇩🇪 Deutsch</button>
     </div>
 
     <!-- Main Dashboard Container - Single Layout with Phase Control -->
@@ -7795,15 +7795,19 @@
         window.currentLanguage = 'fr'; // Set French as default
 
         // Language switching function (global)
-        window.setLanguage = function(lang) {
+        window.setLanguage = function(lang, button) {
             window.currentLanguage = lang;
             window.updateLanguage();
             
-            // Update active button
+            // Clear active from all buttons
             document.querySelectorAll('.language-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            // Add active to the clicked button
+            if (button) {
+                button.classList.add('active');
+            }
             
             // Clear caches to force refresh
             if (window.cachedNews) window.cachedNews = [];
