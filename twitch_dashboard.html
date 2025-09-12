@@ -2229,10 +2229,10 @@
 
     <!-- Language Switcher -->
     <div class="language-switcher">
-        <button class="language-btn" onclick="setLanguage('en')">🇺🇸 English</button>
-        <button class="language-btn active" onclick="setLanguage('fr')">🇫🇷 Français</button>
-        <button class="language-btn" onclick="setLanguage('es')">🇪🇸 Español</button>
-        <button class="language-btn" onclick="setLanguage('de')">🇩🇪 Deutsch</button>
+        <button class="language-btn" onclick="window.setLanguage('en')">🇺🇸 English</button>
+        <button class="language-btn active" onclick="window.setLanguage('fr')">🇫🇷 Français</button>
+        <button class="language-btn" onclick="window.setLanguage('es')">🇪🇸 Español</button>
+        <button class="language-btn" onclick="window.setLanguage('de')">🇩🇪 Deutsch</button>
     </div>
 
     <!-- Main Dashboard Container - Single Layout with Phase Control -->
@@ -5316,7 +5316,7 @@
                         // Only skip translation if they contain dynamic content (viewer names)
                         // Allow translation for default/fallback text
                         if (element.textContent.includes('{{') || element.textContent.includes('New Viewer') || element.textContent.includes('Viewer')) {
-                            return;
+                        return;
                         }
                     }
                     if (element.id === 'autoHideCountdown') {
@@ -5625,13 +5625,13 @@
                 // Determine country and language based on current language setting
                 let country = 'us';
                 let language = 'en';
-                if (currentLanguage === 'fr') {
+                if (window.currentLanguage === 'fr') {
                     country = 'fr';
                     language = 'fr';
-                } else if (currentLanguage === 'es') {
+                } else if (window.currentLanguage === 'es') {
                     country = 'es';
                     language = 'es';
-                } else if (currentLanguage === 'de') {
+                } else if (window.currentLanguage === 'de') {
                     country = 'de';
                     language = 'de';
                 }
