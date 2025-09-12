@@ -4506,7 +4506,7 @@
             let translatedPrompt = prompt;
             
             // Translate common English phrases to French
-            for (const [english, french] of Object.entries(aiPromptTranslations)) {
+            for (const [english, french] of Object.entries(window.aiPromptTranslations)) {
                 const regex = new RegExp(english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
                 translatedPrompt = translatedPrompt.replace(regex, french);
             }
@@ -7946,7 +7946,7 @@
             let translatedPrompt = prompt;
             
             // Translate common English phrases to French
-            for (const [english, french] of Object.entries(aiPromptTranslations)) {
+            for (const [english, french] of Object.entries(window.aiPromptTranslations)) {
                 const regex = new RegExp(english.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
                 translatedPrompt = translatedPrompt.replace(regex, french);
             }
