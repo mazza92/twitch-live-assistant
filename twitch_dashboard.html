@@ -7792,12 +7792,12 @@
         };
 
         // Global variables
-        let currentLanguage = 'fr'; // Set French as default
+        window.currentLanguage = 'fr'; // Set French as default
 
-        // Language switching function
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            updateLanguage();
+        // Language switching function (global)
+        window.setLanguage = function(lang) {
+            window.currentLanguage = lang;
+            window.updateLanguage();
             
             // Update active button
             document.querySelectorAll('.language-btn').forEach(btn => {
@@ -7812,11 +7812,11 @@
             console.log(`🌐 Language switched to: ${lang}`);
         }
 
-        // Update language function
-        function updateLanguage() {
+        // Update language function (global)
+        window.updateLanguage = function() {
             // This function would update all UI elements based on currentLanguage
             // For now, we'll just log it
-            console.log(`🌐 Current language: ${currentLanguage}`);
+            console.log(`🌐 Current language: ${window.currentLanguage}`);
         }
 
         // Translations object for multi-language support
@@ -7956,7 +7956,7 @@
 
         // Initialize translations when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            updateLanguage();
+            window.updateLanguage();
             console.log('🌐 Initial translations applied');
         });
     </script>
