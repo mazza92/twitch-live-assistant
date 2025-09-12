@@ -7818,14 +7818,42 @@
 
         // Update language function (global)
         window.updateLanguage = function() {
-            // This function would update all UI elements based on currentLanguage
-            // For now, we'll just log it
-            console.log(`🌐 Current language: ${window.currentLanguage}`);
+            const currentLang = window.currentLanguage || 'fr';
+            const translations = window.i18nTranslations;
+            
+            console.log(`🌐 Current language: ${currentLang}`);
+            
+            if (!translations || !translations[currentLang]) {
+                console.warn(`🌐 No translations found for language: ${currentLang}`);
+                return;
+            }
+            
+            // Update all elements with data-translate attributes
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    element.textContent = translations[currentLang][key];
+                }
+            });
+            
+            // Update page title
+            if (translations[currentLang].pageTitle) {
+                document.title = translations[currentLang].pageTitle;
+            }
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = currentLang;
+            
+            console.log(`🌐 UI updated to ${currentLang}`);
         }
 
         // Translations object for multi-language support
         window.i18nTranslations = {
             en: {
+                // UI Translations
+                pageTitle: "Twitch Live Dashboard",
+                liveViewers: "Live Viewers",
+                
                 // Fallback AI Prompts
                 fallback_engagement_question: "❓ **Ask Questions**: Even if no one answers, ask questions! Say: \"I'm curious - what do you think about this? Even if you don't type, I'd love to hear your thoughts!\"",
                 fallback_engagement_poll: "📊 **Start a Poll**: Create engagement with a quick poll! Say: \"Quick poll - what's your favorite game genre? Type 1 for FPS, 2 for RPG, 3 for Strategy!\"",
@@ -7849,6 +7877,10 @@
                 aiAssistant: "AI Assistant"
             },
             fr: {
+                // UI Translations
+                pageTitle: "Tableau de Bord Twitch Live",
+                liveViewers: "Spectateurs en Direct",
+                
                 // Fallback AI Prompts
                 fallback_engagement_question: "❓ **Posez des Questions** : Même si personne ne répond, posez des questions ! Dites : \"Je suis curieux - qu'en pensez-vous ? Même si vous ne tapez pas, j'aimerais entendre vos pensées !\"",
                 fallback_engagement_poll: "📊 **Lancez un Sondage** : Créez de l'engagement avec un sondage rapide ! Dites : \"Sondage rapide - quel est votre genre de jeu préféré ? Tapez 1 pour FPS, 2 pour RPG, 3 pour Stratégie !\"",
@@ -7872,6 +7904,10 @@
                 aiAssistant: "Assistant IA"
             },
             es: {
+                // UI Translations
+                pageTitle: "Panel de Control de Twitch Live",
+                liveViewers: "Espectadores en Vivo",
+                
                 // Fallback AI Prompts
                 fallback_engagement_question: "❓ **Haz Preguntas**: ¡Incluso si nadie responde, haz preguntas! Di: \"¡Tengo curiosidad - ¿qué piensas sobre esto? ¡Incluso si no escribes, me encantaría escuchar tus pensamientos!\"",
                 fallback_engagement_poll: "📊 **Inicia una Encuesta**: ¡Crea engagement con una encuesta rápida! Di: \"Encuesta rápida - ¿cuál es tu género de juego favorito? ¡Escribe 1 para FPS, 2 para RPG, 3 para Estrategia!\"",
@@ -7895,6 +7931,10 @@
                 aiAssistant: "Asistente IA"
             },
             de: {
+                // UI Translations
+                pageTitle: "Twitch Live Dashboard",
+                liveViewers: "Live Zuschauer",
+                
                 // Fallback AI Prompts
                 fallback_engagement_question: "❓ **Stelle Fragen**: Auch wenn niemand antwortet, stelle Fragen! Sage: \"Ich bin neugierig - was denkst du darüber? Auch wenn du nicht tippst, würde ich gerne deine Gedanken hören!\"",
                 fallback_engagement_poll: "📊 **Starte eine Umfrage**: Erstelle Engagement mit einer schnellen Umfrage! Sage: \"Schnelle Umfrage - was ist dein Lieblingsspielgenre? Tippe 1 für FPS, 2 für RPG, 3 für Strategie!\"",
