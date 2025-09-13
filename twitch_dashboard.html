@@ -7809,6 +7809,20 @@
                 button.classList.add('active');
             }
             
+            // Send language preference to server
+            fetch('/api/set-language', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    language: lang, 
+                    sessionId: currentSessionId 
+                })
+            }).catch(error => {
+                console.error('Error setting language:', error);
+            });
+            
             // Clear caches to force refresh
             if (window.cachedNews) window.cachedNews = [];
             if (window.cachedFacts) window.cachedFacts = [];
