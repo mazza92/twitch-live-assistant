@@ -1171,7 +1171,7 @@ async function generateBuildingAudiencePrompt(metrics) {
     try {
         // Try AI-powered prompt with rich context
         const sessionLanguage = metrics.language || 'en';
-        const aiPrompt = await geminiService.generatePromptWithContext(context, sessionLanguage);
+        const aiPrompt = await geminiService.generatePrompt(context, sessionLanguage);
         
         if (aiPrompt && aiPrompt.message) {
             return {
