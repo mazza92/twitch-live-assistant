@@ -253,6 +253,18 @@ const promptTranslations = {
         subBoost: "🎉 **Boost Sub**: Nouvel abonné ! Dites: \"Bienvenue dans la famille ! Merci de vous être abonné !\" ou \"Une autre personne incroyable a rejoint la communauté ! Bienvenue !\"",
         raidBoost: "⚔️ **Boost Raid**: Raid entrant ! Dites: \"Bienvenue les raiders ! Merci d'apporter l'énergie !\" ou \"Montrons notre amour aux raiders ! Bienvenue à tous !\"",
         
+        // First Viewer Catcher prompts
+        first_viewer_welcome: "🎉 **ALERTE PREMIER SPECTATEUR!**: Bienvenue sur le stream ! Dites: \"Salut ! Merci d'être mon premier spectateur aujourd'hui ! J'apprécie vraiment que vous soyez là !\"",
+        first_viewer_engagement: "🤝 **Première Connexion**: Rendez-les spéciaux ! Dites: \"Vous êtes la première personne à me rejoindre aujourd'hui - ça vous rend spécial ! Qu'est-ce qui vous a amené ici ?\"",
+        first_viewer_community: "🏠 **Construire Communauté**: Commencez à construire avec la première personne ! Dites: \"Bienvenue dans notre petite communauté ! Même si c'est juste nous deux, rendons-la géniale !\"",
+        
+        // Zero to One Engine - "Always Be Talking" prompts for zero_viewers phase
+        always_be_talking_1: "🎤 **Toujours Parler**: Le chat est calme, mais c'est ok! Continuez à parler de ce que vous faites, vos pensées, ou posez des questions. Dites: \"Je sais que le chat est calme maintenant, mais je vais continuer à parler car on ne sait jamais qui pourrait être là!\"",
+        always_be_talking_2: "🗣️ **Garder l'Énergie**: Même sans chat visible, gardez la conversation fluide! Dites: \"Je vais continuer à parler car j'adore ce que je fais! N'hésitez pas à intervenir à tout moment!\"",
+        always_be_talking_3: "💭 **Partager Vos Pensées**: Utilisez ce temps calme pour partager votre processus. Dites: \"Je réfléchis à voix haute ici - c'est vraiment utile pour moi de traiter ce que je fais!\"",
+        always_be_talking_4: "❓ **Poser des Questions**: Même si personne ne répond, posez des questions! Dites: \"Je suis curieux - qu'en pensez-vous? Même si vous ne tapez pas, j'aimerais entendre vos pensées!\"",
+        always_be_talking_5: "🎯 **Définir des Objectifs**: Partagez vos objectifs de stream. Dites: \"Mon objectif aujourd'hui est de [objectif]. Même si je suis seul ici, je vais travailler pour l'atteindre!\"",
+        
         // Enhanced fallback prompts with more variety
         fallback_engagement_question: "💬 **Question Directe**: Le chat a besoin d'activation! Dites: \"Je veux vous entendre! Quelle est la chose la plus intéressante qui vous est arrivée cette semaine?\" ou \"Laissez un message et dites-moi ce que vous pensez de ce sujet!\"",
         fallback_engagement_poll: "📊 **Sondage Rapide**: Parfait pour l'engagement! Dites: \"Faisons un sondage rapide! Tapez votre [sujet] préféré et je compterai les votes!\" ou \"Je suis curieux - quel est votre avis là-dessus? Partagez vos pensées!\"",
@@ -272,7 +284,57 @@ const promptTranslations = {
         
         fallback_momentum_maintain: "🔥 **Maintenir Momentum**: Gardons l'énergie qui coule! Dites: \"J'adore cette énergie! Continuons - que devrions-nous faire ensuite?\" ou \"L'ambiance est parfaite maintenant! Comment pouvons-nous l'améliorer encore?\"",
         fallback_momentum_celebrate: "🎉 **Célébrer Réussites**: C'est l'heure de célébrer! Dites: \"Vous êtes tous incroyables! Qu'est-ce dont vous êtes fier d'avoir accompli récemment?\" ou \"Célébrons ensemble! Quelle est votre plus grande victoire cette semaine?\"",
-        fallback_momentum_next: "🔮 **Teaser Prochain Contenu**: Construire l'anticipation! Dites: \"Je suis déjà excité pour la prochaine fois! Qu'aimeriez-vous voir dans le prochain stream?\" ou \"Ce n'est que le début! Qu'explorerons-nous ensemble ensuite?\""
+        fallback_momentum_next: "🔮 **Teaser Prochain Contenu**: Construire l'anticipation! Dites: \"Je suis déjà excité pour la prochaine fois! Qu'aimeriez-vous voir dans le prochain stream?\" ou \"Ce n'est que le début! Qu'explorerons-nous ensemble ensuite?\"",
+        
+        // Dynamic External Data Prompts with placeholders
+        news_discussion: "📰 **Discussion Actualités**: Le chat est calme! Parlez de cette actualité: \"{newsTitle}\" - Qu'en pensez-vous?",
+        trivia_engagement: "🧠 **Fun Fact**: Voici quelque chose d'intéressant: \"{triviaText}\" - Le saviez-vous? Partagez vos pensées!",
+        time_based_greeting: "⏰ **Basé sur l'Heure**: Bon {timeOfDay}! C'est {dayOfWeek} et nous sommes {timeContext}. Que faites-vous aujourd'hui?",
+        weather_chat: "🌤️ **Chat Météo**: C'est un {timeOfDay} {dayOfWeek} - parfait pour le streaming! Quel temps fait-il chez vous?",
+        weekend_energy: "🎉 **Énergie Weekend**: C'est {dayOfWeek} - le moment parfait pour se détendre et discuter! Quels sont vos plans de weekend?",
+        prime_time_boost: "🔥 **Prime Time**: C'est l'heure de pointe pour le streaming! Avec {viewerCount} spectateurs, rendons cette session incroyable!"
+    },
+    es: {
+        // First Viewer Catcher prompts
+        first_viewer_welcome: "🎉 **¡ALERTA PRIMER ESPECTADOR!**: ¡Bienvenido al stream! Di: \"¡Hola! ¡Gracias por ser mi primer espectador hoy! ¡Realmente aprecio que estés aquí!\"",
+        first_viewer_engagement: "🤝 **Primera Conexión**: ¡Hazlos sentir especiales! Di: \"Eres la primera persona en unirse a mí hoy - ¡eso te hace especial! ¿Qué te trajo aquí?\"",
+        first_viewer_community: "🏠 **Construir Comunidad**: ¡Comienza a construir con la primera persona! Di: \"¡Bienvenido a nuestra pequeña comunidad! ¡Incluso si solo somos nosotros dos, hagámosla increíble!\"",
+        
+        // Zero to One Engine - "Always Be Talking" prompts for zero_viewers phase
+        always_be_talking_1: "🎤 **Siempre Hablar**: El chat está tranquilo, ¡pero está bien! Sigue hablando sobre lo que haces, tus pensamientos, o haz preguntas. Di: \"Sé que el chat está tranquilo ahora, pero voy a seguir hablando porque nunca sabes quién podría estar ahí!\"",
+        always_be_talking_2: "🗣️ **Mantener la Energía**: Incluso sin chat visible, mantén la conversación fluida! Di: \"Voy a seguir hablando porque amo lo que hago! Siéntete libre de intervenir en cualquier momento!\"",
+        always_be_talking_3: "💭 **Compartir Tus Pensamientos**: Usa este tiempo tranquilo para compartir tu proceso. Di: \"Estoy pensando en voz alta aquí - esto es realmente útil para procesar lo que estoy haciendo!\"",
+        always_be_talking_4: "❓ **Hacer Preguntas**: Incluso si nadie responde, ¡haz preguntas! Di: \"Tengo curiosidad - ¿qué opinas de esto? Incluso si no escribes, me encantaría escuchar tus pensamientos!\"",
+        always_be_talking_5: "🎯 **Establecer Metas**: Comparte tus objetivos de streaming. Di: \"Mi objetivo hoy es [objetivo]. Incluso si estoy solo aquí, voy a trabajar para lograrlo!\"",
+        
+        // Dynamic External Data Prompts with placeholders
+        news_discussion: "📰 **Discusión de Noticias**: ¡El chat está tranquilo! Habla sobre esta noticia: \"{newsTitle}\" - ¿Qué opinas?",
+        trivia_engagement: "🧠 **Dato Curioso**: Aquí hay algo interesante: \"{triviaText}\" - ¿Lo sabías? ¡Comparte tus pensamientos!",
+        time_based_greeting: "⏰ **Basado en la Hora**: ¡Buen {timeOfDay}! Es {dayOfWeek} y estamos {timeContext}. ¿Qué haces hoy?",
+        weather_chat: "🌤️ **Chat del Clima**: Es un {timeOfDay} {dayOfWeek} - ¡perfecto para streaming! ¿Cómo está el clima donde estás?",
+        weekend_energy: "🎉 **Energía de Fin de Semana**: Es {dayOfWeek} - ¡el momento perfecto para relajarse y charlar! ¿Cuáles son tus planes de fin de semana?",
+        prime_time_boost: "🔥 **Hora Pico**: ¡Es hora pico para streaming! Con {viewerCount} espectadores, ¡hagamos esta sesión increíble!"
+    },
+    de: {
+        // First Viewer Catcher prompts
+        first_viewer_welcome: "🎉 **ERSTER ZUSCHAUER ALARM!**: Willkommen beim Stream! Sage: \"Hey! Danke, dass du heute mein erster Zuschauer bist! Ich schätze es wirklich, dass du hier bist!\"",
+        first_viewer_engagement: "🤝 **Erste Verbindung**: Lass sie sich besonders fühlen! Sage: \"Du bist die erste Person, die heute zu mir gestoßen ist - das macht dich besonders! Was hat dich hierher gebracht?\"",
+        first_viewer_community: "🏠 **Gemeinschaft Aufbauen**: Fang mit der ersten Person an zu bauen! Sage: \"Willkommen in unserer kleinen Gemeinschaft! Auch wenn es nur wir zwei sind, lass uns sie großartig machen!\"",
+        
+        // Zero to One Engine - "Always Be Talking" prompts for zero_viewers phase
+        always_be_talking_1: "🎤 **Immer Sprechen**: Der Chat ist ruhig, aber das ist ok! Sprich weiter über das, was du tust, deine Gedanken, oder stelle Fragen. Sage: \"Ich weiß, der Chat ist gerade ruhig, aber ich werde weiter sprechen, weil man nie weiß, wer zuschauen könnte!\"",
+        always_be_talking_2: "🗣️ **Energie Behalten**: Auch ohne sichtbaren Chat, halte das Gespräch am Laufen! Sage: \"Ich werde weiter sprechen, weil ich liebe, was ich tue! Fühl dich frei, jederzeit einzuspringen!\"",
+        always_be_talking_3: "💭 **Gedanken Teilen**: Nutze diese ruhige Zeit, um deinen Prozess zu teilen. Sage: \"Ich denke hier laut nach - das ist wirklich hilfreich für mich, um zu verarbeiten, was ich tue!\"",
+        always_be_talking_4: "❓ **Fragen Stellen**: Auch wenn niemand antwortet, stelle Fragen! Sage: \"Ich bin neugierig - was denkst du darüber? Auch wenn du nicht tippst, würde ich gerne deine Gedanken hören!\"",
+        always_be_talking_5: "🎯 **Ziele Setzen**: Teile deine Streaming-Ziele. Sage: \"Mein Ziel heute ist [Ziel]. Auch wenn ich hier allein bin, werde ich daran arbeiten, es zu erreichen!\"",
+        
+        // Dynamic External Data Prompts with placeholders
+        news_discussion: "📰 **Nachrichtendiskussion**: Der Chat ist ruhig! Sprich über diese Nachricht: \"{newsTitle}\" - Was denkst du?",
+        trivia_engagement: "🧠 **Fun Fact**: Hier ist etwas Interessantes: \"{triviaText}\" - Wusstest du das? Teile deine Gedanken!",
+        time_based_greeting: "⏰ **Zeitbasiert**: Guten {timeOfDay}! Es ist {dayOfWeek} und wir sind {timeContext}. Was machst du heute?",
+        weather_chat: "🌤️ **Wetter Chat**: Es ist ein {timeOfDay} {dayOfWeek} - perfekt für Streaming! Wie ist das Wetter bei dir?",
+        weekend_energy: "🎉 **Wochenend Energie**: Es ist {dayOfWeek} - die perfekte Zeit zum Entspannen und Plaudern! Was sind deine Wochenendpläne?",
+        prime_time_boost: "🔥 **Prime Time**: Es ist Hauptsendezeit für Streaming! Mit {viewerCount} Zuschauern, lass uns diese Session großartig machen!"
     }
 };
 
@@ -1770,7 +1832,15 @@ app.post('/api/test-events', (req, res) => {
 
 app.post('/api/generate-prompt', async (req, res) => {
     try {
-        const prompt = await generateAIPrompt();
+        const { sessionId } = req.body;
+        
+        if (!sessionId || !userSessions.has(sessionId)) {
+            return res.status(400).json({ success: false, error: 'Session ID required' });
+        }
+        
+        const session = userSessions.get(sessionId);
+        const prompt = await generateAIPrompt(session);
+        
         if (prompt) {
             res.json({ success: true, prompt });
         } else {
