@@ -1592,8 +1592,8 @@ app.get('/api/health', (req, res) => {
     res.json({
         status: 'healthy',
         twitch: {
-            connected: twitchClient ? twitchClient.readyState() === 'OPEN' : false,
-            channel: currentChannel || 'No channel connected'
+            status: 'monitoring_sessions',
+            active_sessions: userSessions.size
         },
         gemini: geminiService.getHealthStatus(),
         uptime: process.uptime(),
@@ -1674,7 +1674,7 @@ app.post('/api/test-events', (req, res) => {
     // Tier 2 subscription
     metrics.tier2Subs++;
     metrics.sessionTier2Subs++;
-    streamMetrics.newSubs.push({
+    metrics.newSubs.push({
         username: 'TestSubscriber2',
         plan: 'Tier 2',
         timestamp: Date.now()
@@ -1683,7 +1683,7 @@ app.post('/api/test-events', (req, res) => {
     // Tier 3 subscription
     metrics.tier3Subs++;
     metrics.sessionTier3Subs++;
-    streamMetrics.newSubs.push({
+    metrics.newSubs.push({
         username: 'TestSubscriber3',
         plan: 'Tier 3',
         timestamp: Date.now()
@@ -2123,9 +2123,12 @@ setInterval(async () => {
 process.on('SIGINT', () => {
     console.log('\n🛑 [SHUTDOWN] Shutting down gracefully...');
     
-    if (twitchClient && twitchClient.readyState() === 'OPEN') {
-        twitchClient.disconnect();
-    }
+    console.log(`[SHUTDOWN] Disconnecting ${userSessions.size} active sessions...`);
+    userSessions.forEach(session => {
+        if (session.connection && session.connection.readyState() === 'OPEN') {
+            session.connection.disconnect();
+        }
+    });
     
     server.close(() => {
         console.log('✅ [SHUTDOWN] Server closed');
