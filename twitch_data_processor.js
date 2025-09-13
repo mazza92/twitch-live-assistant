@@ -1674,16 +1674,6 @@ app.get('/api/metrics', (req, res) => {
     }
 });
 
-app.post('/api/set-language', (req, res) => {
-    const { language } = req.body;
-    if (language && ['en', 'fr', 'es', 'de'].includes(language)) {
-        // Store language preference (you could save this to a database)
-        console.log(`🌐 [LANGUAGE] Language set to: ${language}`);
-        res.json({ success: true, language });
-    } else {
-        res.status(400).json({ error: 'Invalid language' });
-    }
-});
 
 app.get('/api/health', (req, res) => {
     res.json({
