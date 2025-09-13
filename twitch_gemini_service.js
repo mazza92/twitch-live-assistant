@@ -26,76 +26,80 @@ class TwitchGeminiService {
     buildContextString(metrics, language = 'en') {
         const now = new Date();
         const streamDuration = Math.floor((now - metrics.streamStartTime) / 60000); // minutes
+
+        // --- Prompt Templates for each language ---
+        const templates = {
+            en: {
+                system_persona: "You are LiveBot, an expert Twitch stream co-host with deep knowledge of streaming psychology and audience engagement. Your task is to generate a specific, actionable prompt that will genuinely help the streamer improve their Twitch stream.",
+                context_header: "STREAM CONTEXT:",
+                metrics_header: "DETAILED METRICS:",
+                activity_header: "RECENT ACTIVITY:",
+                users_header: "TOP ENGAGED USERS:",
+                suggestions_header: "CONTENT SUGGESTIONS:",
+                task_header: "TASK: Generate a specific, actionable prompt (1-2 sentences) that:",
+                task_points: [
+                    "Addresses the current stream situation with precision",
+                    "Provides a clear, specific action for the streamer",
+                    "Feels natural and matches the stream's energy",
+                    "Helps build genuine community connection",
+                    "Avoids generic phrases like \"hit that follow button\"",
+                    "Considers Twitch-specific features (bits, subs, raids, etc.)"
+                ],
+                examples_header: "EXAMPLES OF GOOD PROMPTS:",
+                examples: [
+                    "\"I see we have some new faces! Drop a message and tell me what brought you here today\"",
+                    "\"The chat is buzzing! Let's do a quick poll - what's your favorite part of this stream so far?\"",
+                    "\"Thanks for all the bits! You all are amazing supporters!\""
+                ],
+                format_instructions: "FORMAT: Just the prompt text, no explanations or formatting."
+            },
+            fr: {
+                system_persona: "Vous êtes LiveBot, un co-animateur expert de stream Twitch avec une connaissance approfondie de la psychologie du streaming et de l'engagement du public. Votre tâche est de générer une suggestion spécifique et exploitable qui aidera réellement le streamer à améliorer son stream Twitch. Vous ne devez parler QUE français.",
+                context_header: "CONTEXTE DU STREAM :",
+                metrics_header: "MÉTRIQUES DÉTAILLÉES :",
+                activity_header: "ACTIVITÉ RÉCENTE :",
+                users_header: "UTILISATEURS LES PLUS ENGAGÉS :",
+                suggestions_header: "SUGGESTIONS DE CONTENU :",
+                task_header: "TÂCHE : Générez une suggestion spécifique et exploitable (1-2 phrases) qui :",
+                task_points: [
+                    "Répond à la situation actuelle du stream avec précision",
+                    "Fournit une action claire et spécifique pour le streamer",
+                    "Semble naturelle et correspond à l'énergie du stream",
+                    "Aide à créer une véritable connexion avec la communauté",
+                    "Évite les phrases génériques comme \"cliquez sur le bouton suivre\"",
+                    "Prend en compte les fonctionnalités spécifiques de Twitch (bits, subs, raids, etc.)"
+                ],
+                examples_header: "EXEMPLES DE BONNES SUGGESTIONS :",
+                examples: [
+                    "\"Je vois qu'il y a de nouveaux visages ! Laissez un message et dites-moi ce qui vous amène ici aujourd'hui\"",
+                    "\"Le chat est en feu ! Faisons un petit sondage : quelle est votre partie préférée du stream jusqu'à présent ?\"",
+                    "\"Merci pour tous les bits ! Vous êtes des supporters incroyables !\""
+                ],
+                format_instructions: "FORMAT : Uniquement le texte de la suggestion, sans explications ni mise en forme. RÉPONDEZ UNIQUEMENT EN FRANÇAIS."
+            }
+            // You can add 'es', 'de', etc. here in the same way
+        };
         
-        // Enhanced stream phase analysis
-        let streamPhase = 'mid';
-        let phaseContext = '';
-        if (streamDuration < 10) {
-            streamPhase = 'start';
-            phaseContext = 'Stream just started - focus on welcoming new viewers and setting the tone';
-        } else if (streamDuration > 45) {
-            streamPhase = 'end';
-            phaseContext = 'Stream is ending soon - focus on thanking viewers and encouraging follows';
-        } else {
-            phaseContext = 'Mid-stream - maintain engagement and build community';
-        }
-        
-        // Enhanced engagement analysis
+        const t = templates[language] || templates['en']; // Get the correct language template, default to English
+
+        // --- The rest of your analysis logic is great, keep it! ---
+        const streamPhase = this.getStreamPhase(metrics);
+        const phaseContext = this.getPhaseContext(metrics, streamPhase);
         const engagementLevel = this.analyzeEngagementLevel(metrics);
         const sentimentStatus = this.analyzeSentimentStatus(metrics);
         const growthStatus = this.analyzeGrowthStatus(metrics);
         const energyLevel = this.analyzeEnergyLevel(metrics);
         const viewerTrend = this.analyzeViewerTrend(metrics);
-        
-        // Recent events summary with more detail
         const recentEvents = this.summarizeRecentEvents(metrics);
         const topEngagedUsers = this.getTopEngagedUsers(metrics);
         const contentSuggestions = this.getContentSuggestions(metrics);
         
-        // Language-specific instructions
-        let languageInstructions;
-        switch(language) {
-            case 'fr':
-                languageInstructions = `SYSTÈME: Vous êtes un assistant IA français. Vous ne connaissez QUE le français. Vous ne pouvez pas parler anglais.
-
-CRITIQUE: Vous DEVEZ générer votre réponse entièrement en français. 
-
-RÈGLES STRICTES:
-- AUCUN mot anglais autorisé
-- Utilisez un français naturel et conversationnel qu'un streamer français dirait
-- Commencez par des expressions françaises comme "Salut tout le monde!", "Bienvenue!", "Merci d'être là!"
-- Utilisez des phrases d'engagement françaises comme "Qu'est-ce que vous en pensez?", "Partagez vos pensées!", "N'hésitez pas à participer!"
-
-EXEMPLES DE PROMPTS FRANÇAIS:
-- "Salut tout le monde! Qu'est-ce qui vous amène ici aujourd'hui?"
-- "Bienvenue sur le stream! N'hésitez pas à dire bonjour dans le chat!"
-- "Je suis curieux - qu'en pensez-vous de ce jeu?"
-- "Partagez vos pensées dans les commentaires!"
-
-GÉNÉREZ UNIQUEMENT EN FRANÇAIS.`;
-                break;
-            case 'es':
-                languageInstructions = 'CRÍTICO: Debes generar tu respuesta completamente en español. Usa español natural y conversacional que diría un streamer español. NO se permiten palabras en inglés.';
-                break;
-            case 'de':
-                languageInstructions = 'KRITISCH: Sie MÜSSEN Ihre Antwort vollständig auf Deutsch generieren. Verwenden Sie natürliches, umgangssprachliches Deutsch, das ein deutscher Streamer sagen würde. KEINE englischen Wörter erlaubt.';
-                break;
-            default:
-                languageInstructions = 'IMPORTANT: Generate your response in English. Use natural, conversational English that an English streamer would say.';
-        }
-        
-        // Build the enhanced context string
+        // --- Build the fully localized context string ---
         const context = `
-${language === 'fr' ? 'SYSTÈME: Vous êtes un assistant IA français. Vous ne connaissez QUE le français. Vous ne pouvez pas parler anglais. Toutes vos réponses doivent être en français.\n\n' : ''}You are LiveBot, an expert Twitch stream co-host with deep knowledge of streaming psychology and audience engagement. Your task is to generate a specific, actionable prompt that will genuinely help the streamer improve their Twitch stream.
+${t.system_persona}
 
-${languageInstructions}
-
-${language === 'fr' ? 'SYSTÈME: Vous êtes un assistant IA français. Vous ne connaissez QUE le français. Vous ne pouvez pas parler anglais. Toutes vos réponses doivent être en français.' : ''}
-
-STREAM CONTEXT:
+${t.context_header}
 - Stream Duration: ${streamDuration} minutes (${streamPhase} phase)
-- Phase Context: ${phaseContext}
-- Current Viewers: ${metrics.currentViewerCount || 0}
 - Viewer Trend: ${viewerTrend}
 - Engagement Level: ${engagementLevel}
 - Energy Level: ${energyLevel}
@@ -103,43 +107,28 @@ STREAM CONTEXT:
 - Growth: ${growthStatus}
 - Game/Category: ${metrics.gameCategory || 'Unknown'}
 
-DETAILED METRICS:
+${t.metrics_header}
 - Messages per minute: ${metrics.messagesPerMinute || 0}
 - Follows gained this session: ${metrics.sessionFollowersGained || 0}
 - Subs gained this session: ${metrics.sessionSubsGained || 0}
 - Bits earned this session: ${metrics.sessionBitsEarned || 0}
-- Raids received: ${metrics.sessionRaidsReceived || 0}
-- Unique chatters: ${metrics.uniqueChatters || 0}
-- Average watch time: ${metrics.averageWatchTime || 0} minutes
-- Viewer retention: ${metrics.viewerRetention || 0}%
 
-RECENT ACTIVITY:
+${t.activity_header}
 ${recentEvents}
 
-TOP ENGAGED USERS:
+${t.users_header}
 ${topEngagedUsers}
 
-CONTENT SUGGESTIONS:
+${t.suggestions_header}
 ${contentSuggestions}
 
-TASK: Generate a specific, actionable prompt (1-2 sentences) that:
-1. Addresses the current stream situation with precision
-2. Provides a clear, specific action for the streamer
-3. Feels natural and matches the stream's energy
-4. Helps build genuine community connection
-5. Avoids generic phrases like "hit that follow button"
-6. Considers Twitch-specific features (bits, subs, raids, etc.)
+${t.task_header}
+${t.task_points.map(p => `1. ${p}`).join('\n')}
 
-EXAMPLES OF GOOD PROMPTS:
-- "I see we have some new faces! Drop a message and tell me what brought you here today"
-- "The chat is buzzing! Let's do a quick poll - what's your favorite part of this stream so far?"
-- "I love the energy right now! Who wants to share their biggest win this week?"
-- "Thanks for all the bits! You all are amazing supporters!"
-- "Welcome to the raiders! Thanks for bringing the energy!"
+${t.examples_header}
+${t.examples.map(e => `- ${e}`).join('\n')}
 
-FORMAT: Just the prompt text, no explanations or formatting.
-
-${language === 'fr' ? 'IMPORTANT: GÉNÉREZ UNIQUEMENT EN FRANÇAIS. AUCUN MOT ANGLAIS AUTORISÉ.' : ''}
+${t.format_instructions}
         `.trim();
 
         return context;
