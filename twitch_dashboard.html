@@ -2229,8 +2229,8 @@
 
     <!-- Language Switcher -->
     <div class="language-switcher">
-        <button class="language-btn" onclick="window.setLanguage('en', this)">🇺🇸 English</button>
-        <button class="language-btn active" onclick="window.setLanguage('fr', this)">🇫🇷 Français</button>
+        <button class="language-btn active" onclick="window.setLanguage('en', this)">🇺🇸 English</button>
+        <button class="language-btn" onclick="window.setLanguage('fr', this)">🇫🇷 Français</button>
         <button class="language-btn" onclick="window.setLanguage('es', this)">🇪🇸 Español</button>
         <button class="language-btn" onclick="window.setLanguage('de', this)">🇩🇪 Deutsch</button>
     </div>
@@ -2278,8 +2278,8 @@
                 <div class="abt-timer-circle">
                     <div class="abt-timer-inner" id="abtTimerDisplay">30</div>
                 </div>
-                <div class="abt-timer-text">Next prompt in</div>
-                <button class="abt-mute-toggle" id="abtMuteToggle">🔊 Mute</button>
+                <div class="abt-timer-text" data-translate="nextPromptIn">Next prompt in</div>
+                <button class="abt-mute-toggle" id="abtMuteToggle" data-translate="mute">🔊 Mute</button>
                 <button class="api-config-toggle" id="apiConfigToggle" onclick="toggleApiConfig()">⚙️</button>
             </div>
             
@@ -2972,6 +2972,14 @@
             saurav: 'https://saurav.tech/NewsAPI/top-headlines/category',
             abhishek: 'https://newsapi.abhisheksurela79.workers.dev/top-headlines'
         };
+        
+        // Language to country code mapping for NewsAPI
+        const languageToCountry = {
+            'en': 'us',  // US English
+            'fr': 'fr',  // French
+            'es': 'es',  // Spanish
+            'de': 'de'   // German
+        };
 
         // PERSISTENCE ENGINE - Emotional Support & Validation
         let persistenceEngine = {
@@ -3142,6 +3150,14 @@
                 nextPromptIn: 'Next prompt in',
                 mute: 'Mute',
                 unmute: 'Unmute',
+                
+                // Prompt translations
+                news_discussion: '📰 **News Discussion**: Chat is quiet! Try talking about this news story: "{newsTitle}" - What do you think about this?',
+                always_be_talking_1: '🎤 **Always Be Talking**: Chat is quiet, but that\'s okay! Keep talking about what you\'re doing, your thoughts, or ask questions. Say: "I know chat is quiet right now, but I\'m going to keep talking because you never know who might be lurking!"',
+                always_be_talking_2: '🗣️ **Keep the Energy Up**: Even with no visible chat, keep the conversation flowing! Say: "I\'m going to keep talking because I love what I do! Feel free to jump in anytime!"',
+                always_be_talking_3: '💭 **Share Your Thoughts**: Use this quiet time to share your process. Say: "I\'m thinking out loud here - this is actually really helpful for me to process what I\'m doing!"',
+                always_be_talking_4: '❓ **Ask Questions**: Even if no one answers, ask questions! Say: "I\'m curious - what do you think about this? Even if you don\'t type, I\'d love to hear your thoughts!"',
+                always_be_talking_5: '🎯 **Set Goals**: Share your streaming goals. Say: "My goal today is to [goal]. Even if it\'s just me here, I\'m going to work towards it!"',
                 
                 // Gauge Levels
                 quiet: 'Quiet',
@@ -3429,6 +3445,14 @@
                 mute: 'Muet',
                 unmute: 'Activer le son',
                 
+                // Prompt translations
+                news_discussion: '📰 **Discussion Actualités**: Le chat est calme! Parlez de cette actualité: "{newsTitle}" - Qu\'en pensez-vous?',
+                always_be_talking_1: '🎤 **Toujours Parler**: Le chat est calme, mais c\'est ok! Continuez à parler de ce que vous faites, vos pensées, ou posez des questions. Dites: "Je sais que le chat est calme maintenant, mais je vais continuer à parler car on ne sait jamais qui pourrait être là!"',
+                always_be_talking_2: '🗣️ **Garder l\'Énergie**: Même sans chat visible, gardez la conversation fluide! Dites: "Je vais continuer à parler car j\'adore ce que je fais! N\'hésitez pas à intervenir à tout moment!"',
+                always_be_talking_3: '💭 **Partager Vos Pensées**: Utilisez ce temps calme pour partager votre processus. Dites: "Je réfléchis à voix haute ici - c\'est vraiment utile pour moi de traiter ce que je fais!"',
+                always_be_talking_4: '❓ **Poser des Questions**: Même si personne ne répond, posez des questions! Dites: "Je suis curieux - qu\'en pensez-vous? Même si vous ne tapez pas, j\'aimerais entendre vos pensées!"',
+                always_be_talking_5: '🎯 **Définir des Objectifs**: Partagez vos objectifs de stream. Dites: "Mon objectif aujourd\'hui est de [objectif]. Même si je suis seul ici, je vais travailler pour l\'atteindre!"',
+                
                 // Gauge Levels
                 quiet: 'Calme',
                 low: 'Faible',
@@ -3715,6 +3739,14 @@
                 mute: 'Silenciar',
                 unmute: 'Activar sonido',
                 
+                // Prompt translations
+                news_discussion: '📰 **Discusión de Noticias**: ¡El chat está tranquilo! Habla sobre esta noticia: "{newsTitle}" - ¿Qué opinas?',
+                always_be_talking_1: '🎤 **Siempre Hablar**: El chat está tranquilo, ¡pero está bien! Sigue hablando sobre lo que haces, tus pensamientos, o haz preguntas. Di: "Sé que el chat está tranquilo ahora, pero voy a seguir hablando porque nunca sabes quién podría estar ahí!"',
+                always_be_talking_2: '🗣️ **Mantener la Energía**: Incluso sin chat visible, mantén la conversación fluida! Di: "Voy a seguir hablando porque amo lo que hago! Siéntete libre de intervenir en cualquier momento!"',
+                always_be_talking_3: '💭 **Compartir Tus Pensamientos**: Usa este tiempo tranquilo para compartir tu proceso. Di: "Estoy pensando en voz alta aquí - esto es realmente útil para procesar lo que estoy haciendo!"',
+                always_be_talking_4: '❓ **Hacer Preguntas**: Incluso si nadie responde, ¡haz preguntas! Di: "Tengo curiosidad - ¿qué opinas de esto? Incluso si no escribes, me encantaría escuchar tus pensamientos!"',
+                always_be_talking_5: '🎯 **Establecer Metas**: Comparte tus objetivos de streaming. Di: "Mi objetivo hoy es [objetivo]. Incluso si estoy solo aquí, voy a trabajar para lograrlo!"',
+                
                 // Gauge Levels
                 quiet: 'Tranquilo',
                 low: 'Bajo',
@@ -4000,6 +4032,14 @@
                 nextPromptIn: 'Nächster Prompt in',
                 mute: 'Stumm',
                 unmute: 'Ton einschalten',
+                
+                // Prompt translations
+                news_discussion: '📰 **Nachrichtendiskussion**: Der Chat ist ruhig! Sprich über diese Nachricht: "{newsTitle}" - Was denkst du?',
+                always_be_talking_1: '🎤 **Immer Sprechen**: Der Chat ist ruhig, aber das ist ok! Sprich weiter über das, was du tust, deine Gedanken, oder stelle Fragen. Sage: "Ich weiß, der Chat ist gerade ruhig, aber ich werde weiter sprechen, weil man nie weiß, wer zuschauen könnte!"',
+                always_be_talking_2: '🗣️ **Energie Behalten**: Auch ohne sichtbaren Chat, halte das Gespräch am Laufen! Sage: "Ich werde weiter sprechen, weil ich liebe, was ich tue! Fühl dich frei, jederzeit einzuspringen!"',
+                always_be_talking_3: '💭 **Gedanken Teilen**: Nutze diese ruhige Zeit, um deinen Prozess zu teilen. Sage: "Ich denke hier laut nach - das ist wirklich hilfreich für mich, um zu verarbeiten, was ich tue!"',
+                always_be_talking_4: '❓ **Fragen Stellen**: Auch wenn niemand antwortet, stelle Fragen! Sage: "Ich bin neugierig - was denkst du darüber? Auch wenn du nicht tippst, würde ich gerne deine Gedanken hören!"',
+                always_be_talking_5: '🎯 **Ziele Setzen**: Teile deine Streaming-Ziele. Sage: "Mein Ziel heute ist [Ziel]. Auch wenn ich hier allein bin, werde ich daran arbeiten, es zu erreichen!"',
                 
                 // Gauge Levels
                 quiet: 'Ruhig',
@@ -4374,6 +4414,18 @@
             if (customData) {
                 // Use custom data (from ABT Coach)
                 message = customData.message;
+                
+                // Translate message if it's a translation key
+                if (message && typeof message === 'string') {
+                    const t = translations[currentLanguage];
+                    if (t && t[message]) {
+                        message = t[message];
+                    } else if (message.startsWith('fallback_') && t) {
+                        // Handle fallback prompt keys
+                        message = t[message] || message;
+                    }
+                }
+                
                 priority = customData.priority || 'high';
                 category = customData.category || null;
                 className = priority === 'high' ? 'high-priority' : priority === 'urgent' ? 'urgent' : '';
@@ -4990,6 +5042,9 @@
 
         // Set language
         function setLanguage(lang, button) {
+            console.log('🌐 [LANGUAGE] Setting language to:', lang);
+            console.log('🌐 [LANGUAGE] Current session ID:', currentSessionId);
+            
             currentLanguage = lang;
             
             // Clear API caches to get fresh content in new language
@@ -5006,15 +5061,31 @@
             button.classList.add('active');
             
             // Send language preference to server
+            if (currentSessionId) {
             fetch('/api/set-language', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ language: lang })
-            }).catch(error => {
-                console.error('Error setting language:', error);
-            });
+                    body: JSON.stringify({ 
+                        language: lang,
+                        sessionId: currentSessionId 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('✅ Language set successfully:', data.language);
+                    } else {
+                        console.error('❌ Error setting language:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error setting language:', error);
+                });
+            } else {
+                console.warn('⚠️ No active session - language will be set locally only');
+            }
             
             // Update text content
             updateLanguage();
@@ -5402,7 +5473,8 @@
                     
                     for (const category of categories) {
                         try {
-                            const freeApiUrl = `${FREE_NEWS_APIS.saurav}/${category}/${language}.json`;
+                            const country = languageToCountry[language] || 'us';  // Fallback to US
+                            const freeApiUrl = `${FREE_NEWS_APIS.saurav}/${category}/${country}.json`;
                             console.log(`📰 Fetching from free API: ${freeApiUrl}`);
                             
                             const response = await fetch(freeApiUrl);
@@ -5902,10 +5974,14 @@
             
             if (timerContainer) {
                 timerContainer.style.display = 'flex';
+                console.log('✅ ABT Timer container shown');
+            } else {
+                console.error('❌ ABT Timer container not found');
             }
             
             if (muteToggle) {
                 muteToggle.addEventListener('click', toggleABTMute);
+                console.log('✅ ABT Mute toggle initialized');
             }
             
             // Start 30-second timer
@@ -7459,8 +7535,8 @@
             // Test FREE News APIs first
             console.log('🆓 Testing FREE News APIs...');
             try {
-                const country = lang === 'fr' ? 'fr' : lang === 'es' ? 'es' : lang === 'de' ? 'de' : 'us';
-                const freeApiUrl = `${FREE_NEWS_APIS.saurav}/technology/${language}.json`;
+                const country = languageToCountry[language] || 'us';  // Use the mapping
+                const freeApiUrl = `${FREE_NEWS_APIS.saurav}/technology/${country}.json`;
                 console.log(`📰 Testing: ${freeApiUrl}`);
                 
                 const response = await fetch(freeApiUrl);

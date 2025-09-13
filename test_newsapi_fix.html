@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsAPI Fix Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); }
+        .error { background: rgba(244, 67, 54, 0.3); }
+        .warning { background: rgba(255, 152, 0, 0.3); }
+        .info { background: rgba(33, 150, 243, 0.3); }
+        .news-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #9146FF;
+        }
+        .news-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .news-description {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .test-button {
+            background: #9146FF;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #7c3aed;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 NewsAPI Fix Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Different Languages & Countries</h3>
+        <p>This test verifies that the NewsAPI endpoints work correctly with country codes instead of language codes.</p>
+        
+        <button class="test-button" onclick="testLanguage('en', 'us')">🇺🇸 English (US)</button>
+        <button class="test-button" onclick="testLanguage('fr', 'fr')">🇫🇷 French (France)</button>
+        <button class="test-button" onclick="testLanguage('es', 'es')">🇪🇸 Spanish (Spain)</button>
+        <button class="test-button" onclick="testLanguage('de', 'de')">🇩🇪 German (Germany)</button>
+        <button class="test-button" onclick="testAllLanguages()">🔄 Test All Languages</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Results:</h3>
+        <div id="testResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>News Results:</h3>
+        <div id="newsResults"></div>
+    </div>
+
+    <script>
+        // Language to country code mapping (same as in the fixed code)
+        const languageToCountry = {
+            'en': 'us',  // US English
+            'fr': 'fr',  // French
+            'es': 'es',  // Spanish
+            'de': 'de'   // German
+        };
+        
+        const FREE_NEWS_APIS = {
+            saurav: 'https://saurav.tech/NewsAPI/top-headlines/category'
+        };
+        
+        async function testLanguage(language, expectedCountry) {
+            addResult(`🧪 Testing ${language} -> ${expectedCountry}`, 'info');
+            
+            const categories = ['technology', 'entertainment', 'business'];
+            let successCount = 0;
+            let totalCount = 0;
+            
+            for (const category of categories) {
+                totalCount++;
+                const country = languageToCountry[language] || 'us';
+                const url = `${FREE_NEWS_APIS.saurav}/${category}/${country}.json`;
+                
+                try {
+                    addResult(`📰 Testing: ${url}`, 'info');
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        successCount++;
+                        addResult(`✅ ${category} (${country}): ${response.status} - ${data.articles?.length || 0} articles`, 'success');
+                        
+                        // Show first article if available
+                        if (data.articles && data.articles.length > 0) {
+                            displayNewsItem(data.articles[0], `${category} (${country})`);
+                        }
+                    } else {
+                        addResult(`❌ ${category} (${country}): ${response.status} ${response.statusText}`, 'error');
+                    }
+                } catch (error) {
+                    addResult(`❌ ${category} (${country}): Network error - ${error.message}`, 'error');
+                }
+            }
+            
+            const successRate = (successCount / totalCount) * 100;
+            addResult(`📊 ${language} Results: ${successCount}/${totalCount} successful (${successRate.toFixed(1)}%)`, 
+                     successRate === 100 ? 'success' : successRate > 50 ? 'warning' : 'error');
+        }
+        
+        async function testAllLanguages() {
+            addResult('🔄 Testing all languages...', 'info');
+            clearResults();
+            
+            const languages = ['en', 'fr', 'es', 'de'];
+            for (const lang of languages) {
+                const country = languageToCountry[lang];
+                await testLanguage(lang, country);
+                addResult('', 'info'); // Empty line for separation
+            }
+        }
+        
+        function displayNewsItem(article, source) {
+            const newsDiv = document.createElement('div');
+            newsDiv.className = 'news-item';
+            newsDiv.innerHTML = `
+                <div class="news-title">${article.title || 'No title'}</div>
+                <div class="news-description">${article.description || 'No description'}</div>
+                <small>Source: ${source} | URL: ${article.url || 'N/A'}</small>
+            `;
+            document.getElementById('newsResults').appendChild(newsDiv);
+        }
+        
+        function addResult(message, type) {
+            if (!message) return; // Skip empty messages
+            
+            const resultsDiv = document.getElementById('testResults');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            resultsDiv.appendChild(statusDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '';
+            document.getElementById('newsResults').innerHTML = '';
+        }
+        
+        // Test on page load
+        window.addEventListener('load', () => {
+            addResult('🚀 NewsAPI Fix Test loaded. Click a button to start testing.', 'info');
+            addResult('💡 This tests the saurav.tech API with correct country codes.', 'info');
+        });
+    </script>
+</body>
+</html>

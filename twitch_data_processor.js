@@ -15,6 +15,19 @@ const wss = new WebSocket.Server({ server });
 app.use(express.json()); // Parse JSON bodies
 app.use(express.static('.')); // Serve static files from current directory
 
+// Add CORS headers
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
+
 // Initialize sentiment analyzer
 const sentiment = new Sentiment();
 
@@ -37,23 +50,60 @@ async function fetchTrendingNews() {
         }
         
         // Using a free news API - NewsAPI requires API key, so using alternative
-        const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=5&apiKey=demo');
+        const response = await fetch('https://newsapi.org/v2/top-headlines?country=us&category=technology&pageSize=5&apiKey=db94af2f4bac408ab8084f22a7a2c9c6');
         
         if (!response.ok) {
-            // Fallback to a different free API
-            const fallbackResponse = await fetch('https://api.quotable.io/random');
-            const fallbackData = await fallbackResponse.json();
-            
-            const data = {
-                articles: [{
-                    title: fallbackData.content,
-                    description: `Inspirational quote: "${fallbackData.content}" - ${fallbackData.author}`,
-                    url: 'https://quotable.io'
-                }]
-            };
-            
-            EXTERNAL_DATA_CACHE.set(cacheKey, { data, timestamp: Date.now() });
-            return data;
+            console.log(`📰 [NEWS] NewsAPI error ${response.status}: ${response.statusText}`);
+            // Fallback to saurav.tech free API
+            try {
+                console.log(`📰 [NEWS] Trying saurav.tech free API...`);
+                const sauravResponse = await fetch('https://saurav.tech/NewsAPI/top-headlines/category/technology/us.json');
+                
+                if (sauravResponse.ok) {
+                    const sauravData = await sauravResponse.json();
+                    console.log(`📰 [NEWS] Saurav.tech API success!`);
+                    
+                    EXTERNAL_DATA_CACHE.set(cacheKey, { data: sauravData, timestamp: Date.now() });
+                    return sauravData;
+                } else {
+                    throw new Error(`Saurav.tech API error: ${sauravResponse.status}`);
+                }
+            } catch (sauravError) {
+                console.log(`📰 [NEWS] Saurav.tech API failed:`, sauravError.message);
+                // Fallback to quotes API
+                try {
+                    const fallbackResponse = await fetch('https://api.quotable.io/random');
+                    if (fallbackResponse.ok) {
+                        const fallbackData = await fallbackResponse.json();
+                        
+                        const data = {
+                            articles: [{
+                                title: fallbackData.content,
+                                description: `Inspirational quote: "${fallbackData.content}" - ${fallbackData.author}`,
+                                url: 'https://quotable.io'
+                            }]
+                        };
+                        
+                        EXTERNAL_DATA_CACHE.set(cacheKey, { data, timestamp: Date.now() });
+                        return data;
+                    } else {
+                        throw new Error(`Quotes API error: ${fallbackResponse.status}`);
+                    }
+                } catch (quotesError) {
+                    console.log(`📰 [NEWS] Quotes API also failed:`, quotesError.message);
+                    // Use static fallback
+                    const data = {
+                        articles: [{
+                            title: "Streaming Tips",
+                            description: "Keep talking about what you're passionate about!",
+                            url: '#'
+                        }]
+                    };
+                    
+                    EXTERNAL_DATA_CACHE.set(cacheKey, { data, timestamp: Date.now() });
+                    return data;
+                }
+            }
         }
         
         const data = await response.json();
@@ -1732,20 +1782,34 @@ app.post('/api/generate-prompt', async (req, res) => {
 });
 
 app.post('/api/set-language', (req, res) => {
+    console.log(`🌐 [LANGUAGE] Set language request received:`, req.body);
+    
     const { language, sessionId } = req.body;
 
-    if (!sessionId || !userSessions.has(sessionId)) {
+    if (!sessionId) {
+        console.log(`🌐 [LANGUAGE] No sessionId provided. Available sessions: ${Array.from(userSessions.keys())}`);
+        return res.status(400).json({ success: false, error: 'Session ID is required' });
+    }
+
+    if (!userSessions.has(sessionId)) {
+        console.log(`🌐 [LANGUAGE] Session not found: ${sessionId}. Available sessions: ${Array.from(userSessions.keys())}`);
         return res.status(404).json({ success: false, error: 'Session not found' });
     }
 
-    if (language && promptTranslations[language]) {
-        const session = userSessions.get(sessionId);
-        session.metrics.language = language; // Set language on the specific session
-        console.log(`🌐 [LANGUAGE] Language for session ${sessionId} set to: ${language}`);
-        res.json({ success: true, language: language });
-    } else {
-        res.status(400).json({ success: false, error: 'Invalid language' });
+    if (!language) {
+        console.log(`🌐 [LANGUAGE] No language provided`);
+        return res.status(400).json({ success: false, error: 'Language is required' });
     }
+
+    if (!promptTranslations[language]) {
+        console.log(`🌐 [LANGUAGE] Invalid language: ${language}. Available languages: ${Object.keys(promptTranslations).join(', ')}`);
+        return res.status(400).json({ success: false, error: 'Invalid language. Available languages: ' + Object.keys(promptTranslations).join(', ') });
+    }
+
+    const session = userSessions.get(sessionId);
+    session.metrics.language = language; // Set language on the specific session
+    console.log(`🌐 [LANGUAGE] Language for session ${sessionId} set to: ${language}`);
+    res.json({ success: true, language: language });
 });
 
 // Create empty metrics object for new sessions
@@ -2054,21 +2118,21 @@ setInterval(async () => {
     userSessions.forEach(async (session) => {
         if (session.isConnected && session.channel) {
             console.log(`🔄 [PERIODIC] Updating stream info for session ${session.sessionId}...`);
-        // Update stream info
+            // Update stream info
             const streamInfo = await getStreamInfo(session.channel);
-        if (streamInfo) {
+            if (streamInfo) {
                 console.log(`📺 [STREAM] Session ${session.sessionId} - Live: ${session.metrics.isLive}, Viewers: ${session.metrics.currentViewerCount}, Title: ${session.metrics.streamTitle}`);
-        } else {
+            } else {
                 console.log(`📺 [STREAM] Session ${session.sessionId} - No stream data received`);
-        }
-        
-        // Update rolling metrics
+            }
+            
+            // Update rolling metrics
             calculateRollingMetrics(session.metrics);
-        
-        // Broadcast updates
+            
+            // Broadcast updates
             broadcastToSession(session);
             console.log(`📊 [PERIODIC] Metrics updated and broadcasted for session ${session.sessionId}`);
-    }
+        }
     });
 }, 5000); // Every 5 seconds for more real-time updates
 
@@ -2076,7 +2140,7 @@ setInterval(async () => {
 setInterval(() => {
     userSessions.forEach(session => {
         if (session.isConnected && session.channel && session.wsClients.size > 0) {
-        // Send a lightweight update to keep dashboard responsive
+            // Send a lightweight update to keep dashboard responsive
             broadcastToSession(session);
         }
     });

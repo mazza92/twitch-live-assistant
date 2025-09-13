@@ -1,37 +1,35 @@
-// Simple test to check if the server can start
-console.log('Testing Twitch server startup...');
+const express = require('express');
+const http = require('http');
 
-try {
-    // Check if all required modules are available
-    console.log('✓ Checking dependencies...');
-    require('tmi.js');
-    console.log('✓ tmi.js loaded');
-    
-    require('express');
-    console.log('✓ express loaded');
-    
-    require('ws');
-    console.log('✓ ws loaded');
-    
-    require('sentiment');
-    console.log('✓ sentiment loaded');
-    
-    require('path');
-    console.log('✓ path loaded');
-    
-    // Check if .env file exists
-    const fs = require('fs');
-    if (fs.existsSync('.env')) {
-        console.log('✓ .env file found');
-    } else {
-        console.log('⚠ .env file not found - using default values');
-    }
-    
-    // Try to load the main file
-    console.log('✓ All dependencies loaded successfully');
-    console.log('✓ Server should start without issues');
-    
-} catch (error) {
-    console.error('❌ Error:', error.message);
-    process.exit(1);
-}
+const app = express();
+const server = http.createServer(app);
+
+app.use(express.json());
+app.use(express.static('.'));
+
+// Test API endpoint
+app.post('/api/set-language', (req, res) => {
+    console.log('Language API called:', req.body);
+    res.json({ success: true, message: 'Language set successfully' });
+});
+
+// Test static file serving
+app.get('/en.json', (req, res) => {
+    res.json({ test: 'English file served successfully' });
+});
+
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+    console.log(`🚀 [TEST SERVER] Running on port ${PORT}`);
+    console.log(`📊 [DASHBOARD] Dashboard available at http://localhost:${PORT}/twitch_dashboard.html`);
+    console.log(`🔗 [API] API available at http://localhost:${PORT}/api/set-language`);
+});
+
+// Keep server running
+process.on('SIGINT', () => {
+    console.log('\n🛑 [SHUTDOWN] Shutting down gracefully...');
+    server.close(() => {
+        console.log('✅ [SHUTDOWN] Server closed');
+        process.exit(0);
+    });
+});

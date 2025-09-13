@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Switcher Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .language-switcher {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .language-btn {
+            background: rgba(145, 70, 255, 0.2);
+            border: 1px solid rgba(145, 70, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .language-btn:hover {
+            background: rgba(145, 70, 255, 0.4);
+        }
+        .language-btn.active {
+            background: #9146FF;
+            box-shadow: 0 4px 15px rgba(145, 70, 255, 0.4);
+        }
+        .test-results {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); }
+        .error { background: rgba(244, 67, 54, 0.3); }
+        .warning { background: rgba(255, 152, 0, 0.3); }
+    </style>
+</head>
+<body>
+    <h1>🧪 Language Switcher Test</h1>
+    
+    <div class="language-switcher">
+        <button class="language-btn active" onclick="testSetLanguage('en', this)">🇺🇸 English</button>
+        <button class="language-btn" onclick="testSetLanguage('fr', this)">🇫🇷 Français</button>
+        <button class="language-btn" onclick="testSetLanguage('es', this)">🇪🇸 Español</button>
+        <button class="language-btn" onclick="testSetLanguage('de', this)">🇩🇪 Deutsch</button>
+    </div>
+    
+    <div class="test-results">
+        <h3>Test Results:</h3>
+        <div id="testResults"></div>
+    </div>
+    
+    <div class="test-results">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Make sure the Twitch server is running on port 3000</li>
+            <li>Click on different language buttons</li>
+            <li>Check the console for detailed logs</li>
+            <li>Look for success/error messages in the test results</li>
+        </ol>
+    </div>
+
+    <script>
+        let currentLanguage = 'en';
+        let currentSessionId = null;
+        
+        // Test function to simulate the language switcher
+        async function testSetLanguage(lang, button) {
+            console.log('🌐 [TEST] Setting language to:', lang);
+            
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            currentLanguage = lang;
+            
+            // Test the API call
+            try {
+                // First, try to create a test session
+                if (!currentSessionId) {
+                    console.log('🔄 [TEST] Creating test session...');
+                    const connectResponse = await fetch('/api/connect-channel', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ channel: 'test_language_channel' })
+                    });
+                    
+                    if (connectResponse.ok) {
+                        const connectData = await connectResponse.json();
+                        currentSessionId = connectData.sessionId;
+                        addTestResult('✅ Test session created: ' + currentSessionId, 'success');
+                    } else {
+                        addTestResult('❌ Failed to create test session', 'error');
+                        return;
+                    }
+                }
+                
+                // Now test the language setting
+                console.log('🌐 [TEST] Testing language API call...');
+                const response = await fetch('/api/set-language', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        language: lang,
+                        sessionId: currentSessionId 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addTestResult(`✅ Language set to ${lang} successfully`, 'success');
+                    console.log('✅ Language set successfully:', data);
+                } else {
+                    addTestResult(`❌ Error setting language: ${data.error}`, 'error');
+                    console.error('❌ Error setting language:', data);
+                }
+                
+            } catch (error) {
+                addTestResult(`❌ Network error: ${error.message}`, 'error');
+                console.error('❌ Network error:', error);
+            }
+        }
+        
+        function addTestResult(message, type) {
+            const resultsDiv = document.getElementById('testResults');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            resultsDiv.appendChild(statusDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        // Test server connection on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    addTestResult('✅ Server is running and accessible', 'success');
+                } else {
+                    addTestResult('❌ Server health check failed', 'error');
+                }
+            } catch (error) {
+                addTestResult('❌ Cannot connect to server. Make sure it\'s running on port 3000', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

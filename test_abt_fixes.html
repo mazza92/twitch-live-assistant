@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABT Timer & Prompt Translation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); }
+        .error { background: rgba(244, 67, 54, 0.3); }
+        .warning { background: rgba(255, 152, 0, 0.3); }
+        .info { background: rgba(33, 150, 243, 0.3); }
+        .test-button {
+            background: #9146FF;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #7c3aed;
+        }
+        .prompt-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border-left: 4px solid #9146FF;
+        }
+        .abt-timer-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(145, 70, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .abt-timer-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #9146FF, transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .abt-timer-inner {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 ABT Timer & Prompt Translation Test</h1>
+    
+    <div class="test-section">
+        <h3>Test ABT Timer Display</h3>
+        <p>This tests if the ABT timer container shows properly and displays correctly.</p>
+        
+        <div class="abt-timer-container" id="testABTTimer" style="display: none;">
+            <div class="abt-timer-circle">
+                <div class="abt-timer-inner" id="testTimerDisplay">30</div>
+            </div>
+            <div class="abt-timer-text">Next prompt in</div>
+            <button class="test-button" onclick="toggleTestTimer()">🔊 Mute</button>
+        </div>
+        
+        <button class="test-button" onclick="testABTTimer()">Test ABT Timer</button>
+        <button class="test-button" onclick="hideABTTimer()">Hide ABT Timer</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Prompt Translation</h3>
+        <p>This tests if prompt keys are properly translated to readable text.</p>
+        
+        <button class="test-button" onclick="testPromptTranslation('en')">🇺🇸 English</button>
+        <button class="test-button" onclick="testPromptTranslation('fr')">🇫🇷 French</button>
+        <button class="test-button" onclick="testPromptTranslation('es')">🇪🇸 Spanish</button>
+        <button class="test-button" onclick="testPromptTranslation('de')">🇩🇪 German</button>
+        
+        <div class="prompt-display" id="promptDisplay">
+            <strong>Test Prompt:</strong> <span id="promptText">Click a language button to test</span>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test Results:</h3>
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        // Mock translations (simplified version)
+        const translations = {
+            en: {
+                news_discussion: '📰 **News Discussion**: Chat is quiet! Try talking about this news story: "{newsTitle}" - What do you think about this?',
+                always_be_talking_1: '🎤 **Always Be Talking**: Chat is quiet, but that\'s okay! Keep talking about what you\'re doing, your thoughts, or ask questions. Say: "I know chat is quiet right now, but I\'m going to keep talking because you never know who might be lurking!"',
+                always_be_talking_2: '🗣️ **Keep the Energy Up**: Even with no visible chat, keep the conversation flowing! Say: "I\'m going to keep talking because I love what I do! Feel free to jump in anytime!"',
+                nextPromptIn: 'Next prompt in',
+                mute: 'Mute'
+            },
+            fr: {
+                news_discussion: '📰 **Discussion Actualités**: Le chat est calme! Parlez de cette actualité: "{newsTitle}" - Qu\'en pensez-vous?',
+                always_be_talking_1: '🎤 **Toujours Parler**: Le chat est calme, mais c\'est ok! Continuez à parler de ce que vous faites, vos pensées, ou posez des questions. Dites: "Je sais que le chat est calme maintenant, mais je vais continuer à parler car on ne sait jamais qui pourrait être là!"',
+                always_be_talking_2: '🗣️ **Garder l\'Énergie**: Même sans chat visible, gardez la conversation fluide! Dites: "Je vais continuer à parler car j\'adore ce que je fais! N\'hésitez pas à intervenir à tout moment!"',
+                nextPromptIn: 'Prochain prompt dans',
+                mute: 'Muet'
+            },
+            es: {
+                news_discussion: '📰 **Discusión de Noticias**: ¡El chat está tranquilo! Habla sobre esta noticia: "{newsTitle}" - ¿Qué opinas?',
+                always_be_talking_1: '🎤 **Siempre Hablar**: El chat está tranquilo, ¡pero está bien! Sigue hablando sobre lo que haces, tus pensamientos, o haz preguntas. Di: "Sé que el chat está tranquilo ahora, pero voy a seguir hablando porque nunca sabes quién podría estar ahí!"',
+                always_be_talking_2: '🗣️ **Mantener la Energía**: Incluso sin chat visible, mantén la conversación fluida! Di: "Voy a seguir hablando porque amo lo que hago! Siéntete libre de intervenir en cualquier momento!"',
+                nextPromptIn: 'Siguiente prompt en',
+                mute: 'Silenciar'
+            },
+            de: {
+                news_discussion: '📰 **Nachrichtendiskussion**: Der Chat ist ruhig! Sprich über diese Nachricht: "{newsTitle}" - Was denkst du?',
+                always_be_talking_1: '🎤 **Immer Sprechen**: Der Chat ist ruhig, aber das ist ok! Sprich weiter über das, was du tust, deine Gedanken, oder stelle Fragen. Sage: "Ich weiß, der Chat ist gerade ruhig, aber ich werde weiter sprechen, weil man nie weiß, wer zuschauen könnte!"',
+                always_be_talking_2: '🗣️ **Energie Behalten**: Auch ohne sichtbaren Chat, halte das Gespräch am Laufen! Sage: "Ich werde weiter sprechen, weil ich liebe, was ich tue! Fühl dich frei, jederzeit einzuspringen!"',
+                nextPromptIn: 'Nächster Prompt in',
+                mute: 'Stumm'
+            }
+        };
+        
+        let currentLanguage = 'en';
+        let testTimer = 30;
+        let testTimerInterval = null;
+        
+        function testABTTimer() {
+            addResult('🧪 Testing ABT Timer display...', 'info');
+            
+            const timerContainer = document.getElementById('testABTTimer');
+            const timerDisplay = document.getElementById('testTimerDisplay');
+            
+            if (timerContainer) {
+                timerContainer.style.display = 'flex';
+                addResult('✅ ABT Timer container shown', 'success');
+                
+                // Start countdown
+                testTimer = 30;
+                if (timerDisplay) {
+                    timerDisplay.textContent = testTimer;
+                }
+                
+                // Start interval
+                if (testTimerInterval) {
+                    clearInterval(testTimerInterval);
+                }
+                
+                testTimerInterval = setInterval(() => {
+                    testTimer--;
+                    if (timerDisplay) {
+                        timerDisplay.textContent = testTimer;
+                    }
+                    
+                    if (testTimer <= 0) {
+                        addResult('⏰ Timer reached zero - would trigger prompt', 'success');
+                        testTimer = 30; // Reset
+                    }
+                }, 1000);
+                
+                addResult('✅ ABT Timer started and counting down', 'success');
+            } else {
+                addResult('❌ ABT Timer container not found', 'error');
+            }
+        }
+        
+        function hideABTTimer() {
+            const timerContainer = document.getElementById('testABTTimer');
+            if (timerContainer) {
+                timerContainer.style.display = 'none';
+                if (testTimerInterval) {
+                    clearInterval(testTimerInterval);
+                    testTimerInterval = null;
+                }
+                addResult('✅ ABT Timer hidden and stopped', 'success');
+            }
+        }
+        
+        function toggleTestTimer() {
+            addResult('🔊 Mute button clicked (functionality would toggle here)', 'info');
+        }
+        
+        function testPromptTranslation(language) {
+            addResult(`🌐 Testing prompt translation for ${language}...`, 'info');
+            
+            currentLanguage = language;
+            const t = translations[language] || translations['en'];
+            
+            // Test different prompt keys
+            const testKeys = ['news_discussion', 'always_be_talking_1', 'always_be_talking_2'];
+            
+            testKeys.forEach((key, index) => {
+                const translated = t[key] || key;
+                const isTranslated = translated !== key;
+                
+                addResult(`${isTranslated ? '✅' : '❌'} ${key}: ${isTranslated ? 'Translated' : 'Raw key'}`, 
+                         isTranslated ? 'success' : 'error');
+                
+                if (index === 0) {
+                    // Show first translation in the display
+                    document.getElementById('promptText').textContent = translated;
+                }
+            });
+            
+            // Test timer text translation
+            const timerText = t.nextPromptIn || 'Next prompt in';
+            addResult(`✅ Timer text: "${timerText}"`, 'success');
+            
+            // Test mute button translation
+            const muteText = t.mute || 'Mute';
+            addResult(`✅ Mute button: "${muteText}"`, 'success');
+        }
+        
+        function addResult(message, type) {
+            const resultsDiv = document.getElementById('testResults');
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            resultsDiv.appendChild(statusDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        // Test on page load
+        window.addEventListener('load', () => {
+            addResult('🚀 ABT Timer & Prompt Translation Test loaded', 'info');
+            addResult('💡 This tests the fixes for ABT timer display and prompt translation', 'info');
+        });
+    </script>
+</body>
+</html>

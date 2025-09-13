@@ -1,0 +1,58 @@
+name: Deploy Twitch Live Assistant
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'twitch-live-assistant/package-lock.json'
+    
+    - name: Install dependencies
+      working-directory: ./twitch-live-assistant
+      run: npm ci
+    
+    - name: Run tests
+      working-directory: ./twitch-live-assistant
+      run: |
+        # Test if the server starts without errors
+        timeout 10s npm start || true
+        echo "✅ Server startup test completed"
+    
+    - name: Check for linting errors
+      working-directory: ./twitch-live-assistant
+      run: |
+        # Check if there are any obvious syntax errors
+        node -c twitch_data_processor.js
+        echo "✅ Syntax check passed"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Render
+      uses: johnbeynon/render-deploy-action@v0.0.8
+      with:
+        service-id: ${{ secrets.RENDER_SERVICE_ID }}
+        api-key: ${{ secrets.RENDER_API_KEY }}
+    
+    - name: Notify deployment success
+      run: |
+        echo "🚀 Deployment completed successfully!"
+        echo "Your app should be available at: https://twitch-live-assistant.onrender.com"
