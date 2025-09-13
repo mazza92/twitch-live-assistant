@@ -4952,10 +4952,6 @@
                         message = translations[currentLanguage][message] || message;
                     }
                     
-                    // Translate AI-generated prompts to French
-                    if (currentLanguage === 'fr') {
-                        message = translateAIPrompt(message, 'fr');
-                    }
                     
                 promptDiv.innerHTML = `
                         <div class="prompt-type">${prompt.prompt?.type || translations[currentLanguage].aiAssistant}</div>
@@ -4981,10 +4977,6 @@
                         message = translations[currentLanguage][message] || message;
                     }
                     
-                    // Translate AI-generated prompts to French
-                    if (currentLanguage === 'fr') {
-                        message = translateAIPrompt(message, 'fr');
-                    }
                     
                     promptDiv.innerHTML = `
                         <div class="prompt-type">${prompt.prompt?.type || translations[currentLanguage].aiAssistant}</div>
