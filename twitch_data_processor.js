@@ -1492,58 +1492,6 @@ function generateFirstViewerPrompt(metrics) {
     };
 }
 
-// Generate AI-powered prompts for building_audience phase
-async function generateBuildingAudiencePrompt(metrics) {
-    try {
-        // Try AI-powered prompt first
-        const sessionLanguage = metrics.language || 'en';
-        const aiPrompt = await geminiService.generatePrompt(metrics, sessionLanguage);
-        
-        if (aiPrompt && aiPrompt.message) {
-            return {
-                type: 'ai_powered',
-                message: aiPrompt.message,
-                priority: 'medium',
-                phase: 'building_audience'
-            };
-        }
-    } catch (error) {
-        console.log('🤖 [AI] Gemini API failed, using fallback:', error.message);
-    }
-    
-    // Fallback to dynamic library
-    const fallbackPrompts = [
-        'chatActivation',
-        'followBoost',
-        'communityGrowth',
-        'aiEngagementBoost',
-        'aiInteraction',
-        'aiMomentum',
-        'bitsBoost',
-        'subBoost',
-        'raidBoost'
-    ];
-    
-    // Select based on metrics
-    let selectedPrompt;
-    if (metrics.messagesPerMinute < 1) {
-        selectedPrompt = 'chatActivation';
-    } else if (metrics.sessionFollowersGained > 0) {
-        selectedPrompt = 'followBoost';
-    } else if (metrics.rollingSentimentScore > 0.5) {
-        selectedPrompt = 'aiMomentum';
-    } else {
-        selectedPrompt = fallbackPrompts[Math.floor(Math.random() * fallbackPrompts.length)];
-    }
-    
-    return {
-        type: 'fallback',
-        message: selectedPrompt,
-        priority: 'medium',
-        phase: 'building_audience'
-    };
-}
-
 // Broadcast metrics to a specific session's dashboard clients
 function broadcastToSession(session) {
     console.log(`📊 [BROADCAST] Attempting to broadcast to session: ${session.sessionId}`);
