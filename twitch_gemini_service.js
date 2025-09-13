@@ -26,13 +26,24 @@ class TwitchGeminiService {
     buildContextString(metrics, language = 'en') {
         const now = new Date();
         const streamDuration = Math.floor((now - metrics.streamStartTime) / 60000); // minutes
-
+        
         // --- Prompt Templates for each language ---
         const templates = {
             en: {
                 system_persona: "You are LiveBot, an expert Twitch stream co-host with deep knowledge of streaming psychology and audience engagement. Your task is to generate a specific, actionable prompt that will genuinely help the streamer improve their Twitch stream.",
                 context_header: "STREAM CONTEXT:",
+                label_stream_duration: "Stream Duration",
+                label_viewer_trend: "Viewer Trend",
+                label_engagement: "Engagement Level",
+                label_energy: "Energy Level",
+                label_sentiment: "Sentiment",
+                label_growth: "Growth",
+                label_category: "Game/Category",
                 metrics_header: "DETAILED METRICS:",
+                label_msg_per_min: "Messages per minute",
+                label_follows: "Follows gained (session)",
+                label_subs: "Subs gained (session)",
+                label_bits: "Bits earned (session)",
                 activity_header: "RECENT ACTIVITY:",
                 users_header: "TOP ENGAGED USERS:",
                 suggestions_header: "CONTENT SUGGESTIONS:",
@@ -56,7 +67,18 @@ class TwitchGeminiService {
             fr: {
                 system_persona: "Vous êtes LiveBot, un co-animateur expert de stream Twitch avec une connaissance approfondie de la psychologie du streaming et de l'engagement du public. Votre tâche est de générer une suggestion spécifique et exploitable qui aidera réellement le streamer à améliorer son stream Twitch. Vous ne devez parler QUE français.",
                 context_header: "CONTEXTE DU STREAM :",
+                label_stream_duration: "Durée du Stream",
+                label_viewer_trend: "Tendance des spectateurs",
+                label_engagement: "Niveau d'engagement",
+                label_energy: "Niveau d'énergie",
+                label_sentiment: "Sentiment",
+                label_growth: "Croissance",
+                label_category: "Jeu/Catégorie",
                 metrics_header: "MÉTRIQUES DÉTAILLÉES :",
+                label_msg_per_min: "Messages par minute",
+                label_follows: "Follows gagnés (session)",
+                label_subs: "Abonnements gagnés (session)",
+                label_bits: "Bits reçus (session)",
                 activity_header: "ACTIVITÉ RÉCENTE :",
                 users_header: "UTILISATEURS LES PLUS ENGAGÉS :",
                 suggestions_header: "SUGGESTIONS DE CONTENU :",
@@ -80,16 +102,63 @@ class TwitchGeminiService {
             // You can add 'es', 'de', etc. here in the same way
         };
         
+        const analysis_translations = {
+            en: {
+                engagement_explosive: '🔥 EXPLOSIVE - Very high engagement!',
+                engagement_high: '📈 HIGH - Good engagement',
+                engagement_moderate: '✅ MODERATE - Decent engagement',
+                engagement_low: '📉 LOW - Needs attention',
+                engagement_quiet: '😴 QUIET - Very low engagement, needs activation',
+                sentiment_positive: '😊 POSITIVE - Great vibes!',
+                sentiment_neutral: '😐 NEUTRAL - Mixed feelings',
+                sentiment_negative: '😔 NEGATIVE - Needs energy boost',
+                growth_excellent: '🚀 EXCELLENT - Strong growth!',
+                growth_good: '📈 GOOD - Steady growth',
+                growth_slow: '🐌 SLOW - Needs momentum',
+                energy_high: '⚡ HIGH - Great energy!',
+                energy_medium: '🔋 MEDIUM - Decent energy',
+                energy_low: '🔋 LOW - Needs boost',
+                trend_up: '📈 RISING - Viewers increasing',
+                trend_stable: '➡️ STABLE - Consistent viewership',
+                trend_down: '📉 DECLINING - Viewers decreasing'
+            },
+            fr: {
+                engagement_explosive: '🔥 EXPLOSIF - Engagement très élevé !',
+                engagement_high: '📈 ÉLEVÉ - Bon engagement',
+                engagement_moderate: '✅ MODÉRÉ - Engagement correct',
+                engagement_low: '📉 FAIBLE - Nécessite de l\'attention',
+                engagement_quiet: '😴 CALME - Engagement très faible, nécessite une activation',
+                sentiment_positive: '😊 POSITIF - Excellente ambiance !',
+                sentiment_neutral: '😐 NEUTRE - Sentiments mitigés',
+                sentiment_negative: '😔 NÉGATIF - Besoin d\'un boost d\'énergie',
+                growth_excellent: '🚀 EXCELLENT - Croissance forte !',
+                growth_good: '📈 BON - Croissance régulière',
+                growth_slow: '🐌 LENT - Besoin d\'élan',
+                energy_high: '⚡ ÉLEVÉE - Excellente énergie !',
+                energy_medium: '🔋 MOYENNE - Énergie correcte',
+                energy_low: '🔋 FAIBLE - Besoin d\'un boost',
+                trend_up: '📈 EN HAUSSE - Spectateurs en augmentation',
+                trend_stable: '➡️ STABLE - Audience constante',
+                trend_down: '📉 EN BAISSE - Spectateurs en diminution'
+            }
+        };
+        
         const t = templates[language] || templates['en']; // Get the correct language template, default to English
+        const at = analysis_translations[language] || analysis_translations['en'];
 
         // --- The rest of your analysis logic is great, keep it! ---
         const streamPhase = this.getStreamPhase(metrics);
         const phaseContext = this.getPhaseContext(metrics, streamPhase);
-        const engagementLevel = this.analyzeEngagementLevel(metrics);
-        const sentimentStatus = this.analyzeSentimentStatus(metrics);
-        const growthStatus = this.analyzeGrowthStatus(metrics);
-        const energyLevel = this.analyzeEnergyLevel(metrics);
-        const viewerTrend = this.analyzeViewerTrend(metrics);
+        const engagementLevelKey = this.analyzeEngagementLevel(metrics);
+        const engagementLevel = at[engagementLevelKey];
+        const sentimentStatusKey = this.analyzeSentimentStatus(metrics);
+        const sentimentStatus = at[sentimentStatusKey];
+        const growthStatusKey = this.analyzeGrowthStatus(metrics);
+        const growthStatus = at[growthStatusKey];
+        const energyLevelKey = this.analyzeEnergyLevel(metrics);
+        const energyLevel = at[energyLevelKey];
+        const viewerTrendKey = this.analyzeViewerTrend(metrics);
+        const viewerTrend = at[viewerTrendKey];
         const recentEvents = this.summarizeRecentEvents(metrics);
         const topEngagedUsers = this.getTopEngagedUsers(metrics);
         const contentSuggestions = this.getContentSuggestions(metrics);
@@ -99,19 +168,19 @@ class TwitchGeminiService {
 ${t.system_persona}
 
 ${t.context_header}
-- Stream Duration: ${streamDuration} minutes (${streamPhase} phase)
-- Viewer Trend: ${viewerTrend}
-- Engagement Level: ${engagementLevel}
-- Energy Level: ${energyLevel}
-- Sentiment: ${sentimentStatus}
-- Growth: ${growthStatus}
-- Game/Category: ${metrics.gameCategory || 'Unknown'}
+- ${t.label_stream_duration}: ${streamDuration} minutes (${streamPhase} phase)
+- ${t.label_viewer_trend}: ${viewerTrend}
+- ${t.label_engagement}: ${engagementLevel}
+- ${t.label_energy}: ${energyLevel}
+- ${t.label_sentiment}: ${sentimentStatus}
+- ${t.label_growth}: ${growthStatus}
+- ${t.label_category}: ${metrics.gameCategory || (language === 'fr' ? 'Inconnu' : 'Unknown')}
 
 ${t.metrics_header}
-- Messages per minute: ${metrics.messagesPerMinute || 0}
-- Follows gained this session: ${metrics.sessionFollowersGained || 0}
-- Subs gained this session: ${metrics.sessionSubsGained || 0}
-- Bits earned this session: ${metrics.sessionBitsEarned || 0}
+- ${t.label_msg_per_min}: ${metrics.messagesPerMinute || 0}
+- ${t.label_follows}: ${metrics.sessionFollowersGained || 0}
+- ${t.label_subs}: ${metrics.sessionSubsGained || 0}
+- ${t.label_bits}: ${metrics.sessionBitsEarned || 0}
 
 ${t.activity_header}
 ${recentEvents}
@@ -135,6 +204,18 @@ ${t.format_instructions}
     }
 
     /**
+     * Get the context for the current stream phase
+     */
+    getPhaseContext(metrics, streamPhase) {
+        if (streamPhase === 'start') {
+            return 'Stream just started - focus on welcoming new viewers and setting the tone';
+        } else if (streamPhase === 'end') {
+            return 'Stream is ending soon - focus on thanking viewers and encouraging follows';
+        }
+        return 'Mid-stream - maintain engagement and build community';
+    }
+
+    /**
      * Analyze engagement level based on Twitch metrics
      */
     analyzeEngagementLevel(metrics) {
@@ -145,11 +226,11 @@ ${t.format_instructions}
         // Calculate engagement ratio
         const engagementRatio = viewerCount > 0 ? (uniqueChatters / viewerCount) : 0;
         
-        if (messageRate > 20 && engagementRatio > 0.3) return '🔥 EXPLOSIVE - Very high engagement!';
-        if (messageRate > 10 && engagementRatio > 0.2) return '📈 HIGH - Good engagement';
-        if (messageRate > 5 && engagementRatio > 0.1) return '✅ MODERATE - Decent engagement';
-        if (messageRate > 2 && engagementRatio > 0.05) return '📉 LOW - Needs attention';
-        return '😴 QUIET - Very low engagement, needs activation';
+        if (messageRate > 20 && engagementRatio > 0.3) return 'engagement_explosive';
+        if (messageRate > 10 && engagementRatio > 0.2) return 'engagement_high';
+        if (messageRate > 5 && engagementRatio > 0.1) return 'engagement_moderate';
+        if (messageRate > 2 && engagementRatio > 0.05) return 'engagement_low';
+        return 'engagement_quiet';
     }
 
     /**
@@ -157,9 +238,9 @@ ${t.format_instructions}
      */
     analyzeSentimentStatus(metrics) {
         const sentiment = metrics.rollingSentimentScore || 0;
-        if (sentiment > 0.3) return '😊 POSITIVE - Happy audience';
-        if (sentiment > -0.1) return '😐 NEUTRAL - Mixed feelings';
-        return '😔 NEGATIVE - Audience seems down';
+        if (sentiment > 0.3) return 'sentiment_positive';
+        if (sentiment > -0.1) return 'sentiment_neutral';
+        return 'sentiment_negative';
     }
 
     /**
@@ -173,10 +254,10 @@ ${t.format_instructions}
         
         const totalGrowth = followerGains + (subGains * 3) + (bitsEarned / 100) + (raidsReceived * 2);
         
-        if (totalGrowth > 20) return '🚀 BOOMING - Excellent growth across all metrics!';
-        if (totalGrowth > 10) return '📈 GROWING - Good growth in multiple areas';
-        if (totalGrowth > 5) return '✅ POSITIVE - Some growth activity';
-        return '📊 STABLE - Steady but could use more growth';
+        if (totalGrowth > 20) return 'growth_excellent';
+        if (totalGrowth > 10) return 'growth_good';
+        if (totalGrowth > 5) return 'growth_slow';
+        return 'growth_slow';
     }
 
     /**
@@ -545,6 +626,37 @@ ${t.format_instructions}
                 streamDuration: streamDuration
             }
         };
+    }
+
+    /**
+     * Analyze energy level based on Twitch metrics
+     */
+    analyzeEnergyLevel(metrics) {
+        const messageRate = metrics.messagesPerMinute || 0;
+        const viewerCount = metrics.currentViewerCount || 0;
+        const bitsEarned = metrics.sessionBitsEarned || 0;
+        const subsGained = metrics.sessionSubsGained || 0;
+        
+        // Calculate energy score
+        const energyScore = (messageRate * 2) + (viewerCount * 0.1) + (bitsEarned * 0.01) + (subsGained * 5);
+        
+        if (energyScore > 50) return 'energy_high';
+        if (energyScore > 20) return 'energy_medium';
+        return 'energy_low';
+    }
+
+    /**
+     * Analyze viewer trend based on Twitch metrics
+     */
+    analyzeViewerTrend(metrics) {
+        const currentViewers = metrics.currentViewerCount || 0;
+        const peakViewers = metrics.peakViewerCount || 0;
+        const averageViewers = metrics.averageViewerCount || 0;
+        
+        // Simple trend analysis
+        if (currentViewers > averageViewers * 1.2) return 'trend_up';
+        if (currentViewers < averageViewers * 0.8) return 'trend_down';
+        return 'trend_stable';
     }
 
     /**
