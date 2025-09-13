@@ -111,8 +111,7 @@ function getTimeContext() {
     };
 }
 
-// Global language setting for AI prompts (default: English)
-let currentLanguage = 'en';
+// Note: Language setting is now per-session in metrics.language (default: 'en')
 
 // AI Prompt Translations for Twitch
 const promptTranslations = {
@@ -1258,7 +1257,8 @@ async function generateBuildingAudiencePrompt(metrics) {
     
     try {
         // Try AI-powered prompt with rich context
-        const aiPrompt = await geminiService.generatePromptWithContext(context, currentLanguage);
+        const sessionLanguage = metrics.language || 'en';
+        const aiPrompt = await geminiService.generatePromptWithContext(context, sessionLanguage);
         
         if (aiPrompt && aiPrompt.message) {
             return {
@@ -1358,9 +1358,10 @@ async function generateDynamicFallbackPrompt(metrics) {
 // Finalize prompt with placeholder replacement and history
 async function finalizePrompt(prompt, session) {
     const metrics = session.metrics;
+    const sessionLanguage = metrics.language || 'en'; // Use session language, fallback to 'en'
     
     // Get the base message from translations
-    let fullMessage = promptTranslations[currentLanguage][prompt.message] || prompt.message;
+    let fullMessage = promptTranslations[sessionLanguage][prompt.message] || prompt.message;
     
     // Prepare replacement data
     const replacements = {
@@ -1470,7 +1471,8 @@ function generateFirstViewerPrompt(metrics) {
 async function generateBuildingAudiencePrompt(metrics) {
     try {
         // Try AI-powered prompt first
-        const aiPrompt = await geminiService.generatePrompt(metrics, currentLanguage);
+        const sessionLanguage = metrics.language || 'en';
+        const aiPrompt = await geminiService.generatePrompt(metrics, sessionLanguage);
         
         if (aiPrompt && aiPrompt.message) {
             return {
@@ -1827,14 +1829,105 @@ app.post('/api/generate-prompt', async (req, res) => {
 });
 
 app.post('/api/set-language', (req, res) => {
-    const { language } = req.body;
+    const { language, sessionId } = req.body;
+
+    if (!sessionId || !userSessions.has(sessionId)) {
+        return res.status(404).json({ success: false, error: 'Session not found' });
+    }
+
     if (language && promptTranslations[language]) {
-        currentLanguage = language;
-        res.json({ success: true, language: currentLanguage });
+        const session = userSessions.get(sessionId);
+        session.metrics.language = language; // Set language on the specific session
+        console.log(`🌐 [LANGUAGE] Language for session ${sessionId} set to: ${language}`);
+        res.json({ success: true, language: language });
     } else {
-        res.json({ success: false, error: 'Invalid language' });
+        res.status(400).json({ success: false, error: 'Invalid language' });
     }
 });
+
+// Create empty metrics object for new sessions
+function createEmptyMetrics() {
+    return {
+        // Stream info
+        isLive: false,
+        streamTitle: '',
+        gameCategory: '',
+        streamLanguage: '',
+        streamStartTime: Date.now(),
+        streamUptime: 0,
+        
+        // Viewer metrics
+        currentViewerCount: 0,
+        peakViewerCount: 0,
+        averageViewerCount: 0,
+        totalViewerMinutes: 0,
+        viewerRetention: 0,
+        predictedRetention: 0,
+        
+        // Chat metrics
+        totalMessages: 0,
+        messagesPerMinute: 0,
+        rollingSentimentScore: 0,
+        uniqueChatters: new Set(),
+        chatScore: 0,
+        
+        // Engagement metrics
+        totalFollowers: 0,
+        sessionFollowersGained: 0,
+        followersGainsPerMinute: 0,
+        totalSubs: 0,
+        sessionSubsGained: 0,
+        subsGainsPerMinute: 0,
+        totalBits: 0,
+        sessionBitsEarned: 0,
+        bitsPerMinute: 0,
+        totalRaids: 0,
+        sessionRaidsReceived: 0,
+        
+        // Sub tiers
+        tier1Subs: 0,
+        tier2Subs: 0,
+        tier3Subs: 0,
+        
+        // Recent activity arrays
+        recentMessages: [],
+        newFollowers: [],
+        newSubs: [],
+        recentBits: [],
+        recentRaids: [],
+        
+        // User engagement tracking
+        userEngagement: new Map(),
+        topEngagedUsers: [],
+        
+        // Zero to One Engine
+        streamPhase: 'zero_viewers', // zero_viewers, first_viewer, building_audience
+        firstViewerTime: null,
+        phaseTransitionTime: Date.now(),
+        lastPromptTime: 0,
+        promptHistory: [],
+        
+        // Peer comparison (dummy data for now)
+        peerAvgViewers: 15,
+        peerAvgFollowers: 1200,
+        peerAvgSubs: 45,
+        
+        // Recommendations
+        retentionRec: "Stream starting up...",
+        viewerRec: "Building audience...",
+        growthRec: "Focus on engagement...",
+        revenueTip: "Getting started...",
+        
+        // Health score
+        healthScore: 100,
+        
+        // Projected metrics
+        projectedRevenue: 0,
+        
+        // Session-specific language setting
+        language: 'en' // Default to English
+    };
+}
 
 // Channel switching endpoints - Multi-session support
 app.post('/api/connect-channel', async (req, res) => {
