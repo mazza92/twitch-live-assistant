@@ -286,6 +286,13 @@ const promptTranslations = {
         fallback_momentum_celebrate: "🎉 **Célébrer Réussites**: C'est l'heure de célébrer! Dites: \"Vous êtes tous incroyables! Qu'est-ce dont vous êtes fier d'avoir accompli récemment?\" ou \"Célébrons ensemble! Quelle est votre plus grande victoire cette semaine?\"",
         fallback_momentum_next: "🔮 **Teaser Prochain Contenu**: Construire l'anticipation! Dites: \"Je suis déjà excité pour la prochaine fois! Qu'aimeriez-vous voir dans le prochain stream?\" ou \"Ce n'est que le début! Qu'explorerons-nous ensemble ensuite?\"",
         
+        // Context-aware prompts
+        low_engagement_boost: "💬 **Boost d'Engagement**: Avec {viewerCount} spectateurs et {messageRate} messages/min, faisons bouger ce chat! Dites: \"Je veux vous entendre! Qu'est-ce qui vous préoccupe?\"",
+        high_engagement_maintain: "🎯 **Maintenir l'Élan**: Excellente énergie avec {viewerCount} spectateurs! Dites: \"J'adore cette énergie! Continuons - qu'en pensez-vous?\"",
+        sentiment_positive: "😊 **Vibes Positives**: Le chat se sent bien! Dites: \"J'adore l'énergie positive ici! Vous êtes tous incroyables!\"",
+        sentiment_neutral: "🤔 **Chat Neutre**: Pimentons les choses! Dites: \"Je veux entendre vos opinions! Qu'en pensez-vous de ce sujet?\"",
+        sentiment_negative: "🔄 **Réinitialiser l'Énergie**: Changeons ça! Dites: \"Je veux me concentrer sur le positif! Qu'est-ce qui s'est bien passé pour vous aujourd'hui?\"",
+        
         // Dynamic External Data Prompts with placeholders
         news_discussion: "📰 **Discussion Actualités**: Le chat est calme! Parlez de cette actualité: \"{newsTitle}\" - Qu'en pensez-vous?",
         trivia_engagement: "🧠 **Fun Fact**: Voici quelque chose d'intéressant: \"{triviaText}\" - Le saviez-vous? Partagez vos pensées!",
@@ -307,6 +314,13 @@ const promptTranslations = {
         always_be_talking_4: "❓ **Hacer Preguntas**: Incluso si nadie responde, ¡haz preguntas! Di: \"Tengo curiosidad - ¿qué opinas de esto? Incluso si no escribes, me encantaría escuchar tus pensamientos!\"",
         always_be_talking_5: "🎯 **Establecer Metas**: Comparte tus objetivos de streaming. Di: \"Mi objetivo hoy es [objetivo]. Incluso si estoy solo aquí, voy a trabajar para lograrlo!\"",
         
+        // Context-aware prompts
+        low_engagement_boost: "💬 **Boost de Engagement**: Con {viewerCount} espectadores y {messageRate} mensajes/min, ¡hagamos mover este chat! Di: \"¡Quiero escucharte! ¿Qué tienes en mente?\"",
+        high_engagement_maintain: "🎯 **Mantener Momentum**: ¡Excelente energía con {viewerCount} espectadores! Di: \"¡Amo esta energía! Sigamos - ¿qué opinas de esto?\"",
+        sentiment_positive: "😊 **Vibes Positivas**: ¡El chat se siente genial! Di: \"¡Amo la energía positiva aquí! ¡Todos ustedes son increíbles!\"",
+        sentiment_neutral: "🤔 **Chat Neutral**: ¡Sazonemos las cosas! Di: \"¡Quiero escuchar tus opiniones! ¿Qué opinas de este tema?\"",
+        sentiment_negative: "🔄 **Reiniciar Energía**: ¡Cambiemos esto! Di: \"¡Quiero enfocarme en lo positivo! ¿Qué algo bueno te pasó hoy?\"",
+        
         // Dynamic External Data Prompts with placeholders
         news_discussion: "📰 **Discusión de Noticias**: ¡El chat está tranquilo! Habla sobre esta noticia: \"{newsTitle}\" - ¿Qué opinas?",
         trivia_engagement: "🧠 **Dato Curioso**: Aquí hay algo interesante: \"{triviaText}\" - ¿Lo sabías? ¡Comparte tus pensamientos!",
@@ -327,6 +341,13 @@ const promptTranslations = {
         always_be_talking_3: "💭 **Gedanken Teilen**: Nutze diese ruhige Zeit, um deinen Prozess zu teilen. Sage: \"Ich denke hier laut nach - das ist wirklich hilfreich für mich, um zu verarbeiten, was ich tue!\"",
         always_be_talking_4: "❓ **Fragen Stellen**: Auch wenn niemand antwortet, stelle Fragen! Sage: \"Ich bin neugierig - was denkst du darüber? Auch wenn du nicht tippst, würde ich gerne deine Gedanken hören!\"",
         always_be_talking_5: "🎯 **Ziele Setzen**: Teile deine Streaming-Ziele. Sage: \"Mein Ziel heute ist [Ziel]. Auch wenn ich hier allein bin, werde ich daran arbeiten, es zu erreichen!\"",
+        
+        // Context-aware prompts
+        low_engagement_boost: "💬 **Engagement Boost**: Mit {viewerCount} Zuschauern und {messageRate} Nachrichten/min, lass uns diesen Chat in Bewegung bringen! Sage: \"Ich möchte von dir hören! Was denkst du?\"",
+        high_engagement_maintain: "🎯 **Momentum Behalten**: Große Energie mit {viewerCount} Zuschauern! Sage: \"Ich liebe diese Energie! Lass uns weitermachen - was denkst du darüber?\"",
+        sentiment_positive: "😊 **Positive Vibes**: Der Chat fühlt sich großartig an! Sage: \"Ich liebe die positive Energie hier! Ihr seid alle unglaublich!\"",
+        sentiment_neutral: "🤔 **Neutraler Chat**: Lass uns die Dinge würzen! Sage: \"Ich möchte deine Meinungen hören! Was denkst du über dieses Thema?\"",
+        sentiment_negative: "🔄 **Energie Zurücksetzen**: Lass uns das ändern! Sage: \"Ich möchte mich auf das Positive konzentrieren! Was Gutes ist dir heute passiert?\"",
         
         // Dynamic External Data Prompts with placeholders
         news_discussion: "📰 **Nachrichtendiskussion**: Der Chat ist ruhig! Sprich über diese Nachricht: \"{newsTitle}\" - Was denkst du?",
@@ -1348,31 +1369,37 @@ async function fetchExternalData() {
 async function generateDynamicFallbackPrompt(metrics) {
     const externalData = await fetchExternalData();
     const timeContext = getTimeContext();
+    const sessionLanguage = metrics.language || 'en'; // Get the current language
     
     // Select prompt based on metrics and context
-    let selectedPrompt;
+    let selectedPromptKey;
     
     if (metrics.messagesPerMinute < 1) {
-        selectedPrompt = 'low_engagement_boost';
+        selectedPromptKey = 'low_engagement_boost';
     } else if (metrics.rollingSentimentScore > 0.5) {
-        selectedPrompt = 'sentiment_positive';
+        selectedPromptKey = 'sentiment_positive';
     } else if (metrics.rollingSentimentScore < -0.3) {
-        selectedPrompt = 'sentiment_negative';
+        selectedPromptKey = 'sentiment_negative';
     } else if (timeContext.isPrimeTime) {
-        selectedPrompt = 'prime_time_boost';
+        selectedPromptKey = 'prime_time_boost';
     } else if (timeContext.isWeekend) {
-        selectedPrompt = 'weekend_energy';
+        selectedPromptKey = 'weekend_energy';
     } else if (externalData.news) {
-        selectedPrompt = 'news_discussion';
+        selectedPromptKey = 'news_discussion';
     } else if (externalData.trivia) {
-        selectedPrompt = 'trivia_engagement';
+        selectedPromptKey = 'trivia_engagement';
     } else {
-        selectedPrompt = 'time_based_greeting';
+        selectedPromptKey = 'time_based_greeting';
     }
+    
+    // Translate the selected key into the full prompt message
+    const translatedMessage = promptTranslations[sessionLanguage][selectedPromptKey] || 
+                            promptTranslations['en'][selectedPromptKey] || 
+                            selectedPromptKey; // Fallback to key if translation not found
     
     return {
         type: 'dynamic_fallback',
-        message: selectedPrompt,
+        message: translatedMessage, // Return the translated message
         priority: 'medium',
         phase: 'building_audience',
         externalData: externalData,
